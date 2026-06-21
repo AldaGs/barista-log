@@ -1,5 +1,5 @@
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string'
-import { db } from '@/db/dexie'
+import { db, uid } from '@/db/dexie'
 import { saveRecipe, saveBean, saveGear, saveGrinder, saveWater } from '@/db/repo'
 import type { Bean, Gear, Grinder, Recipe, WaterProfile } from '@/db/types'
 
@@ -10,7 +10,53 @@ import type { Bean, Gear, Grinder, Recipe, WaterProfile } from '@/db/types'
  * imports — adding any bundled entities to their own libraries.
  */
 
-const VERSION = 1
+const VERSION = 2
+
+// Short key maps keep the encoded payload compact so the QR stays low-density
+// and easy to scan. Keys not listed pass through unchanged (no real field name
+// collides with a short code, so the inverse is unambiguous).
+const RECIPE_K: Record<string, string> = {
+  title: 't', method: 'm', grindClicks: 'gc', grindLabel: 'gl', doseIn: 'd', yieldOut: 'y',
+  ratio: 'r', waterTemp: 'wt', shotTimeSec: 'st', pressureBar: 'pb', preInfusionSec: 'pi',
+  brewer: 'br', totalTimeSec: 'tt', bloomSec: 'bl', pours: 'po', steps: 's', notes: 'n',
+}
+const STEP_K: Record<string, string> = {
+  type: 't', water: 'w', atTimeSec: 'a', intensity: 'in', method: 'me', pourPattern: 'pp', pourHeight: 'ph', note: 'no',
+}
+const BEAN_K: Record<string, string> = { name: 'n', roaster: 'r', origin: 'o', process: 'p', roastLevel: 'rl', roastDate: 'rd', notes: 'nt' }
+const GEAR_K: Record<string, string> = { name: 'n', type: 't', brand: 'b', notes: 'nt' }
+const GRINDER_K: Record<string, string> = { name: 'n', type: 't', burr: 'b', micronsPerClick: 'mpc', zeroOffsetClicks: 'z', maxClicks: 'mc', source: 's', estimated: 'e' }
+const WATER_K: Record<string, string> = { name: 'n', supplier: 's', tds: 'td', gh: 'gh', kh: 'kh', notes: 'nt' }
+
+const invert = (m: Record<string, string>) => Object.fromEntries(Object.entries(m).map(([k, v]) => [v, k]))
+const remap = (o: Record<string, unknown>, m: Record<string, string>) =>
+  Object.fromEntries(Object.entries(o).map(([k, v]) => [m[k] ?? k, v]))
+
+/** Pack a payload into its short-key wire form. */
+function pack(p: SharePayload): Record<string, unknown> {
+  const recipe = remap(p.recipe as Record<string, unknown>, RECIPE_K)
+  if (Array.isArray(p.recipe.steps)) recipe.s = p.recipe.steps.map((st) => remap(st as unknown as Record<string, unknown>, STEP_K))
+  const out: Record<string, unknown> = { v: p.v, r: recipe }
+  if (p.bean) out.b = remap(p.bean, BEAN_K)
+  if (p.gear) out.g = remap(p.gear, GEAR_K)
+  if (p.grinder) out.gr = remap(p.grinder, GRINDER_K)
+  if (p.water) out.w = remap(p.water, WATER_K)
+  return out
+}
+
+/** Unpack the short-key wire form back into a SharePayload. */
+function unpack(o: Record<string, any>): SharePayload {
+  const recipe = remap(o.r ?? {}, invert(RECIPE_K)) as Record<string, unknown>
+  if (Array.isArray(o.r?.s)) recipe.steps = o.r.s.map((st: Record<string, unknown>) => remap(st, invert(STEP_K)))
+  return {
+    v: o.v,
+    recipe: recipe as SharedRecipe,
+    bean: o.b && (remap(o.b, invert(BEAN_K)) as SharedBean),
+    gear: o.g && (remap(o.g, invert(GEAR_K)) as SharedGear),
+    grinder: o.gr && (remap(o.gr, invert(GRINDER_K)) as SharedGrinder),
+    water: o.w && (remap(o.w, invert(WATER_K)) as SharedWater),
+  }
+}
 
 type SharedRecipe = Omit<Recipe, keyof Recipe & ('id' | 'dirty' | 'syncedAt' | 'createdAt' | 'updatedAt' | 'beanId' | 'gearId' | 'grinderId' | 'waterId' | 'forkedFromId')>
 type SharedBean = Pick<Bean, 'name' | 'roaster' | 'origin' | 'process' | 'roastLevel' | 'roastDate' | 'notes'>
@@ -43,9 +89,19 @@ export async function buildSharePayload(recipe: Recipe): Promise<SharePayload> {
   const grinder = grinderId ? await db.grinders.get(grinderId) : undefined
   const water = waterId ? await db.waters.get(waterId) : undefined
 
+  // Drop step ids — they're device-local UUIDs that bloat the payload and are
+  // regenerated on import.
+  const recipeOut = clean(recipeFields) as Record<string, unknown>
+  if (Array.isArray(recipeOut.steps)) {
+    recipeOut.steps = recipeOut.steps.map((s) => {
+      const { id: _sid, ...rest } = s as Record<string, unknown>
+      return clean(rest)
+    })
+  }
+
   return clean({
     v: VERSION,
-    recipe: clean(recipeFields) as SharedRecipe,
+    recipe: recipeOut as unknown as SharedRecipe,
     bean: bean && clean({ name: bean.name, roaster: bean.roaster, origin: bean.origin, process: bean.process, roastLevel: bean.roastLevel, roastDate: bean.roastDate, notes: bean.notes }),
     gear: gear && clean({ name: gear.name, type: gear.type, brand: gear.brand, notes: gear.notes }),
     grinder: grinder && clean({ name: grinder.name, type: grinder.type, burr: grinder.burr, micronsPerClick: grinder.micronsPerClick, zeroOffsetClicks: grinder.zeroOffsetClicks, maxClicks: grinder.maxClicks, source: grinder.source, estimated: grinder.estimated }),
@@ -54,14 +110,14 @@ export async function buildSharePayload(recipe: Recipe): Promise<SharePayload> {
 }
 
 export function encodePayload(p: SharePayload): string {
-  return compressToEncodedURIComponent(JSON.stringify(p))
+  return compressToEncodedURIComponent(JSON.stringify(pack(p)))
 }
 
 export function decodePayload(code: string): SharePayload | null {
   try {
     const json = decompressFromEncodedURIComponent(code)
     if (!json) return null
-    const p = JSON.parse(json) as SharePayload
+    const p = unpack(JSON.parse(json))
     if (!p?.recipe || !p.recipe.method) return null
     return p
   } catch {
@@ -110,10 +166,14 @@ export async function importPayload(p: SharePayload): Promise<string> {
     waterId = existing?.id ?? (await saveWater(p.water))
   }
 
+  // Regenerate the step ids that were stripped for sharing.
+  const steps = p.recipe.steps?.map((s) => ({ ...s, id: uid() }))
+
   return saveRecipe({
     ...p.recipe,
     title: p.recipe.title || '',
     method: p.recipe.method,
+    steps,
     beanId,
     gearId,
     grinderId,

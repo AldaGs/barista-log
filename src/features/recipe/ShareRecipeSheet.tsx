@@ -18,7 +18,11 @@ export function ShareRecipeSheet({ recipe, onClose }: { recipe: Recipe; onClose:
       const u = shareUrl(encodePayload(payload))
       if (!alive) return
       setUrl(u)
-      QRCode.toDataURL(u, { width: 480, margin: 1 }).then((d) => alive && setQr(d)).catch(() => {})
+      // Level 'L' + a wide render keeps the modules large and low-density so
+      // budget phone cameras can lock on.
+      QRCode.toDataURL(u, { width: 640, margin: 2, errorCorrectionLevel: 'L' })
+        .then((d) => alive && setQr(d))
+        .catch(() => {})
     })
     return () => {
       alive = false
