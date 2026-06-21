@@ -11,6 +11,7 @@ import { BrewTimer } from '@/components/BrewTimer'
 import { BrewSteps } from '@/components/BrewSteps'
 import { ClockInput } from '@/components/ClockInput'
 import { GrindConverter } from '@/features/grinder/GrindConverter'
+import { InlineGearAdd } from '@/features/gear/InlineGearAdd'
 import { useSettings } from '@/store/settings'
 import { cToF, fToC, formatSeconds } from '@/lib/units'
 
@@ -229,6 +230,7 @@ export default function RecipeFormPage() {
               <option key={g.id} value={g.id}>{g.name}</option>
             ))}
           </select>
+          <InlineGearAdd type="machine" onAdded={(id) => set({ gearId: id })} />
         </Field>
         <div className="grid grid-cols-3 gap-3">
           <Field label={t('recipe.shotTime')}>
@@ -252,6 +254,7 @@ export default function RecipeFormPage() {
                   <option key={g.id} value={g.id}>{g.name}</option>
                 ))}
               </select>
+              <InlineGearAdd type="brewer" onAdded={(id) => set({ gearId: id })} />
             </Field>
             <Field label={t('recipe.totalTime')}>
               <ClockInput value={form.totalTimeSec} onChange={(secs) => set({ totalTimeSec: secs })} />
