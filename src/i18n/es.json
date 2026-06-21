@@ -198,7 +198,8 @@
     "brewCount_other": "{{count}} preparaciones",
     "forkCount_one": "{{count}} bifurcación",
     "forkCount_other": "{{count}} bifurcaciones",
-    "unlinked": "Preparaciones sin receta"
+    "unlinked": "Preparaciones sin receta",
+    "confirmDelete": "¿Eliminar esta preparación registrada?"
   },
   "stats": {
     "title": "Estadísticas",

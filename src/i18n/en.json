@@ -198,7 +198,8 @@
     "brewCount_other": "{{count}} brews",
     "forkCount_one": "{{count}} fork",
     "forkCount_other": "{{count}} forks",
-    "unlinked": "Unlinked brews"
+    "unlinked": "Unlinked brews",
+    "confirmDelete": "Delete this logged brew?"
   },
   "stats": {
     "title": "Stats",

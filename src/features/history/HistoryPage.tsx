@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { format } from 'date-fns'
-import { Star, GitCompare, GitFork, ChevronRight } from 'lucide-react'
+import { Star, GitCompare, GitFork, ChevronRight, Trash2 } from 'lucide-react'
 import { db } from '@/db/dexie'
+import { deleteSession } from '@/db/repo'
 import type { BrewMethod, BrewSession, Recipe } from '@/db/types'
 import { PageHeader, EmptyState } from '@/components/ui'
 import { BlobImage } from '@/components/PhotoInput'
@@ -111,6 +112,17 @@ export default function HistoryPage() {
             <Star size={16} fill="currentColor" /> {s.rating}
           </span>
         ) : null}
+        <button
+          className="shrink-0 text-muted hover:text-red-500"
+          aria-label={t('common.delete')}
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            if (confirm(t('history.confirmDelete'))) deleteSession(s.id)
+          }}
+        >
+          <Trash2 size={18} />
+        </button>
       </Link>
     )
   }
