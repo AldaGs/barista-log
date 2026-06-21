@@ -15,11 +15,17 @@ function stepLabel(s: BrewStep, t: (k: string) => string) {
       .filter(Boolean)
       .join(' · ')
   }
+  if (s.type === 'press') {
+    return [t('step.' + s.type), s.pressStrength && t('step.press_' + s.pressStrength), s.note]
+      .filter(Boolean)
+      .join(' · ')
+  }
   return [
     t('step.' + s.type),
     s.water != null ? `${s.water} g` : null,
     s.pourPattern && t('step.' + s.pourPattern),
     s.pourHeight && t('step.' + s.pourHeight),
+    s.flowRate && t('step.flow_' + s.flowRate),
     s.note,
   ]
     .filter(Boolean)

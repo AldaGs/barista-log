@@ -52,11 +52,13 @@ export interface Grinder extends SyncMeta {
   estimated?: number
 }
 
-export type BrewStepType = 'bloom' | 'pour' | 'agitation' | 'wait' | 'drawdown' | 'other'
+export type BrewStepType = 'bloom' | 'pour' | 'agitation' | 'wait' | 'drawdown' | 'press' | 'other'
 export type AgitationIntensity = 'light' | 'medium' | 'strong'
-export type AgitationMethod = 'swirl' | 'stir' | 'mechanical' | 'tap'
-export type PourPattern = 'circular' | 'elliptical' | 'direct'
+export type AgitationMethod = 'swirl' | 'stir' | 'tap'
+export type PourPattern = 'circular' | 'elliptical' | 'direct' | 'edge' | 'concentric'
 export type PourHeight = 'low' | 'high'
+export type FlowRate = 'slow' | 'medium' | 'fast'
+export type PressStrength = 'low' | 'medium' | 'hard'
 
 export interface BrewStep {
   id: string
@@ -71,6 +73,10 @@ export interface BrewStep {
   /** for bloom / pour steps — how the water is poured */
   pourPattern?: PourPattern
   pourHeight?: PourHeight
+  /** for bloom / pour steps — how fast the water is poured */
+  flowRate?: FlowRate
+  /** for press steps (Aeropress / French press) — plunge strength */
+  pressStrength?: PressStrength
   note?: string
 }
 

@@ -21,7 +21,7 @@ const RECIPE_K: Record<string, string> = {
   brewer: 'br', totalTimeSec: 'tt', bloomSec: 'bl', pours: 'po', steps: 's', notes: 'n',
 }
 const STEP_K: Record<string, string> = {
-  type: 't', water: 'w', atTimeSec: 'a', intensity: 'in', method: 'me', pourPattern: 'pp', pourHeight: 'ph', note: 'no',
+  type: 't', water: 'w', atTimeSec: 'a', intensity: 'in', method: 'me', pourPattern: 'pp', pourHeight: 'ph', flowRate: 'fr', pressStrength: 'ps', note: 'no',
 }
 const BEAN_K: Record<string, string> = { name: 'n', roaster: 'r', origin: 'o', process: 'p', roastLevel: 'rl', roastDate: 'rd', notes: 'nt' }
 const GEAR_K: Record<string, string> = { name: 'n', type: 't', brand: 'b', notes: 'nt' }

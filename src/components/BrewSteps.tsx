@@ -5,20 +5,25 @@ import type {
   AgitationMethod,
   BrewStep,
   BrewStepType,
+  FlowRate,
   PourHeight,
   PourPattern,
+  PressStrength,
 } from '@/db/types'
 import { uid } from '@/db/dexie'
 import { ClockInput } from './ClockInput'
 
-const STEP_TYPES: BrewStepType[] = ['bloom', 'pour', 'agitation', 'wait', 'drawdown', 'other']
+const STEP_TYPES: BrewStepType[] = ['bloom', 'pour', 'agitation', 'wait', 'drawdown', 'press', 'other']
 const INTENSITIES: AgitationIntensity[] = ['light', 'medium', 'strong']
-const METHODS: AgitationMethod[] = ['swirl', 'stir', 'mechanical', 'tap']
-const POUR_PATTERNS: PourPattern[] = ['circular', 'elliptical', 'direct']
+const METHODS: AgitationMethod[] = ['swirl', 'stir', 'tap']
+const POUR_PATTERNS: PourPattern[] = ['circular', 'elliptical', 'direct', 'edge', 'concentric']
 const POUR_HEIGHTS: PourHeight[] = ['low', 'high']
+const FLOW_RATES: FlowRate[] = ['slow', 'medium', 'fast']
+const PRESS_STRENGTHS: PressStrength[] = ['low', 'medium', 'hard']
 
 const hasWater = (t: BrewStepType) => t === 'bloom' || t === 'pour'
 const isAgitation = (t: BrewStepType) => t === 'agitation'
+const isPress = (t: BrewStepType) => t === 'press'
 
 export function BrewSteps({
   value,
@@ -114,7 +119,28 @@ export function BrewSteps({
                     <option key={x} value={x}>{t(`step.${x}`)}</option>
                   ))}
                 </select>
+                <select
+                  className="input !py-1.5"
+                  value={s.flowRate ?? ''}
+                  onChange={(e) => update(s.id, { flowRate: (e.target.value || undefined) as FlowRate | undefined })}
+                >
+                  <option value="">{t('step.flowRate')}</option>
+                  {FLOW_RATES.map((x) => (
+                    <option key={x} value={x}>{t(`step.flow_${x}`)}</option>
+                  ))}
+                </select>
               </>
+            )}
+            {isPress(s.type) && (
+              <select
+                className="input !py-1.5"
+                value={s.pressStrength ?? 'medium'}
+                onChange={(e) => update(s.id, { pressStrength: e.target.value as PressStrength })}
+              >
+                {PRESS_STRENGTHS.map((x) => (
+                  <option key={x} value={x}>{t(`step.press_${x}`)}</option>
+                ))}
+              </select>
             )}
             {isAgitation(s.type) && (
               <>

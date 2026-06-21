@@ -70,10 +70,15 @@ export function RecipeCard({
                       ? [s.method && t('step.' + s.method), s.intensity && t('step.' + s.intensity)]
                           .filter(Boolean)
                           .join(' · ')
+                      : s.type === 'press'
+                      ? [s.pressStrength && t('step.press_' + s.pressStrength), s.note]
+                          .filter(Boolean)
+                          .join(' · ')
                       : [
                           s.water != null ? `${s.water} g` : null,
                           s.pourPattern && t('step.' + s.pourPattern),
                           s.pourHeight && t('step.' + s.pourHeight),
+                          s.flowRate && t('step.flow_' + s.flowRate),
                           s.note,
                         ]
                           .filter(Boolean)
