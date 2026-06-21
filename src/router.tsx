@@ -5,6 +5,7 @@ import RecipeFormPage from './features/recipe/RecipeFormPage'
 import RecipeDetailPage from './features/recipe/RecipeDetailPage'
 import BrewPlayPage from './features/brew/BrewPlayPage'
 import LogSessionPage from './features/recipe/LogSessionPage'
+import ImportRecipePage from './features/recipe/ImportRecipePage'
 import HistoryPage from './features/history/HistoryPage'
 import StatsPage from './features/stats/StatsPage'
 import ComparePage from './features/compare/ComparePage'
@@ -22,6 +23,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'recipe/new', element: <RecipeFormPage /> },
+      { path: 'import', element: <ImportRecipePage /> },
       { path: 'recipe/:id', element: <RecipeDetailPage /> },
       { path: 'recipe/:id/edit', element: <RecipeFormPage /> },
       { path: 'recipe/:id/brew', element: <BrewPlayPage /> },

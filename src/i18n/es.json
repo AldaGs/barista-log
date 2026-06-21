@@ -218,6 +218,20 @@
     "brewsN_one": "{{count}} preparación",
     "brewsN_other": "{{count}} preparaciones"
   },
+  "share": {
+    "recipeTitle": "Compartir receta",
+    "recipeHint": "Escanea el QR o comparte el enlace. Contiene la receta completa — sin cuenta.",
+    "copyLink": "Copiar enlace",
+    "copied": "¡Copiado!"
+  },
+  "import": {
+    "title": "Importar receta",
+    "invalid": "Este enlace no contiene una receta válida.",
+    "bundled": "También incluye",
+    "bundledHint": "Los elementos nuevos se agregan a tu biblioteca; los existentes se vinculan por nombre.",
+    "action": "Importar receta",
+    "importing": "Importando…"
+  },
   "compare": { "title": "Comparar", "field": "Campo", "needTwo": "Elige al menos dos preparaciones." },
   "beans": {
     "title": "Granos",

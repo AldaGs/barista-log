@@ -1,8 +1,8 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Pencil, Copy, Trash2, Share2, Play, Check, GitFork, AlertTriangle } from 'lucide-react'
+import { Pencil, Copy, Trash2, Share2, Play, Check, GitFork, AlertTriangle, Send } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { deleteRecipe } from '@/db/repo'
 import { PageHeader } from '@/components/ui'
@@ -11,12 +11,14 @@ import { BrewChart } from '@/components/BrewChart'
 import { estimateBrew, measuredBrew, type BrewPoint } from '@/lib/brewModel'
 import { freshness } from '@/lib/freshness'
 import { shareRecipePng } from '@/lib/share'
+import { ShareRecipeSheet } from './ShareRecipeSheet'
 
 export default function RecipeDetailPage() {
   const { t } = useTranslation()
   const { id } = useParams()
   const navigate = useNavigate()
   const cardRef = useRef<HTMLDivElement>(null)
+  const [showShare, setShowShare] = useState(false)
 
   const recipe = useLiveQuery(() => (id ? db.recipes.get(id) : undefined), [id])
   const bean = useLiveQuery(
@@ -65,6 +67,9 @@ export default function RecipeDetailPage() {
         back
         action={
           <div className="flex gap-1">
+            <button onClick={() => setShowShare(true)} className="btn-ghost !px-2" aria-label={t('share.recipeTitle')}>
+              <Send size={18} />
+            </button>
             <Link to={`/recipe/${recipe.id}/edit`} className="btn-ghost !px-2" aria-label="edit">
               <Pencil size={18} />
             </Link>
@@ -159,6 +164,8 @@ export default function RecipeDetailPage() {
           <Trash2 size={18} /> {t('common.delete')}
         </button>
       </div>
+
+      {showShare && <ShareRecipeSheet recipe={recipe} onClose={() => setShowShare(false)} />}
     </div>
   )
 }

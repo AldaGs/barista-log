@@ -218,6 +218,20 @@
     "brewsN_one": "{{count}} brew",
     "brewsN_other": "{{count}} brews"
   },
+  "share": {
+    "recipeTitle": "Share recipe",
+    "recipeHint": "Scan the QR or share the link. It contains the full recipe — no account needed.",
+    "copyLink": "Copy link",
+    "copied": "Copied!"
+  },
+  "import": {
+    "title": "Import recipe",
+    "invalid": "This link doesn't contain a valid recipe.",
+    "bundled": "Also included",
+    "bundledHint": "New items are added to your library; existing ones are matched by name.",
+    "action": "Import recipe",
+    "importing": "Importing…"
+  },
   "compare": { "title": "Compare", "field": "Field", "needTwo": "Pick at least two brews." },
   "beans": {
     "title": "Beans",
