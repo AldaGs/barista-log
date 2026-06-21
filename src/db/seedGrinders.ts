@@ -21,7 +21,7 @@ type SeedGrinder = Pick<
 >
 
 export const SEED_GRINDERS: SeedGrinder[] = [
-  { name: 'Timemore Chestnut C2', type: 'hand', burr: 'conical', micronsPerClick: 50, maxClicks: 36, source: 'community' },
+  { name: 'Timemore Chestnut C2', type: 'hand', burr: 'conical', micronsPerClick: 36, maxClicks: 36, source: 'community (~33-36µm, aligned to reference converters)' },
   { name: 'Timemore Chestnut C3 / C3S', type: 'hand', burr: 'conical', micronsPerClick: 83, maxClicks: 30, source: 'manufacturer (0.083mm/click)' },
   { name: 'Comandante C40 (MK4)', type: 'hand', burr: 'conical', micronsPerClick: 30, maxClicks: 40, source: 'community (~30µm/click)' },
   { name: '1Zpresso JX', type: 'hand', burr: 'conical', micronsPerClick: 25, maxClicks: 40, source: 'manufacturer' },

@@ -37,20 +37,38 @@ class BaristaDB extends Dexie {
 
 export const db = new BaristaDB()
 
-/** Insert shipped grinders the first time the app runs. Idempotent. */
+/**
+ * Insert shipped grinders on first run, and reconcile reference values on later
+ * runs so corrections (e.g. a fixed microns-per-click) reach existing installs.
+ * Only rows we shipped (`seeded === 1`) are touched — user-added grinders and
+ * user edits to custom grinders are never overwritten. Idempotent.
+ */
 export async function ensureSeedData() {
-  const count = await db.grinders.count()
-  if (count > 0) return
   const ts = now()
-  await db.grinders.bulkAdd(
-    SEED_GRINDERS.map((g) => ({
-      ...g,
-      id: uid(),
-      seeded: 1,
-      dirty: 0,
-      syncedAt: null,
-      createdAt: ts,
-      updatedAt: ts,
-    })),
-  )
+  const existingSeeded = await db.grinders.where('seeded').equals(1).toArray()
+  const byName = new Map(existingSeeded.map((g) => [g.name, g]))
+
+  for (const seed of SEED_GRINDERS) {
+    const current = byName.get(seed.name)
+    if (!current) {
+      // new shipped grinder
+      await db.grinders.add({
+        ...seed,
+        id: uid(),
+        seeded: 1,
+        dirty: 0,
+        syncedAt: null,
+        createdAt: ts,
+        updatedAt: ts,
+      })
+    } else if (
+      current.micronsPerClick !== seed.micronsPerClick ||
+      current.burr !== seed.burr ||
+      current.maxClicks !== seed.maxClicks ||
+      current.source !== seed.source
+    ) {
+      // refresh corrected reference data
+      await db.grinders.update(current.id, { ...seed, updatedAt: ts })
+    }
+  }
 }
