@@ -98,40 +98,47 @@ export default function BrewPlayPage() {
     [recipe?.steps],
   )
 
-  // Active step = the last step whose start time has been reached.
-  const activeIndex = useMemo(() => {
-    let idx = -1
-    steps.forEach((s, i) => {
-      if ((s.atTimeSec ?? 0) <= elapsed) idx = i
-    })
-    return idx
-  }, [steps, elapsed])
+  // Each step's time is the checkpoint it should be *finished* by. A step runs
+  // from the previous step's time (0 for the first) up to its own time. The
+  // current step is the first one not yet finished; -1 means the brew is done.
+  const currentIndex = useMemo(
+    () => steps.findIndex((s) => elapsed < (s.atTimeSec ?? 0)),
+    [steps, elapsed],
+  )
+  const isComplete = currentIndex === -1
+  const activeIndex = isComplete ? steps.length : currentIndex
 
-  // Keep the screen awake while brewing; beep/vibrate when a step triggers.
+  // Running cumulative target weight after each step.
+  const cumWater = useMemo(() => {
+    let sum = 0
+    return steps.map((s) => (sum += s.water ?? 0))
+  }, [steps])
+
+  // Keep the screen awake while brewing; beep/vibrate when a step changes.
   useWakeLock(running)
   const prevActive = useRef(-1)
   useEffect(() => {
     if (activeIndex !== prevActive.current) {
-      if (running && activeIndex >= 0) cue(activeIndex === steps.length - 1)
+      if (running) cue(isComplete)
       prevActive.current = activeIndex
     }
-  }, [activeIndex, running, steps.length])
+  }, [activeIndex, running, isComplete])
 
-  const nextStep = steps[activeIndex + 1]
-  const countdown = nextStep ? (nextStep.atTimeSec ?? 0) - elapsed : null
+  const currentStep = isComplete ? null : steps[currentIndex]
+  const nextStep = isComplete ? null : steps[currentIndex + 1]
+  // Seconds left in the current step (i.e. until the next one begins).
+  const countdown = currentStep ? (currentStep.atTimeSec ?? 0) - elapsed : null
 
   // Fraction [0,1] of a step's time window that has elapsed — drives the pill fill.
   const stepFill = (i: number) => {
     if (i < activeIndex) return 1
     if (i > activeIndex) return 0
-    const start = steps[i].atTimeSec ?? 0
-    const end = steps[i + 1]?.atTimeSec
-    if (end == null || end <= start) return running || elapsed > start ? 1 : 0
+    const start = i === 0 ? 0 : steps[i - 1].atTimeSec ?? 0
+    const end = steps[i].atTimeSec ?? 0
+    if (end <= start) return 1
     return Math.min(1, Math.max(0, (elapsed - start) / (end - start)))
   }
-  const cumulativeWater = steps
-    .slice(0, activeIndex + 1)
-    .reduce((sum, s) => sum + (s.water ?? 0), 0)
+  const targetWater = isComplete ? cumWater[cumWater.length - 1] : cumWater[currentIndex]
 
   if (recipe === undefined) return null
   if (!recipe) return <p className="text-muted">Not found.</p>
@@ -153,13 +160,13 @@ export default function BrewPlayPage() {
               </div>
             )}
             <span className="font-mono text-5xl tabular-nums">{formatSeconds(elapsed)}</span>
-            {activeIndex >= 0 ? (
-              <p className="text-lg font-semibold">{stepLabel(steps[activeIndex], t)}</p>
+            {currentStep ? (
+              <p className="text-lg font-semibold">{stepLabel(currentStep, t)}</p>
             ) : (
-              <p className="text-muted">{t('play.start')}…</p>
+              <p className="font-semibold text-accent">{t('play.complete')}</p>
             )}
-            {cumulativeWater > 0 && (
-              <p className="text-sm text-muted">{cumulativeWater} g</p>
+            {targetWater > 0 && (
+              <p className="text-2xl font-bold tabular-nums text-brand">{targetWater} g</p>
             )}
             {nextStep && (
               <p className="mt-1 text-sm text-muted">
@@ -168,9 +175,6 @@ export default function BrewPlayPage() {
                   <span className="ml-2 font-semibold text-brand">{t('play.now')} +{countdown}s</span>
                 )}
               </p>
-            )}
-            {!nextStep && activeIndex === steps.length - 1 && (
-              <p className="mt-1 font-semibold text-accent">{t('play.complete')}</p>
             )}
           </div>
 
@@ -210,7 +214,7 @@ export default function BrewPlayPage() {
           {/* Finish → log this brew */}
           <Link
             to={`/recipe/${recipe.id}/log`}
-            className={activeIndex >= steps.length - 1 && elapsed > 0 ? 'btn-primary w-full' : 'btn-ghost w-full'}
+            className={isComplete ? 'btn-primary w-full' : 'btn-ghost w-full'}
           >
             <Check size={18} /> {t('session.logBrew')}
           </Link>
@@ -238,7 +242,12 @@ export default function BrewPlayPage() {
                     {passed ? <Check size={14} className="text-accent" /> : i + 1}
                   </span>
                   <span className={`relative flex-1 ${active ? 'font-semibold' : ''}`}>{stepLabel(s, t)}</span>
-                  <span className="relative tabular-nums text-sm text-muted">{formatSeconds(s.atTimeSec)}</span>
+                  <span className="relative flex shrink-0 flex-col items-end leading-tight">
+                    {cumWater[i] > 0 && (
+                      <span className="tabular-nums text-sm font-semibold text-brand">{cumWater[i]} g</span>
+                    )}
+                    <span className="tabular-nums text-xs text-muted">{formatSeconds(s.atTimeSec)}</span>
+                  </span>
                 </li>
               )
             })}
