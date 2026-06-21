@@ -160,3 +160,28 @@ export interface FlavorTag {
   id: string
   label: string
 }
+
+/**
+ * The single user profile record. Stored under the fixed id `'me'` so it's
+ * one-per-account and rides the generic cloud sync like any other collection.
+ */
+export interface Profile extends SyncMeta {
+  /** fixed singleton id (PROFILE_ID) — a constant UUID so it's valid for cloud sync */
+  id: string
+  // identity
+  displayName?: string
+  /** id of the chosen lucide avatar icon (see AVATAR_ICONS); JSON/sync-friendly */
+  avatarIcon?: string
+  /** optional profile picture; local-only Blob (stripped from cloud sync & JSON backup, like session photos) */
+  photo?: Blob
+  cafe?: string // home café / location
+  bio?: string
+  // brewing defaults — all optional, used to prefill a brand-new recipe
+  defaultMethod?: BrewMethod
+  defaultBeanId?: string
+  defaultGrinderId?: string
+  defaultGearId?: string
+  defaultRatio?: number
+  defaultDoseIn?: number // g
+  defaultWaterTemp?: number // °C stored canonically, like Recipe.waterTemp
+}

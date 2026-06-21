@@ -4,7 +4,9 @@ import type {
   BrewSession,
   Gear,
   Grinder,
+  Profile,
   Recipe,
+  SyncMeta,
   WaterProfile,
 } from './types'
 import { triggerSync } from '@/sync/syncManager'
@@ -156,3 +158,33 @@ export async function saveGear(
   return id
 }
 export const deleteGear = (id: string) => deleteWithTombstone('gear', id)
+
+// ---- Profile (singleton) -------------------------------------------------
+// Fixed id for the one-per-user profile row. Must be a valid UUID because the
+// cloud `sync_records.id` column is typed uuid (an arbitrary string like 'me'
+// is rejected with a 400 on push).
+const PROFILE_ID = '00000000-0000-4000-8000-000000000001'
+
+/** The single profile row, or undefined until the user saves one. */
+export const getProfile = () => db.profile.get(PROFILE_ID)
+
+/** Create or update the singleton profile (always id `'me'`). */
+export async function saveProfile(
+  data: Omit<Profile, keyof SyncMeta | 'id'>,
+): Promise<void> {
+  const existing = await db.profile.get(PROFILE_ID)
+  if (existing) {
+    await db.profile.update(PROFILE_ID, { ...data, dirty: 1, updatedAt: now() })
+  } else {
+    const ts = now()
+    await db.profile.add({
+      ...data,
+      id: PROFILE_ID,
+      dirty: 1,
+      syncedAt: null,
+      createdAt: ts,
+      updatedAt: ts,
+    })
+  }
+  triggerSync()
+}

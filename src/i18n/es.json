@@ -1,5 +1,7 @@
 {
-  "app": { "name": "Slurry Stats" },
+  "app": {
+    "name": "Slurry Stats"
+  },
   "help": {
     "title": "Ayuda",
     "open": "Cómo usar Slurry Stats",
@@ -59,6 +61,26 @@
       }
     }
   },
+  "profile": {
+    "title": "Perfil",
+    "subtitle": "Tu identidad y valores por defecto",
+    "open": "Perfil",
+    "identity": "Identidad",
+    "displayName": "Nombre",
+    "cafe": "Café / ubicación",
+    "bio": "Sobre ti",
+    "defaults": "Valores por defecto",
+    "defaultsIntro": "Se usan para precargar una nueva receta. Déjalo vacío para ninguno.",
+    "defaultMethod": "Método por defecto",
+    "defaultRatio": "Ratio por defecto",
+    "defaultDose": "Dosis por defecto (g)",
+    "defaultTemp": "Temp. del agua por defecto",
+    "saved": "Perfil guardado",
+    "greeting": "Hola, {{name}}",
+    "icon": "Ícono",
+    "choosePhoto": "Elegir / tomar foto",
+    "removePhoto": "Quitar foto"
+  },
   "nav": {
     "home": "Inicio",
     "new": "Nueva",
@@ -83,7 +105,11 @@
     "export": "Exportar",
     "import": "Importar"
   },
-  "method": { "espresso": "Espresso", "brew": "Filtrado", "label": "Método" },
+  "method": {
+    "espresso": "Espresso",
+    "brew": "Filtrado",
+    "label": "Método"
+  },
   "home": {
     "latest": "Última receta",
     "empty": "Aún no hay recetas. ¡Prepara la primera!",
@@ -202,7 +228,10 @@
     "filterAll": "Todas",
     "compare": "Comparar",
     "selectToCompare": "Selecciona 2+ preparaciones para comparar",
-    "view": { "group": "Agrupar", "all": "Todas" },
+    "view": {
+      "group": "Agrupar",
+      "all": "Todas"
+    },
     "brewCount_one": "{{count}} preparación",
     "brewCount_other": "{{count}} preparaciones",
     "forkCount_one": "{{count}} bifurcación",
@@ -242,7 +271,11 @@
     "action": "Importar receta",
     "importing": "Importando…"
   },
-  "compare": { "title": "Comparar", "field": "Campo", "needTwo": "Elige al menos dos preparaciones." },
+  "compare": {
+    "title": "Comparar",
+    "field": "Campo",
+    "needTwo": "Elige al menos dos preparaciones."
+  },
   "beans": {
     "title": "Granos",
     "roaster": "Tostador",

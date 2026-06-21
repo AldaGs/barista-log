@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Camera, X } from 'lucide-react'
 
 /** Downscale an image file to a JPEG Blob (max edge ~1280px) to keep storage small. */
-async function downscale(file: File, maxEdge = 1280, quality = 0.8): Promise<Blob> {
+export async function downscale(file: File, maxEdge = 1280, quality = 0.8): Promise<Blob> {
   const url = URL.createObjectURL(file)
   try {
     const img = await new Promise<HTMLImageElement>((resolve, reject) => {

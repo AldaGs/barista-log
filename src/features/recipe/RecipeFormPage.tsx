@@ -3,7 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/dexie'
-import { saveRecipe, saveSession } from '@/db/repo'
+import { getProfile, saveRecipe, saveSession } from '@/db/repo'
 import type { BrewMethod, Recipe } from '@/db/types'
 import { PageHeader, Field, StarRating, ScoreSlider } from '@/components/ui'
 import { TagInput } from '@/components/TagInput'
@@ -54,6 +54,24 @@ export default function RecipeFormPage() {
       else setForm({ ...r, id: undefined, title: `${r.title} (copy)`, forkedFromId: undefined }) // unlinked copy
     })
   }, [sourceId, id, forkId])
+
+  // Brand-new recipe (no edit/duplicate/fork source): prefill from profile defaults.
+  useEffect(() => {
+    if (sourceId) return
+    getProfile().then((p) => {
+      if (!p) return
+      setForm((f) => ({
+        ...f,
+        method: p.defaultMethod ?? f.method,
+        beanId: p.defaultBeanId ?? f.beanId,
+        grinderId: p.defaultGrinderId ?? f.grinderId,
+        gearId: p.defaultGearId ?? f.gearId,
+        ratio: p.defaultRatio ?? f.ratio,
+        doseIn: p.defaultDoseIn ?? f.doseIn,
+        waterTemp: p.defaultWaterTemp ?? f.waterTemp,
+      }))
+    })
+  }, [sourceId])
 
   const set = (patch: Partial<Recipe>) => setForm((f) => ({ ...f, ...patch }))
   const isEspresso = form.method === 'espresso'

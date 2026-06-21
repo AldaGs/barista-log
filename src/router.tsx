@@ -14,6 +14,7 @@ import WaterPage from './features/water/WaterPage'
 import GrindersPage from './features/grinder/GrindersPage'
 import GearPage from './features/gear/GearPage'
 import SettingsPage from './features/settings/SettingsPage'
+import ProfilePage from './features/profile/ProfilePage'
 import HelpPage from './features/help/HelpPage'
 
 export const router = createBrowserRouter([
@@ -36,6 +37,7 @@ export const router = createBrowserRouter([
       { path: 'grinders', element: <GrindersPage /> },
       { path: 'gear', element: <GearPage /> },
       { path: 'settings', element: <SettingsPage /> },
+      { path: 'profile', element: <ProfilePage /> },
       { path: 'help', element: <HelpPage /> },
       { path: '*', element: <Navigate to="/" replace /> },
     ],

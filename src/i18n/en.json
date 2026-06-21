@@ -1,5 +1,7 @@
 {
-  "app": { "name": "Slurry Stats" },
+  "app": {
+    "name": "Slurry Stats"
+  },
   "help": {
     "title": "Help",
     "open": "How to use Slurry Stats",
@@ -59,6 +61,26 @@
       }
     }
   },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Your identity and brewing defaults",
+    "open": "Profile",
+    "identity": "Identity",
+    "displayName": "Display name",
+    "cafe": "Home café / location",
+    "bio": "About you",
+    "defaults": "Brewing defaults",
+    "defaultsIntro": "Used to prefill a new recipe. Leave blank for none.",
+    "defaultMethod": "Default method",
+    "defaultRatio": "Default ratio",
+    "defaultDose": "Default dose (g)",
+    "defaultTemp": "Default water temp",
+    "saved": "Profile saved",
+    "greeting": "Hi, {{name}}",
+    "icon": "Icon",
+    "choosePhoto": "Choose / take photo",
+    "removePhoto": "Remove photo"
+  },
   "nav": {
     "home": "Home",
     "new": "New",
@@ -83,7 +105,11 @@
     "export": "Export",
     "import": "Import"
   },
-  "method": { "espresso": "Espresso", "brew": "Brew", "label": "Method" },
+  "method": {
+    "espresso": "Espresso",
+    "brew": "Brew",
+    "label": "Method"
+  },
   "home": {
     "latest": "Latest recipe",
     "empty": "No recipes yet. Brew your first one!",
@@ -202,7 +228,10 @@
     "filterAll": "All",
     "compare": "Compare",
     "selectToCompare": "Select 2+ brews to compare",
-    "view": { "group": "Group", "all": "All" },
+    "view": {
+      "group": "Group",
+      "all": "All"
+    },
     "brewCount_one": "{{count}} brew",
     "brewCount_other": "{{count}} brews",
     "forkCount_one": "{{count}} fork",
@@ -242,7 +271,11 @@
     "action": "Import recipe",
     "importing": "Importing…"
   },
-  "compare": { "title": "Compare", "field": "Field", "needTwo": "Pick at least two brews." },
+  "compare": {
+    "title": "Compare",
+    "field": "Field",
+    "needTwo": "Pick at least two brews."
+  },
   "beans": {
     "title": "Beans",
     "roaster": "Roaster",

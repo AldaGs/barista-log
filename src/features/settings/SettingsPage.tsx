@@ -1,8 +1,11 @@
 import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useLiveQuery } from 'dexie-react-hooks'
 import { Download, Upload, HelpCircle, ChevronRight } from 'lucide-react'
 import { PageHeader } from '@/components/ui'
+import { getProfile } from '@/db/repo'
+import { ProfileAvatar } from '@/features/profile/ProfileAvatar'
 import { ACCENTS, useSettings, type AccentId, type Lang, type ThemeMode } from '@/store/settings'
 import type { TempUnit } from '@/lib/units'
 import { exportBackup, importBackup } from '@/lib/backup'
@@ -36,10 +39,23 @@ export default function SettingsPage() {
   const { t } = useTranslation()
   const s = useSettings()
   const fileRef = useRef<HTMLInputElement>(null)
+  const profile = useLiveQuery(getProfile, [])
 
   return (
     <div className="space-y-6">
       <PageHeader title={t('settings.title')} />
+
+      {/* Profile */}
+      <Link to="/profile" className="card flex items-center gap-3 p-4 hover:border-brand">
+        <ProfileAvatar icon={profile?.avatarIcon} photo={profile?.photo} size={44} />
+        <span className="flex-1">
+          <span className="block font-medium">
+            {profile?.displayName?.trim() || t('profile.open')}
+          </span>
+          <span className="block text-sm text-muted">{t('profile.subtitle')}</span>
+        </span>
+        <ChevronRight size={18} className="text-muted" />
+      </Link>
 
       {/* Help */}
       <Link to="/help" className="card flex items-center gap-3 p-4 hover:border-brand">

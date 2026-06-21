@@ -1,6 +1,6 @@
 import { db } from '@/db/dexie'
 
-const TABLES = ['beans', 'waters', 'grinders', 'gear', 'recipes', 'sessions', 'flavorTags'] as const
+const TABLES = ['beans', 'waters', 'grinders', 'gear', 'recipes', 'sessions', 'flavorTags', 'profile'] as const
 
 interface Backup {
   app: 'barista-log'

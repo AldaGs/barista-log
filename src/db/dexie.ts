@@ -5,6 +5,7 @@ import type {
   FlavorTag,
   Gear,
   Grinder,
+  Profile,
   Recipe,
   WaterProfile,
 } from './types'
@@ -31,6 +32,7 @@ class BaristaDB extends Dexie {
   sessions!: Table<BrewSession, string>
   flavorTags!: Table<FlavorTag, string>
   gear!: Table<Gear, string>
+  profile!: Table<Profile, string>
   deletions!: Table<Deletion, string>
 
   constructor() {
@@ -52,6 +54,12 @@ class BaristaDB extends Dexie {
     this.version(4).stores({
       recipes: 'id, title, method, beanId, forkedFromId, updatedAt, dirty',
     })
+    this.version(5).stores({
+      profile: 'id, updatedAt, dirty',
+    })
+    // The profile singleton briefly used the non-UUID id 'me', which the cloud
+    // rejects (sync_records.id is uuid). Drop that stale row so it stops failing.
+    this.version(6).upgrade((tx) => tx.table('profile').delete('me'))
   }
 }
 
