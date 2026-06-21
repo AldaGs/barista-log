@@ -1,6 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#1b1410"/>
-  <path d="M150 150h170a70 70 0 0 1 0 140h-12v8a78 78 0 0 1-78 78h-2a78 78 0 0 1-78-78V150z" fill="none" stroke="#c98a5a" stroke-width="22" stroke-linejoin="round"/>
-  <path d="M308 192h12a36 36 0 0 1 0 72h-12" fill="none" stroke="#c98a5a" stroke-width="22"/>
-  <path d="M186 96c-12 16-12 30 0 46m44-46c-12 16-12 30 0 46m44-46c-12 16-12 30 0 46" fill="none" stroke="#7abca5" stroke-width="16" stroke-linecap="round"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 512 512">
+  <!-- Generator: Adobe Illustrator 30.5.1, SVG Export Plug-In . SVG Version: 2.1.4 Build 3)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #064cb2;
+      }
+
+      .st1 {
+        fill: #1b1410;
+      }
+
+      .st2 {
+        fill: #c98a5a;
+      }
+    </style>
+  </defs>
+  <rect class="st1" width="512" height="512" rx="112" ry="112"/>
+  <path class="st2" d="M256,447c-105.3,0-191-85.7-191-191s85.7-191,191-191,191,85.7,191,191-85.7,191-191,191ZM256,120c-75,0-136,61-136,136s61,136,136,136,136-61,136-136-61-136-136-136Z"/>
+  <path class="st0" d="M204.3,130.2c-49.4,20.4-84.3,69.1-84.3,125.8h-55c0-79.6,49-148,118.4-176.7l20.9,50.9Z"/>
 </svg>

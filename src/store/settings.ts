@@ -4,6 +4,18 @@ import type { TempUnit } from '@/lib/units'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 export type Lang = 'en' | 'es'
+export type AccentId = 'midnight' | 'plum' | 'teal' | 'coffee'
+
+/** Accent presets. `brand`/`accent` are "r g b" triplets used in CSS vars. */
+export const ACCENTS: Record<
+  AccentId,
+  { brandLight: string; brandDark: string; accent: string }
+> = {
+  midnight: { brandLight: '64 86 214', brandDark: '116 134 248', accent: '120 196 214' },
+  plum: { brandLight: '124 78 214', brandDark: '167 130 247', accent: '210 150 235' },
+  teal: { brandLight: '20 142 150', brandDark: '60 196 196', accent: '150 210 180' },
+  coffee: { brandLight: '176 110 64', brandDark: '201 138 90', accent: '122 188 165' },
+}
 
 interface SupabaseConfig {
   url: string
@@ -13,10 +25,12 @@ interface SupabaseConfig {
 interface SettingsState {
   theme: ThemeMode
   lang: Lang
+  accent: AccentId
   tempUnit: TempUnit
   supabase: SupabaseConfig | null
   setTheme: (t: ThemeMode) => void
   setLang: (l: Lang) => void
+  setAccent: (a: AccentId) => void
   setTempUnit: (u: TempUnit) => void
   setSupabase: (c: SupabaseConfig | null) => void
 }
@@ -26,10 +40,12 @@ export const useSettings = create<SettingsState>()(
     (set) => ({
       theme: 'system',
       lang: (navigator.language?.startsWith('es') ? 'es' : 'en') as Lang,
+      accent: 'midnight',
       tempUnit: 'C',
       supabase: null,
       setTheme: (theme) => set({ theme }),
       setLang: (lang) => set({ lang }),
+      setAccent: (accent) => set({ accent }),
       setTempUnit: (tempUnit) => set({ tempUnit }),
       setSupabase: (supabase) => set({ supabase }),
     }),
@@ -37,11 +53,23 @@ export const useSettings = create<SettingsState>()(
   ),
 )
 
+function isDark(theme: ThemeMode) {
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+  return theme === 'dark' || (theme === 'system' && prefersDark)
+}
+
 /** Resolve theme to an effective light/dark and apply the .dark class. */
 export function applyTheme(theme: ThemeMode) {
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-  const dark = theme === 'dark' || (theme === 'system' && prefersDark)
+  const dark = isDark(theme)
   document.documentElement.classList.toggle('dark', dark)
   const meta = document.querySelector('meta[name="theme-color"]')
-  meta?.setAttribute('content', dark ? '#171210' : '#f7f4f0')
+  meta?.setAttribute('content', dark ? '#0d0e15' : '#f7f8fb')
+}
+
+/** Apply the chosen accent to the brand CSS variables (light/dark aware). */
+export function applyAccent(accent: AccentId, theme: ThemeMode) {
+  const a = ACCENTS[accent] ?? ACCENTS.midnight
+  const root = document.documentElement
+  root.style.setProperty('--brand', isDark(theme) ? a.brandDark : a.brandLight)
+  root.style.setProperty('--accent', a.accent)
 }

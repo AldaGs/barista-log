@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Download, Upload } from 'lucide-react'
 import { PageHeader } from '@/components/ui'
-import { useSettings, type Lang, type ThemeMode } from '@/store/settings'
+import { ACCENTS, useSettings, type AccentId, type Lang, type ThemeMode } from '@/store/settings'
 import type { TempUnit } from '@/lib/units'
 import { exportBackup, importBackup } from '@/lib/backup'
 import { CloudSync } from './CloudSync'
@@ -65,6 +65,31 @@ export default function SettingsPage() {
               { value: 'es', label: 'Español' },
             ]}
           />
+        </div>
+        <div>
+          <span className="label">{t('settings.accent')}</span>
+          <div className="flex gap-3">
+            {(Object.keys(ACCENTS) as AccentId[]).map((id) => {
+              const active = s.accent === id
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => s.setAccent(id)}
+                  className="flex flex-col items-center gap-1"
+                  aria-label={t(`settings.accent${id[0].toUpperCase()}${id.slice(1)}`)}
+                >
+                  <span
+                    className={`h-9 w-9 rounded-full border-2 transition ${active ? 'border-text scale-110' : 'border-transparent'}`}
+                    style={{ background: `rgb(${ACCENTS[id].brandDark})` }}
+                  />
+                  <span className={`text-xs ${active ? 'text-text' : 'text-muted'}`}>
+                    {t(`settings.accent${id[0].toUpperCase()}${id.slice(1)}`)}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
         </div>
         <div>
           <span className="label">{t('settings.tempUnit')}</span>

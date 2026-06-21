@@ -3,27 +3,29 @@
 @tailwind utilities;
 
 :root {
-  --bg: 247 244 240;
+  /* Cool neutral light theme. Accent vars (--brand*) are set at runtime. */
+  --bg: 247 248 251;
   --surface: 255 255 255;
-  --surface-2: 244 240 235;
-  --border: 226 220 212;
-  --text: 33 27 22;
-  --muted: 120 110 100;
-  --brand: 176 110 64;      /* roasted-coffee amber */
+  --surface-2: 238 240 246;
+  --border: 222 225 234;
+  --text: 23 25 33;
+  --muted: 108 112 128;
+  --brand: 76 99 230;
   --brand-fg: 255 255 255;
-  --accent: 90 150 130;
+  --accent: 70 150 175;
 }
 
 .dark {
-  --bg: 23 18 14;
-  --surface: 33 26 21;
-  --surface-2: 43 34 28;
-  --border: 58 47 39;
-  --text: 240 233 226;
-  --muted: 160 148 137;
-  --brand: 201 138 90;
-  --brand-fg: 28 20 14;
-  --accent: 122 188 165;
+  /* Deep, near-black with a subtle blue/purple tint. */
+  --bg: 13 14 21;
+  --surface: 21 23 32;
+  --surface-2: 29 31 43;
+  --border: 43 46 62;
+  --text: 228 230 240;
+  --muted: 146 150 168;
+  --brand: 116 134 248;
+  --brand-fg: 17 18 28;
+  --accent: 122 196 210;
 }
 
 html, body, #root { height: 100%; }

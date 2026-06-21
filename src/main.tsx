@@ -4,16 +4,21 @@ import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
 import { ensureSeedData } from './db/dexie'
 import { initSync } from './sync/syncManager'
-import { applyTheme, useSettings } from './store/settings'
+import { applyAccent, applyTheme, useSettings } from './store/settings'
 import './i18n'
 import './styles/index.css'
 
-// Apply theme before first paint and keep it in sync.
-applyTheme(useSettings.getState().theme)
-useSettings.subscribe((s) => applyTheme(s.theme))
+// Apply theme + accent before first paint and keep them in sync.
+function applyAppearance() {
+  const { theme, accent } = useSettings.getState()
+  applyTheme(theme)
+  applyAccent(accent, theme)
+}
+applyAppearance()
+useSettings.subscribe(applyAppearance)
 window
   .matchMedia('(prefers-color-scheme: dark)')
-  .addEventListener('change', () => applyTheme(useSettings.getState().theme))
+  .addEventListener('change', applyAppearance)
 
 ensureSeedData()
 initSync()
