@@ -42,7 +42,7 @@ export async function saveRecipe(
     await db.recipes.update(data.id, { ...ratio, dirty: 1, updatedAt: now() })
     id = data.id
   } else {
-    const rec = { ...freshMeta(), ...ratio } as Recipe
+    const rec = { ...ratio, ...freshMeta() } as Recipe
     await db.recipes.add(rec)
     id = rec.id
   }
@@ -64,7 +64,7 @@ export async function saveSession(
     await db.sessions.update(data.id, { ...data, dirty: 1, updatedAt: now() })
     id = data.id
   } else {
-    const rec = { ...freshMeta(), ...data } as BrewSession
+    const rec = { ...data, ...freshMeta() } as BrewSession
     await db.sessions.add(rec)
     id = rec.id
   }
@@ -83,7 +83,7 @@ export async function saveBean(
     await db.beans.update(data.id, { ...data, dirty: 1, updatedAt: now() })
     id = data.id
   } else {
-    const rec = { ...freshMeta(), ...data } as Bean
+    const rec = { ...data, ...freshMeta() } as Bean
     await db.beans.add(rec)
     id = rec.id
   }
@@ -101,7 +101,7 @@ export async function saveWater(
     await db.waters.update(data.id, { ...data, dirty: 1, updatedAt: now() })
     id = data.id
   } else {
-    const rec = { ...freshMeta(), ...data } as WaterProfile
+    const rec = { ...data, ...freshMeta() } as WaterProfile
     await db.waters.add(rec)
     id = rec.id
   }
@@ -119,7 +119,7 @@ export async function saveGrinder(
     await db.grinders.update(data.id, { ...data, dirty: 1, updatedAt: now() })
     id = data.id
   } else {
-    const rec = { ...freshMeta(), seeded: 0, ...data } as Grinder
+    const rec = { seeded: 0, ...data, ...freshMeta() } as Grinder
     await db.grinders.add(rec)
     id = rec.id
   }
