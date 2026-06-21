@@ -7,6 +7,7 @@ import { saveRecipe, saveSession } from '@/db/repo'
 import type { BrewMethod, Recipe } from '@/db/types'
 import { PageHeader, Field, StarRating, ScoreSlider } from '@/components/ui'
 import { TagInput } from '@/components/TagInput'
+import { FlavorWheel } from '@/components/FlavorWheel'
 import { BrewTimer } from '@/components/BrewTimer'
 import { BrewSteps } from '@/components/BrewSteps'
 import { ClockInput } from '@/components/ClockInput'
@@ -303,7 +304,10 @@ export default function RecipeFormPage() {
         <ScoreSlider label={t('session.bitterness')} value={flavors.bitterness} onChange={(v) => setFlavors((f) => ({ ...f, bitterness: v }))} />
         <div>
           <span className="label">{t('session.tags')}</span>
-          <TagInput value={tags} onChange={setTags} placeholder={t('session.addTag')} />
+          <FlavorWheel value={tags} onChange={setTags} />
+          <div className="mt-2">
+            <TagInput value={tags} onChange={setTags} placeholder={t('session.addTag')} />
+          </div>
         </div>
         <div className="border-t border-border/60 pt-3">
           <p className="text-xs text-muted">{t('session.measuredHint')}</p>

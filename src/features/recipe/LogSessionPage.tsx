@@ -6,6 +6,7 @@ import { db } from '@/db/dexie'
 import { saveSession } from '@/db/repo'
 import { PageHeader, Field, StarRating, ScoreSlider } from '@/components/ui'
 import { TagInput } from '@/components/TagInput'
+import { FlavorWheel } from '@/components/FlavorWheel'
 
 /** Hand-off target from the guided brew player: rate & log a session. */
 export default function LogSessionPage() {
@@ -71,7 +72,10 @@ export default function LogSessionPage() {
         <ScoreSlider label={t('session.bitterness')} value={flavors.bitterness} onChange={(v) => setFlavors((f) => ({ ...f, bitterness: v }))} />
         <div>
           <span className="label">{t('session.tags')}</span>
-          <TagInput value={tags} onChange={setTags} placeholder={t('session.addTag')} />
+          <FlavorWheel value={tags} onChange={setTags} />
+          <div className="mt-2">
+            <TagInput value={tags} onChange={setTags} placeholder={t('session.addTag')} />
+          </div>
         </div>
       </section>
 

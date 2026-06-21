@@ -169,6 +169,7 @@
     "sweetness": "Sweetness",
     "bitterness": "Bitterness",
     "tags": "Flavor tags",
+    "flavorWheel": "Tap a slice",
     "addTag": "Add tag",
     "logBrew": "Log this brew",
     "measured": "Measured",
