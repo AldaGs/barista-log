@@ -1,6 +1,7 @@
 import { useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Download, Upload } from 'lucide-react'
+import { Download, Upload, HelpCircle, ChevronRight } from 'lucide-react'
 import { PageHeader } from '@/components/ui'
 import { ACCENTS, useSettings, type AccentId, type Lang, type ThemeMode } from '@/store/settings'
 import type { TempUnit } from '@/lib/units'
@@ -39,6 +40,13 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <PageHeader title={t('settings.title')} />
+
+      {/* Help */}
+      <Link to="/help" className="card flex items-center gap-3 p-4 hover:border-brand">
+        <HelpCircle size={20} className="text-brand" />
+        <span className="flex-1 font-medium">{t('help.open')}</span>
+        <ChevronRight size={18} className="text-muted" />
+      </Link>
 
       {/* Appearance */}
       <section className="card space-y-4 p-4">

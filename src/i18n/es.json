@@ -1,5 +1,64 @@
 {
   "app": { "name": "Barista Log" },
+  "help": {
+    "title": "Ayuda",
+    "open": "Cómo usar Barista Log",
+    "intro": "Barista Log guarda todo primero en este dispositivo. Este es el flujo habitual.",
+    "sections": {
+      "recipe": {
+        "title": "Registrar una receta nueva",
+        "steps": [
+          "Toca Nueva (＋) en la barra inferior y elige Espresso o Filtrado.",
+          "Opcionalmente elige un grano y un perfil de agua — agrégalos antes si aún no los tienes (más abajo).",
+          "Elige tu molino e ingresa el ajuste de molienda en clics. Usa el Conversor de molienda si vas a calibrar en otro molino.",
+          "Ingresa la dosis y la salida / agua — el ratio se calcula solo.",
+          "Para Filtrado, arma el esquema de vertidos paso a paso (pre-humectado, vertidos, agitación) con agua y tiempo, y toca Aplicar totales.",
+          "Opcionalmente califícala y agrega sabores/etiquetas ahora, o regístrala después de preparar.",
+          "Toca Guardar. Tu receta más reciente aparece en Inicio por defecto."
+        ]
+      },
+      "brewing": {
+        "title": "Preparar y registrar una taza",
+        "steps": [
+          "Abre una receta de filtrado y toca Preparar para la guía con temporizador.",
+          "La pantalla se mantiene encendida y suena/vibra al iniciar cada paso.",
+          "Al terminar, toca Registrar preparación para calificarla y guardarla en el Historial.",
+          "Revisa tazas pasadas en Historial y usa Comparar para ver qué cambió entre días."
+        ]
+      },
+      "beans": {
+        "title": "Agregar granos",
+        "steps": [
+          "Abre Granos en la barra inferior y toca Agregar.",
+          "Ingresa nombre, tostador, origen, proceso y fecha de tueste.",
+          "Los granos guardados aparecen al crear una receta."
+        ]
+      },
+      "water": {
+        "title": "Agregar perfiles de agua",
+        "steps": [
+          "Granos → pestaña Perfiles de agua → Agregar.",
+          "Ponle nombre (p. ej. Third Wave Water o Llave) y agrega proveedor y TDS / GH / KH si los conoces.",
+          "Selecciónalo en una receta para registrar cómo el agua cambia la taza."
+        ]
+      },
+      "grinder": {
+        "title": "Molinos y conversión",
+        "steps": [
+          "Granos → pestaña Molinos. Hay molinos populares precargados; agrega el tuyo con sus micras por clic.",
+          "Usa el conversor para traducir un ajuste de un molino a otro — es un punto de partida, no exacto.",
+          "Los molinos marcados como “estimado” tienen valores aproximados; ajusta unos clics y prueba."
+        ]
+      },
+      "sync": {
+        "title": "Respaldo y sincronización",
+        "steps": [
+          "Ajustes → Datos: exporta o importa un respaldo JSON cuando quieras.",
+          "Opcionalmente conecta Supabase e inicia sesión para respaldar en la nube y restaurar en otro dispositivo."
+        ]
+      }
+    }
+  },
   "nav": {
     "home": "Inicio",
     "new": "Nueva",

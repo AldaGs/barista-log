@@ -1,5 +1,64 @@
 {
   "app": { "name": "Barista Log" },
+  "help": {
+    "title": "Help",
+    "open": "How to use Barista Log",
+    "intro": "Barista Log saves everything on this device first. Here's the usual flow.",
+    "sections": {
+      "recipe": {
+        "title": "Record a new recipe",
+        "steps": [
+          "Tap New (＋) in the bottom bar and pick Espresso or Brew.",
+          "Optionally choose a bean and water profile — add them first if you haven't (see below).",
+          "Pick your grinder and enter the grind setting in clicks. Use the Grind converter if you're dialing on a different grinder.",
+          "Enter dose in and yield / water out — the ratio is calculated automatically.",
+          "For Brew, build the pour schedule step by step (bloom, pours, agitation) with water and time, then tap Apply totals.",
+          "Optionally rate it and add flavors/tags now, or log it after brewing.",
+          "Tap Save. Your newest recipe appears on Home by default."
+        ]
+      },
+      "brewing": {
+        "title": "Brew & log a cup",
+        "steps": [
+          "Open a brew recipe and tap Brew for the guided timer.",
+          "The screen stays awake and beeps/vibrates as each step starts.",
+          "When done, tap Log this brew to rate it and save it to History.",
+          "Review past cups in History, and use Compare to see what changed between days."
+        ]
+      },
+      "beans": {
+        "title": "Add beans",
+        "steps": [
+          "Open Beans in the bottom bar, then tap Add.",
+          "Enter name, roaster, origin, process and roast date.",
+          "Saved beans show up in the bean picker when you create a recipe."
+        ]
+      },
+      "water": {
+        "title": "Add water profiles",
+        "steps": [
+          "Beans → Water profiles tab → Add.",
+          "Name it (e.g. Third Wave Water, or Tap) and add supplier and TDS / GH / KH if you know them.",
+          "Select it on a recipe to track how water changes the cup."
+        ]
+      },
+      "grinder": {
+        "title": "Grinders & conversion",
+        "steps": [
+          "Beans → Grinders tab. Popular grinders are preloaded; add your own with its microns-per-click.",
+          "Use the converter to translate a setting from one grinder to another — it's a starting point, not exact.",
+          "Grinders marked “estimate” have approximate values; adjust a few clicks and taste."
+        ]
+      },
+      "sync": {
+        "title": "Backup & sync",
+        "steps": [
+          "Settings → Data: export or import a JSON backup any time.",
+          "Optionally connect Supabase and sign in to back up to the cloud and restore on another device."
+        ]
+      }
+    }
+  },
   "nav": {
     "home": "Home",
     "new": "New",

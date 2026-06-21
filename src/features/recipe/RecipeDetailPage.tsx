@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Pencil, Copy, Trash2, Share2, Play } from 'lucide-react'
+import { Pencil, Copy, Trash2, Share2, Play, Check } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { deleteRecipe } from '@/db/repo'
 import { PageHeader } from '@/components/ui'
@@ -41,9 +41,18 @@ export default function RecipeDetailPage() {
         }
       />
 
-      {recipe.method === 'brew' && recipe.steps && recipe.steps.length > 0 && (
-        <Link to={`/recipe/${recipe.id}/brew`} className="btn-primary w-full">
-          <Play size={18} /> {t('play.title')}
+      {recipe.method === 'brew' && recipe.steps && recipe.steps.length > 0 ? (
+        <div className="flex gap-2">
+          <Link to={`/recipe/${recipe.id}/brew`} className="btn-primary flex-1">
+            <Play size={18} /> {t('play.title')}
+          </Link>
+          <Link to={`/recipe/${recipe.id}/log`} className="btn-ghost flex-1">
+            <Check size={18} /> {t('session.logBrew')}
+          </Link>
+        </div>
+      ) : (
+        <Link to={`/recipe/${recipe.id}/log`} className="btn-ghost w-full">
+          <Check size={18} /> {t('session.logBrew')}
         </Link>
       )}
 
