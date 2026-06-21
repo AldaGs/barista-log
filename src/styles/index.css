@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 247 244 240;
+  --surface: 255 255 255;
+  --surface-2: 244 240 235;
+  --border: 226 220 212;
+  --text: 33 27 22;
+  --muted: 120 110 100;
+  --brand: 176 110 64;      /* roasted-coffee amber */
+  --brand-fg: 255 255 255;
+  --accent: 90 150 130;
+}
+
+.dark {
+  --bg: 23 18 14;
+  --surface: 33 26 21;
+  --surface-2: 43 34 28;
+  --border: 58 47 39;
+  --text: 240 233 226;
+  --muted: 160 148 137;
+  --brand: 201 138 90;
+  --brand-fg: 28 20 14;
+  --accent: 122 188 165;
+}
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  background: rgb(var(--bg));
+  color: rgb(var(--text));
+  font-family: Inter, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+* { -webkit-tap-highlight-color: transparent; }
+
+.card { @apply bg-surface border border-border rounded-2xl; }
+.input {
+  @apply w-full rounded-xl border border-border bg-surface px-3 py-2 text-text
+         outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition;
+}
+.label { @apply block text-sm font-medium text-muted mb-1; }
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2
+         font-medium transition active:scale-[0.98] disabled:opacity-50;
+}
+.btn-primary { @apply btn bg-brand text-brand-fg hover:opacity-90; }
+.btn-ghost { @apply btn border border-border bg-surface hover:bg-surface-2; }
+.chip { @apply inline-flex items-center gap-1 rounded-full bg-surface-2 px-3 py-1 text-sm; }
