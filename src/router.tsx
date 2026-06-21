@@ -3,6 +3,7 @@ import { AppLayout } from './components/AppLayout'
 import HomePage from './features/home/HomePage'
 import RecipeFormPage from './features/recipe/RecipeFormPage'
 import RecipeDetailPage from './features/recipe/RecipeDetailPage'
+import BrewPlayPage from './features/brew/BrewPlayPage'
 import HistoryPage from './features/history/HistoryPage'
 import ComparePage from './features/compare/ComparePage'
 import BeansPage from './features/beans/BeansPage'
@@ -19,6 +20,7 @@ export const router = createBrowserRouter([
       { path: 'recipe/new', element: <RecipeFormPage /> },
       { path: 'recipe/:id', element: <RecipeDetailPage /> },
       { path: 'recipe/:id/edit', element: <RecipeFormPage /> },
+      { path: 'recipe/:id/brew', element: <BrewPlayPage /> },
       { path: 'history', element: <HistoryPage /> },
       { path: 'compare', element: <ComparePage /> },
       { path: 'beans', element: <BeansPage /> },

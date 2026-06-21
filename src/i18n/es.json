@@ -56,7 +56,9 @@
     "stepWater": "Agua (g)",
     "stepTime": "En el tiempo",
     "runningTotal": "Agua total",
-    "stepNote": "Nota"
+    "stepNote": "Nota",
+    "applyTotals": "Aplicar totales → {{water}} g · {{time}}",
+    "brew": "Preparar"
   },
   "step": {
     "bloom": "Pre-humectado",
@@ -72,6 +74,18 @@
     "stir": "Revolver",
     "mechanical": "Mecánica",
     "tap": "Golpecito"
+  },
+  "play": {
+    "title": "Preparar",
+    "start": "Iniciar",
+    "pause": "Pausar",
+    "resume": "Reanudar",
+    "reset": "Reiniciar",
+    "next": "Siguiente",
+    "now": "Ahora",
+    "done": "Listo",
+    "complete": "Preparación completa",
+    "noSteps": "Esta receta no tiene esquema de vertidos. Agrega pasos para usar la guía."
   },
   "session": {
     "rating": "Calificación",

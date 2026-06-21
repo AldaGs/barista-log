@@ -56,7 +56,9 @@
     "stepWater": "Water (g)",
     "stepTime": "At time",
     "runningTotal": "Total water",
-    "stepNote": "Note"
+    "stepNote": "Note",
+    "applyTotals": "Apply totals → {{water}} g · {{time}}",
+    "brew": "Brew"
   },
   "step": {
     "bloom": "Bloom",
@@ -72,6 +74,18 @@
     "stir": "Stir",
     "mechanical": "Mechanical",
     "tap": "Tap"
+  },
+  "play": {
+    "title": "Brew",
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "reset": "Reset",
+    "next": "Next",
+    "now": "Now",
+    "done": "Done",
+    "complete": "Brew complete",
+    "noSteps": "This recipe has no pour schedule. Add steps to use guided brewing."
   },
   "session": {
     "rating": "Rating",

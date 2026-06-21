@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Pencil, Copy, Trash2, Share2 } from 'lucide-react'
+import { Pencil, Copy, Trash2, Share2, Play } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { deleteRecipe } from '@/db/repo'
 import { PageHeader } from '@/components/ui'
@@ -40,6 +40,12 @@ export default function RecipeDetailPage() {
           </div>
         }
       />
+
+      {recipe.method === 'brew' && recipe.steps && recipe.steps.length > 0 && (
+        <Link to={`/recipe/${recipe.id}/brew`} className="btn-primary w-full">
+          <Play size={18} /> {t('play.title')}
+        </Link>
+      )}
 
       <div ref={cardRef}>
         <RecipeCard recipe={recipe} beanName={bean?.name} />

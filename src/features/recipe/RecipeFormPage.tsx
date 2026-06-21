@@ -12,7 +12,7 @@ import { BrewSteps } from '@/components/BrewSteps'
 import { ClockInput } from '@/components/ClockInput'
 import { GrindConverter } from '@/features/grinder/GrindConverter'
 import { useSettings } from '@/store/settings'
-import { cToF, fToC } from '@/lib/units'
+import { cToF, fToC, formatSeconds } from '@/lib/units'
 
 const num = (v: string) => (v === '' ? undefined : Number(v))
 
@@ -52,6 +52,17 @@ export default function RecipeFormPage() {
     () => (form.doseIn && form.yieldOut ? (form.yieldOut / form.doseIn).toFixed(2) : null),
     [form.doseIn, form.yieldOut],
   )
+
+  // Totals derived from the pour schedule, for one-tap auto-fill.
+  const stepTotals = useMemo(() => {
+    const steps = form.steps ?? []
+    const water = steps.reduce((sum, s) => sum + (s.water ?? 0), 0)
+    const time = steps.reduce((max, s) => Math.max(max, s.atTimeSec ?? 0), 0)
+    return { water: water || undefined, time: time || undefined }
+  }, [form.steps])
+
+  const totalsMatch =
+    stepTotals.water === form.yieldOut && stepTotals.time === form.totalTimeSec
 
   const tempDisplay = form.waterTemp == null ? '' : tempUnit === 'C' ? form.waterTemp : cToF(form.waterTemp)
 
@@ -229,6 +240,18 @@ export default function RecipeFormPage() {
           <div>
             <span className="label">{t('recipe.steps')}</span>
             <BrewSteps value={form.steps ?? []} onChange={(steps) => set({ steps })} />
+            {(stepTotals.water || stepTotals.time) && !totalsMatch && (
+              <button
+                type="button"
+                className="btn-ghost mt-2 w-full !py-1.5 text-sm"
+                onClick={() => set({ yieldOut: stepTotals.water, totalTimeSec: stepTotals.time })}
+              >
+                {t('recipe.applyTotals', {
+                  water: stepTotals.water ?? 0,
+                  time: stepTotals.time ? formatSeconds(stepTotals.time) : '—',
+                })}
+              </button>
+            )}
           </div>
         </div>
       )}
