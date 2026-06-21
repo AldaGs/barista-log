@@ -197,6 +197,24 @@
     "forkCount_other": "{{count}} bifurcaciones",
     "unlinked": "Preparaciones sin receta"
   },
+  "stats": {
+    "title": "Estadísticas",
+    "empty": "Registra preparaciones para ver tus estadísticas.",
+    "totalBrews": "Preparaciones",
+    "last7": "Últimos 7 días",
+    "avgRating": "Calif. media",
+    "brewsPerWeek": "Preparaciones por semana",
+    "methodSplit": "Por método",
+    "ratingDist": "Distribución de calificación",
+    "extraction": "Extracción",
+    "avgExtraction": "Promedio ~{{ext}}% de extracción en {{count}} preparaciones medidas",
+    "topRecipes": "Recetas más preparadas",
+    "topBeans": "Granos más usados",
+    "topFlavors": "Sabores más anotados",
+    "beanAlerts": "Alertas de granos",
+    "brewsN_one": "{{count}} preparación",
+    "brewsN_other": "{{count}} preparaciones"
+  },
   "compare": { "title": "Comparar", "field": "Campo", "needTwo": "Elige al menos dos preparaciones." },
   "beans": {
     "title": "Granos",

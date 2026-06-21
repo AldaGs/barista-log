@@ -197,6 +197,24 @@
     "forkCount_other": "{{count}} forks",
     "unlinked": "Unlinked brews"
   },
+  "stats": {
+    "title": "Stats",
+    "empty": "Log some brews to see your stats.",
+    "totalBrews": "Total brews",
+    "last7": "Last 7 days",
+    "avgRating": "Avg rating",
+    "brewsPerWeek": "Brews per week",
+    "methodSplit": "Method split",
+    "ratingDist": "Rating distribution",
+    "extraction": "Extraction",
+    "avgExtraction": "Average ~{{ext}}% extraction across {{count}} measured brews",
+    "topRecipes": "Most brewed recipes",
+    "topBeans": "Most used beans",
+    "topFlavors": "Most noted flavors",
+    "beanAlerts": "Bean alerts",
+    "brewsN_one": "{{count}} brew",
+    "brewsN_other": "{{count}} brews"
+  },
   "compare": { "title": "Compare", "field": "Field", "needTwo": "Pick at least two brews." },
   "beans": {
     "title": "Beans",

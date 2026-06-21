@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useTranslation } from 'react-i18next'
-import { Plus } from 'lucide-react'
+import { Plus, BarChart3 } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { RecipeSummaryCard } from '@/features/recipe/RecipeSummaryCard'
 import { EmptyState } from '@/components/ui'
@@ -20,9 +20,14 @@ export default function HomePage() {
     <div className="space-y-6">
       <header className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{t('app.name')}</h1>
-        <Link to="/recipe/new" className="btn-primary">
-          <Plus size={18} /> {t('home.newRecipe')}
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link to="/stats" className="btn-ghost !px-2" aria-label={t('stats.title')}>
+            <BarChart3 size={18} />
+          </Link>
+          <Link to="/recipe/new" className="btn-primary">
+            <Plus size={18} /> {t('home.newRecipe')}
+          </Link>
+        </div>
       </header>
 
       {recipes === undefined ? null : latest ? (

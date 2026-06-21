@@ -6,6 +6,7 @@ import RecipeDetailPage from './features/recipe/RecipeDetailPage'
 import BrewPlayPage from './features/brew/BrewPlayPage'
 import LogSessionPage from './features/recipe/LogSessionPage'
 import HistoryPage from './features/history/HistoryPage'
+import StatsPage from './features/stats/StatsPage'
 import ComparePage from './features/compare/ComparePage'
 import BeansPage from './features/beans/BeansPage'
 import WaterPage from './features/water/WaterPage'
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
       { path: 'recipe/:id/brew', element: <BrewPlayPage /> },
       { path: 'recipe/:id/log', element: <LogSessionPage /> },
       { path: 'history', element: <HistoryPage /> },
+      { path: 'stats', element: <StatsPage /> },
       { path: 'compare', element: <ComparePage /> },
       { path: 'beans', element: <BeansPage /> },
       { path: 'water', element: <WaterPage /> },
