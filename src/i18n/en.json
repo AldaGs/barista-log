@@ -73,6 +73,7 @@
     "delete": "Delete",
     "edit": "Edit",
     "duplicate": "Duplicate",
+    "open": "Open",
     "add": "Add",
     "none": "None",
     "optional": "optional",
@@ -120,7 +121,8 @@
     "runningTotal": "Total water",
     "stepNote": "Note",
     "applyTotals": "Apply totals → {{water}} g · {{time}}",
-    "brew": "Brew"
+    "brew": "Brew",
+    "forkedFrom": "Forked from {{title}}"
   },
   "step": {
     "bloom": "Bloom",
@@ -168,14 +170,31 @@
     "bitterness": "Bitterness",
     "tags": "Flavor tags",
     "addTag": "Add tag",
-    "logBrew": "Log this brew"
+    "logBrew": "Log this brew",
+    "measured": "Measured",
+    "measuredHint": "Got a refractometer? Log a TDS reading to plot your real extraction.",
+    "tds": "TDS %",
+    "beverageWeight": "Beverage out (g)"
+  },
+  "chart": {
+    "title": "Brew control chart",
+    "estimated": "Estimated",
+    "measured": "Measured",
+    "readout": "Estimated ~{{ext}}% extraction · {{tds}}% TDS",
+    "disclaimer": "Estimate from your parameters — directional, not a measurement."
   },
   "history": {
     "title": "History",
     "empty": "No brews logged yet.",
     "filterAll": "All",
     "compare": "Compare",
-    "selectToCompare": "Select 2+ brews to compare"
+    "selectToCompare": "Select 2+ brews to compare",
+    "view": { "group": "Group", "all": "All" },
+    "brewCount_one": "{{count}} brew",
+    "brewCount_other": "{{count}} brews",
+    "forkCount_one": "{{count}} fork",
+    "forkCount_other": "{{count}} forks",
+    "unlinked": "Unlinked brews"
   },
   "compare": { "title": "Compare", "field": "Field", "needTwo": "Pick at least two brews." },
   "beans": {

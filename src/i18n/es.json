@@ -73,6 +73,7 @@
     "delete": "Eliminar",
     "edit": "Editar",
     "duplicate": "Duplicar",
+    "open": "Abrir",
     "add": "Agregar",
     "none": "Ninguno",
     "optional": "opcional",
@@ -120,7 +121,8 @@
     "runningTotal": "Agua total",
     "stepNote": "Nota",
     "applyTotals": "Aplicar totales → {{water}} g · {{time}}",
-    "brew": "Preparar"
+    "brew": "Preparar",
+    "forkedFrom": "Bifurcada de {{title}}"
   },
   "step": {
     "bloom": "Bloom/Pre infusión",
@@ -168,14 +170,31 @@
     "bitterness": "Amargor",
     "tags": "Etiquetas de sabor",
     "addTag": "Agregar etiqueta",
-    "logBrew": "Registrar preparación"
+    "logBrew": "Registrar preparación",
+    "measured": "Medido",
+    "measuredHint": "¿Tienes refractómetro? Registra el TDS para graficar tu extracción real.",
+    "tds": "TDS %",
+    "beverageWeight": "Bebida final (g)"
+  },
+  "chart": {
+    "title": "Gráfico de control",
+    "estimated": "Estimado",
+    "measured": "Medido",
+    "readout": "Estimado ~{{ext}}% extracción · {{tds}}% TDS",
+    "disclaimer": "Estimación según tus parámetros — orientativa, no es una medición."
   },
   "history": {
     "title": "Historial",
     "empty": "Aún no hay preparaciones registradas.",
     "filterAll": "Todas",
     "compare": "Comparar",
-    "selectToCompare": "Selecciona 2+ preparaciones para comparar"
+    "selectToCompare": "Selecciona 2+ preparaciones para comparar",
+    "view": { "group": "Agrupar", "all": "Todas" },
+    "brewCount_one": "{{count}} preparación",
+    "brewCount_other": "{{count}} preparaciones",
+    "forkCount_one": "{{count}} bifurcación",
+    "forkCount_other": "{{count}} bifurcaciones",
+    "unlinked": "Preparaciones sin receta"
   },
   "compare": { "title": "Comparar", "field": "Campo", "needTwo": "Elige al menos dos preparaciones." },
   "beans": {

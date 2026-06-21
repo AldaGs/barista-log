@@ -49,6 +49,9 @@ class BaristaDB extends Dexie {
     this.version(3).stores({
       gear: 'id, name, type, seeded, updatedAt, dirty',
     })
+    this.version(4).stores({
+      recipes: 'id, title, method, beanId, forkedFromId, updatedAt, dirty',
+    })
   }
 }
 

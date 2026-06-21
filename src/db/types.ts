@@ -92,6 +92,8 @@ export interface Recipe extends SyncMeta {
   id: string
   title: string
   method: BrewMethod
+  /** id of the recipe this was forked from, if any — tracks lineage */
+  forkedFromId?: string
   beanId?: string
   waterId?: string
   grinderId?: string
@@ -136,6 +138,10 @@ export interface BrewSession extends SyncMeta {
   rating?: number // 0-5
   flavors?: FlavorScores
   flavorTags?: string[]
+  /** measured total dissolved solids, % (from a refractometer) */
+  tds?: number
+  /** measured beverage weight in the cup, g (improves extraction calc) */
+  beverageWeight?: number
   notes?: string
   photo?: Blob
 }

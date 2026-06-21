@@ -34,18 +34,23 @@ export default function RecipeFormPage() {
   const [rating, setRating] = useState(0)
   const [flavors, setFlavors] = useState({ acidity: 0, body: 0, sweetness: 0, bitterness: 0 })
   const [tags, setTags] = useState<string[]>([])
+  const [tds, setTds] = useState('')
+  const [beverageWeight, setBeverageWeight] = useState('')
   const [showConverter, setShowConverter] = useState(false)
 
-  // Load existing recipe (edit) or duplicate source.
-  const sourceId = id ?? params.get('from') ?? undefined
+  // Load existing recipe (edit), duplicate source (?from), or fork source (?fork).
+  const forkId = params.get('fork') ?? undefined
+  const sourceId = id ?? params.get('from') ?? forkId ?? undefined
   useEffect(() => {
     if (!sourceId) return
     db.recipes.get(sourceId).then((r) => {
       if (!r) return
       if (id) setForm(r)
-      else setForm({ ...r, id: undefined, title: `${r.title} (copy)` }) // duplicate
+      else if (forkId)
+        setForm({ ...r, id: undefined, title: `${r.title} (fork)`, forkedFromId: r.id }) // linked fork
+      else setForm({ ...r, id: undefined, title: `${r.title} (copy)`, forkedFromId: undefined }) // unlinked copy
     })
-  }, [sourceId, id])
+  }, [sourceId, id, forkId])
 
   const set = (patch: Partial<Recipe>) => setForm((f) => ({ ...f, ...patch }))
   const isEspresso = form.method === 'espresso'
@@ -91,11 +96,13 @@ export default function RecipeFormPage() {
       pours: form.pours,
       steps: form.steps,
       notes: form.notes,
+      forkedFromId: form.forkedFromId,
       id: id ?? undefined,
     })
 
     // Log a brew session snapshot if the user rated/scored it.
-    const scored = rating > 0 || Object.values(flavors).some(Boolean) || tags.length > 0
+    const scored =
+      rating > 0 || Object.values(flavors).some(Boolean) || tags.length > 0 || tds !== ''
     if (scored) {
       await saveSession({
         recipeId,
@@ -108,6 +115,8 @@ export default function RecipeFormPage() {
         rating,
         flavors,
         flavorTags: tags,
+        tds: tds === '' ? undefined : Number(tds),
+        beverageWeight: beverageWeight === '' ? undefined : Number(beverageWeight),
         notes: form.notes,
       })
     }
@@ -295,6 +304,31 @@ export default function RecipeFormPage() {
         <div>
           <span className="label">{t('session.tags')}</span>
           <TagInput value={tags} onChange={setTags} placeholder={t('session.addTag')} />
+        </div>
+        <div className="border-t border-border/60 pt-3">
+          <p className="text-xs text-muted">{t('session.measuredHint')}</p>
+          <div className="mt-2 grid grid-cols-2 gap-3">
+            <Field label={t('session.tds')} hint={t('common.optional')}>
+              <input
+                className="input"
+                type="number"
+                inputMode="decimal"
+                step="0.01"
+                value={tds}
+                onChange={(e) => setTds(e.target.value)}
+                placeholder={isEspresso ? '10' : '1.35'}
+              />
+            </Field>
+            <Field label={t('session.beverageWeight')} hint={t('common.optional')}>
+              <input
+                className="input"
+                type="number"
+                inputMode="decimal"
+                value={beverageWeight}
+                onChange={(e) => setBeverageWeight(e.target.value)}
+              />
+            </Field>
+          </div>
         </div>
       </section>
 

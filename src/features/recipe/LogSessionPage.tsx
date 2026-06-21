@@ -22,6 +22,8 @@ export default function LogSessionPage() {
   const [flavors, setFlavors] = useState({ acidity: 0, body: 0, sweetness: 0, bitterness: 0 })
   const [tags, setTags] = useState<string[]>([])
   const [notes, setNotes] = useState('')
+  const [tds, setTds] = useState('')
+  const [beverageWeight, setBeverageWeight] = useState('')
 
   if (recipe === undefined) return null
   if (!recipe) return <p className="text-muted">Not found.</p>
@@ -40,6 +42,8 @@ export default function LogSessionPage() {
       rating,
       flavors,
       flavorTags: tags,
+      tds: tds === '' ? undefined : Number(tds),
+      beverageWeight: beverageWeight === '' ? undefined : Number(beverageWeight),
       notes,
     })
     navigate('/history')
@@ -68,6 +72,35 @@ export default function LogSessionPage() {
         <div>
           <span className="label">{t('session.tags')}</span>
           <TagInput value={tags} onChange={setTags} placeholder={t('session.addTag')} />
+        </div>
+      </section>
+
+      <section className="card space-y-3 p-4">
+        <div>
+          <h2 className="font-semibold">{t('session.measured')}</h2>
+          <p className="text-xs text-muted">{t('session.measuredHint')}</p>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label={t('session.tds')} hint={t('common.optional')}>
+            <input
+              className="input"
+              type="number"
+              inputMode="decimal"
+              step="0.01"
+              value={tds}
+              onChange={(e) => setTds(e.target.value)}
+              placeholder={recipe.method === 'espresso' ? '10' : '1.35'}
+            />
+          </Field>
+          <Field label={t('session.beverageWeight')} hint={t('common.optional')}>
+            <input
+              className="input"
+              type="number"
+              inputMode="decimal"
+              value={beverageWeight}
+              onChange={(e) => setBeverageWeight(e.target.value)}
+            />
+          </Field>
         </div>
       </section>
 
