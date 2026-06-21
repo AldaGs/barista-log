@@ -1,9 +1,9 @@
 {
-  "app": { "name": "Barista Log" },
+  "app": { "name": "Slurry Stats" },
   "help": {
     "title": "Help",
-    "open": "How to use Barista Log",
-    "intro": "Barista Log saves everything on this device first. Here's the usual flow.",
+    "open": "How to use Slurry Stats",
+    "intro": "Slurry Stats saves everything on this device first. Here's the usual flow.",
     "sections": {
       "recipe": {
         "title": "Record a new recipe",
@@ -345,7 +345,7 @@
     "exportJson": "Export backup (JSON)",
     "importJson": "Import backup (JSON)",
     "cloud": "Cloud sync (optional)",
-    "cloudIntro": "Barista Log works fully offline. Power users can connect Supabase to back up and sync across devices.",
+    "cloudIntro": "Slurry Stats works fully offline. Power users can connect Supabase to back up and sync across devices.",
     "supabaseUrl": "Supabase URL",
     "supabaseKey": "Supabase anon key",
     "connect": "Connect",

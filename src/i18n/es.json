@@ -1,9 +1,9 @@
 {
-  "app": { "name": "Barista Log" },
+  "app": { "name": "Slurry Stats" },
   "help": {
     "title": "Ayuda",
-    "open": "Cómo usar Barista Log",
-    "intro": "Barista Log guarda todo primero en este dispositivo. Este es el flujo habitual.",
+    "open": "Cómo usar Slurry Stats",
+    "intro": "Slurry Stats guarda todo primero en este dispositivo. Este es el flujo habitual.",
     "sections": {
       "recipe": {
         "title": "Registrar una receta nueva",
@@ -345,7 +345,7 @@
     "exportJson": "Exportar respaldo (JSON)",
     "importJson": "Importar respaldo (JSON)",
     "cloud": "Sincronización en la nube (opcional)",
-    "cloudIntro": "Barista Log funciona sin conexión. Los usuarios avanzados pueden conectar Supabase para respaldar y sincronizar entre dispositivos.",
+    "cloudIntro": "Slurry Stats funciona sin conexión. Los usuarios avanzados pueden conectar Supabase para respaldar y sincronizar entre dispositivos.",
     "supabaseUrl": "URL de Supabase",
     "supabaseKey": "Clave anon de Supabase",
     "connect": "Conectar",

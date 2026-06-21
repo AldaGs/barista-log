@@ -13,8 +13,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'Barista Log',
-        short_name: 'Barista Log',
+        name: 'Slurry Stats',
+        short_name: 'Slurry Stats',
         description: 'Track your brew & espresso recipes, history, beans and grinder settings.',
         theme_color: '#0d0e15',
         background_color: '#0d0e15',

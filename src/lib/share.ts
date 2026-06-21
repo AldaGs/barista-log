@@ -27,7 +27,7 @@ export async function shareRecipePng(node: HTMLElement | null, filename: string)
 
   if (navigator.canShare?.({ files: [file] })) {
     try {
-      await navigator.share({ files: [file], title: 'Barista Log' })
+      await navigator.share({ files: [file], title: 'Slurry Stats' })
       return
     } catch {
       /* user cancelled — fall through to download */

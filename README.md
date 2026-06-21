@@ -1,4 +1,4 @@
-# ☕ Barista Log
+# ☕ Slurry Stats
 
 A local-first **PWA** to track your brew & espresso recipes, log every cup, and
 compare how your notes change day to day. Works fully offline; optional cloud

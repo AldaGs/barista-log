@@ -94,7 +94,7 @@ export function RecipeCard({
         )}
         {recipe.notes && <p className="mt-2 whitespace-pre-wrap text-sm text-muted">{recipe.notes}</p>}
       </div>
-      <p className="px-4 pb-2 text-right text-[10px] text-muted">Barista Log</p>
+      <p className="px-4 pb-2 text-right text-[10px] text-muted">Slurry Stats</p>
     </div>
   )
 }

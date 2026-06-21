@@ -35,7 +35,7 @@ export async function exportBackup() {
 
 export async function importBackup(file: File) {
   const parsed = JSON.parse(await file.text()) as Backup
-  if (parsed.app !== 'barista-log') throw new Error('Not a Barista Log backup file')
+  if (parsed.app !== 'barista-log') throw new Error('Not a Slurry Stats backup file')
   await db.transaction('rw', TABLES.map((tbl) => db.table(tbl)), async () => {
     for (const name of TABLES) {
       const rows = parsed.data[name]
