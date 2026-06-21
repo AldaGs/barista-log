@@ -175,7 +175,10 @@
     "measured": "Medido",
     "measuredHint": "¿Tienes refractómetro? Registra el TDS para graficar tu extracción real.",
     "tds": "TDS %",
-    "beverageWeight": "Bebida final (g)"
+    "beverageWeight": "Bebida final (g)",
+    "photo": "Foto",
+    "addPhoto": "Agregar foto",
+    "photoBusy": "Procesando…"
   },
   "chart": {
     "title": "Gráfico de control",

@@ -8,6 +8,7 @@ import type { BrewMethod, Recipe } from '@/db/types'
 import { PageHeader, Field, StarRating, ScoreSlider } from '@/components/ui'
 import { TagInput } from '@/components/TagInput'
 import { FlavorWheel } from '@/components/FlavorWheel'
+import { PhotoInput } from '@/components/PhotoInput'
 import { BrewTimer } from '@/components/BrewTimer'
 import { BrewSteps } from '@/components/BrewSteps'
 import { ClockInput } from '@/components/ClockInput'
@@ -37,6 +38,7 @@ export default function RecipeFormPage() {
   const [tags, setTags] = useState<string[]>([])
   const [tds, setTds] = useState('')
   const [beverageWeight, setBeverageWeight] = useState('')
+  const [photo, setPhoto] = useState<Blob | undefined>()
   const [showConverter, setShowConverter] = useState(false)
 
   // Load existing recipe (edit), duplicate source (?from), or fork source (?fork).
@@ -103,7 +105,7 @@ export default function RecipeFormPage() {
 
     // Log a brew session snapshot if the user rated/scored it.
     const scored =
-      rating > 0 || Object.values(flavors).some(Boolean) || tags.length > 0 || tds !== ''
+      rating > 0 || Object.values(flavors).some(Boolean) || tags.length > 0 || tds !== '' || !!photo
     if (scored) {
       await saveSession({
         recipeId,
@@ -118,6 +120,7 @@ export default function RecipeFormPage() {
         flavorTags: tags,
         tds: tds === '' ? undefined : Number(tds),
         beverageWeight: beverageWeight === '' ? undefined : Number(beverageWeight),
+        photo,
         notes: form.notes,
       })
     }
@@ -333,6 +336,10 @@ export default function RecipeFormPage() {
               />
             </Field>
           </div>
+        </div>
+        <div className="border-t border-border/60 pt-3">
+          <span className="label">{t('session.photo')}</span>
+          <PhotoInput value={photo} onChange={setPhoto} />
         </div>
       </section>
 

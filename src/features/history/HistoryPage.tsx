@@ -7,6 +7,7 @@ import { Star, GitCompare, GitFork, ChevronRight } from 'lucide-react'
 import { db } from '@/db/dexie'
 import type { BrewMethod, BrewSession, Recipe } from '@/db/types'
 import { PageHeader, EmptyState } from '@/components/ui'
+import { BlobImage } from '@/components/PhotoInput'
 
 type View = 'all' | 'group'
 
@@ -90,9 +91,12 @@ export default function HistoryPage() {
     return (
       <Link
         to={s.recipeId ? `/recipe/${s.recipeId}` : '/history'}
-        className="card flex items-center justify-between p-4 hover:border-brand"
+        className="card flex items-center justify-between gap-3 p-4 hover:border-brand"
       >
-        <div>
+        {s.photo && (
+          <BlobImage blob={s.photo} className="h-14 w-14 shrink-0 rounded-lg object-cover" />
+        )}
+        <div className="min-w-0 flex-1">
           <p className="font-medium">{s.params?.title || t('method.' + s.method)}</p>
           <p className="text-sm text-muted">
             {format(s.date, 'PP')} · {beanName(s.beanId) ?? '—'}

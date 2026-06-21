@@ -7,6 +7,7 @@ import { saveSession } from '@/db/repo'
 import { PageHeader, Field, StarRating, ScoreSlider } from '@/components/ui'
 import { TagInput } from '@/components/TagInput'
 import { FlavorWheel } from '@/components/FlavorWheel'
+import { PhotoInput } from '@/components/PhotoInput'
 
 /** Hand-off target from the guided brew player: rate & log a session. */
 export default function LogSessionPage() {
@@ -25,6 +26,7 @@ export default function LogSessionPage() {
   const [notes, setNotes] = useState('')
   const [tds, setTds] = useState('')
   const [beverageWeight, setBeverageWeight] = useState('')
+  const [photo, setPhoto] = useState<Blob | undefined>()
 
   if (recipe === undefined) return null
   if (!recipe) return <p className="text-muted">Not found.</p>
@@ -45,6 +47,7 @@ export default function LogSessionPage() {
       flavorTags: tags,
       tds: tds === '' ? undefined : Number(tds),
       beverageWeight: beverageWeight === '' ? undefined : Number(beverageWeight),
+      photo,
       notes,
     })
     navigate('/history')
@@ -107,6 +110,11 @@ export default function LogSessionPage() {
           </Field>
         </div>
       </section>
+
+      <div>
+        <span className="label">{t('session.photo')}</span>
+        <PhotoInput value={photo} onChange={setPhoto} />
+      </div>
 
       <Field label={t('recipe.notes')}>
         <textarea className="input min-h-24" value={notes} onChange={(e) => setNotes(e.target.value)} />

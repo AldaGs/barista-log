@@ -175,7 +175,10 @@
     "measured": "Measured",
     "measuredHint": "Got a refractometer? Log a TDS reading to plot your real extraction.",
     "tds": "TDS %",
-    "beverageWeight": "Beverage out (g)"
+    "beverageWeight": "Beverage out (g)",
+    "photo": "Photo",
+    "addPhoto": "Add photo",
+    "photoBusy": "Processing…"
   },
   "chart": {
     "title": "Brew control chart",
