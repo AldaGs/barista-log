@@ -2,13 +2,14 @@ import { useRef } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Pencil, Copy, Trash2, Share2, Play, Check, GitFork } from 'lucide-react'
+import { Pencil, Copy, Trash2, Share2, Play, Check, GitFork, AlertTriangle } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { deleteRecipe } from '@/db/repo'
 import { PageHeader } from '@/components/ui'
 import { RecipeCard } from './RecipeCard'
 import { BrewChart } from '@/components/BrewChart'
 import { estimateBrew, measuredBrew, type BrewPoint } from '@/lib/brewModel'
+import { freshness } from '@/lib/freshness'
 import { shareRecipePng } from '@/lib/share'
 
 export default function RecipeDetailPage() {
@@ -54,6 +55,9 @@ export default function RecipeDetailPage() {
     .filter((x): x is { point: BrewPoint; weight: number } => x !== null)
   const tdsFmt = (v: number) => (recipe.method === 'espresso' ? v.toFixed(1) : v.toFixed(2))
 
+  const beanFresh = bean ? freshness(bean) : null
+  const restingDaysLeft = beanFresh ? Math.max(beanFresh.restDays - (beanFresh.ageDays ?? 0), 0) : 0
+
   return (
     <div className="space-y-4">
       <PageHeader
@@ -81,6 +85,13 @@ export default function RecipeDetailPage() {
         >
           <GitFork size={14} /> {t('recipe.forkedFrom', { title: parent.title || t('method.' + parent.method) })}
         </Link>
+      )}
+
+      {beanFresh?.status === 'resting' && (
+        <div className="flex items-start gap-2 rounded-xl bg-amber-500/15 px-3 py-2 text-sm text-amber-700 dark:text-amber-300">
+          <AlertTriangle size={16} className="mt-0.5 shrink-0" />
+          <span>{t('beans.tooFresh', { name: bean?.name, count: restingDaysLeft })}</span>
+        </div>
       )}
 
       {recipe.method === 'brew' && recipe.steps && recipe.steps.length > 0 ? (

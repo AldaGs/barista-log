@@ -68,9 +68,19 @@ export async function saveSession(
     const rec = { ...data, ...freshMeta() } as BrewSession
     await db.sessions.add(rec)
     id = rec.id
+    await decrementBeanStock(rec.beanId, rec.params?.doseIn)
   }
   triggerSync()
   return id
+}
+
+/** Subtract a logged dose from the bean's remaining stock, if it's tracked. */
+async function decrementBeanStock(beanId?: string, doseIn?: number) {
+  if (!beanId || !doseIn) return
+  const bean = await db.beans.get(beanId)
+  if (!bean || bean.gramsRemaining == null) return
+  const next = Math.max(Math.round((bean.gramsRemaining - doseIn) * 10) / 10, 0)
+  await db.beans.update(beanId, { gramsRemaining: next, dirty: 1, updatedAt: now() })
 }
 
 export const deleteSession = (id: string) => deleteWithTombstone('sessions', id)

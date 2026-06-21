@@ -204,7 +204,30 @@
     "process": "Proceso",
     "roastLevel": "Nivel de tueste",
     "roastDate": "Fecha de tueste",
-    "empty": "Aún no hay granos."
+    "bagSize": "Tamaño de bolsa",
+    "remaining": "Restante",
+    "refill": "↻ Rellenar al tamaño de bolsa",
+    "empty": "Aún no hay granos.",
+    "empty2": "Vacío",
+    "gramsLeft": "{{grams}} g restantes",
+    "daysOld_one": "{{count}} día",
+    "daysOld_other": "{{count}} días",
+    "tooFresh_one": "{{name}} puede estar muy fresco — falta ~{{count}} día de reposo.",
+    "tooFresh_other": "{{name}} puede estar muy fresco — faltan ~{{count}} días de reposo.",
+    "level": {
+      "light": "Claro",
+      "medium-light": "Medio-claro",
+      "medium": "Medio",
+      "medium-dark": "Medio-oscuro",
+      "dark": "Oscuro"
+    },
+    "freshness": {
+      "peak": "Fresco",
+      "fading": "Decayendo",
+      "stale": "Pasado",
+      "restingDays_one": "Reposando · falta {{count}} día",
+      "restingDays_other": "Reposando · faltan {{count}} días"
+    }
   },
   "water": {
     "title": "Perfiles de agua",

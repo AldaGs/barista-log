@@ -204,7 +204,30 @@
     "process": "Process",
     "roastLevel": "Roast level",
     "roastDate": "Roast date",
-    "empty": "No beans yet."
+    "bagSize": "Bag size",
+    "remaining": "Remaining",
+    "refill": "↻ Refill to bag size",
+    "empty": "No beans yet.",
+    "empty2": "Empty",
+    "gramsLeft": "{{grams}} g left",
+    "daysOld_one": "{{count}} day old",
+    "daysOld_other": "{{count}} days old",
+    "tooFresh_one": "{{name}} may be too fresh — about {{count}} more day of resting.",
+    "tooFresh_other": "{{name}} may be too fresh — about {{count}} more days of resting.",
+    "level": {
+      "light": "Light",
+      "medium-light": "Medium-light",
+      "medium": "Medium",
+      "medium-dark": "Medium-dark",
+      "dark": "Dark"
+    },
+    "freshness": {
+      "peak": "Fresh",
+      "fading": "Fading",
+      "stale": "Past peak",
+      "restingDays_one": "Resting · {{count}} day left",
+      "restingDays_other": "Resting · {{count}} days left"
+    }
   },
   "water": {
     "title": "Water profiles",

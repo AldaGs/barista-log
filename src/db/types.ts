@@ -19,6 +19,10 @@ export interface Bean extends SyncMeta {
   process?: string
   roastLevel?: 'light' | 'medium-light' | 'medium' | 'medium-dark' | 'dark'
   roastDate?: string // ISO date
+  /** size of the bag, g (the starting amount) */
+  bagSize?: number
+  /** grams left in the bag; auto-decremented as brews are logged */
+  gramsRemaining?: number
   notes?: string
 }
 
