@@ -46,6 +46,31 @@ export function RecipeCard({ recipe, beanName }: { recipe: Recipe; beanName?: st
             <Row label={t('recipe.pours')} value={recipe.pours} />
           </>
         )}
+        {recipe.steps && recipe.steps.length > 0 && (
+          <div className="mt-3">
+            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
+              {t('recipe.steps')}
+            </p>
+            <ol className="space-y-1">
+              {recipe.steps.map((s, i) => (
+                <li key={s.id} className="flex items-baseline gap-2 text-sm">
+                  <span className="w-4 shrink-0 text-muted">{i + 1}.</span>
+                  <span className="font-medium">{t('step.' + s.type)}</span>
+                  <span className="text-muted">
+                    {s.type === 'agitation'
+                      ? [s.method && t('step.' + s.method), s.intensity && t('step.' + s.intensity)]
+                          .filter(Boolean)
+                          .join(' · ')
+                      : [s.water != null ? `${s.water} g` : null, s.note].filter(Boolean).join(' · ')}
+                  </span>
+                  {s.atTimeSec != null && (
+                    <span className="ml-auto tabular-nums text-muted">{formatSeconds(s.atTimeSec)}</span>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
         {recipe.notes && <p className="mt-2 whitespace-pre-wrap text-sm text-muted">{recipe.notes}</p>}
       </div>
       <p className="px-4 pb-2 text-right text-[10px] text-muted">Barista Log</p>

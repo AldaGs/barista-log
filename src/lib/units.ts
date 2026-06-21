@@ -15,3 +15,21 @@ export function formatSeconds(s: number | undefined): string {
   const sec = s % 60
   return m > 0 ? `${m}:${sec.toString().padStart(2, '0')}` : `${sec}s`
 }
+
+/** mm:ss clock for inputs — always shows minutes (e.g. 0:30, 1:10). */
+export function toClock(s: number | undefined): string {
+  if (s == null) return ''
+  const m = Math.floor(s / 60)
+  return `${m}:${(s % 60).toString().padStart(2, '0')}`
+}
+
+/** Parse "1:10", "70", or "1'10" into seconds. Returns undefined if empty. */
+export function parseClock(input: string): number | undefined {
+  const v = input.trim().replace(/['"]/g, ':').replace(/:$/, '')
+  if (v === '') return undefined
+  if (v.includes(':')) {
+    const [m, s] = v.split(':')
+    return (Number(m) || 0) * 60 + (Number(s) || 0)
+  }
+  return Number(v) || 0
+}

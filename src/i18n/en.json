@@ -50,7 +50,28 @@
     "bloom": "Bloom (s)",
     "pours": "Pours",
     "notes": "Notes",
-    "saved": "Recipe saved"
+    "saved": "Recipe saved",
+    "steps": "Pour schedule",
+    "addStep": "Add step",
+    "stepWater": "Water (g)",
+    "stepTime": "At time",
+    "runningTotal": "Total water",
+    "stepNote": "Note"
+  },
+  "step": {
+    "bloom": "Bloom",
+    "pour": "Pour",
+    "agitation": "Agitation",
+    "wait": "Wait",
+    "drawdown": "Drawdown",
+    "other": "Other",
+    "light": "Light",
+    "medium": "Medium",
+    "strong": "Strong",
+    "swirl": "Swirl",
+    "stir": "Stir",
+    "mechanical": "Mechanical",
+    "tap": "Tap"
   },
   "session": {
     "rating": "Rating",

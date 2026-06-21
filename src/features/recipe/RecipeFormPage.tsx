@@ -8,6 +8,7 @@ import type { BrewMethod, Recipe } from '@/db/types'
 import { PageHeader, Field, StarRating, ScoreSlider } from '@/components/ui'
 import { TagInput } from '@/components/TagInput'
 import { BrewTimer } from '@/components/BrewTimer'
+import { BrewSteps } from '@/components/BrewSteps'
 import { GrindConverter } from '@/features/grinder/GrindConverter'
 import { useSettings } from '@/store/settings'
 import { cToF, fToC } from '@/lib/units'
@@ -73,6 +74,7 @@ export default function RecipeFormPage() {
       totalTimeSec: form.totalTimeSec,
       bloomSec: form.bloomSec,
       pours: form.pours,
+      steps: form.steps,
       notes: form.notes,
       id: id ?? undefined,
     })
@@ -214,19 +216,19 @@ export default function RecipeFormPage() {
           </Field>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3">
-          <Field label={t('recipe.brewer')}>
-            <input className="input" value={form.brewer ?? ''} onChange={(e) => set({ brewer: e.target.value })} placeholder="V60, Aeropress…" />
-          </Field>
-          <Field label={t('recipe.totalTime')}>
-            <input className="input" type="number" value={form.totalTimeSec ?? ''} onChange={(e) => set({ totalTimeSec: num(e.target.value) })} />
-          </Field>
-          <Field label={t('recipe.bloom')}>
-            <input className="input" type="number" value={form.bloomSec ?? ''} onChange={(e) => set({ bloomSec: num(e.target.value) })} />
-          </Field>
-          <Field label={t('recipe.pours')}>
-            <input className="input" type="number" value={form.pours ?? ''} onChange={(e) => set({ pours: num(e.target.value) })} />
-          </Field>
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <Field label={t('recipe.brewer')}>
+              <input className="input" value={form.brewer ?? ''} onChange={(e) => set({ brewer: e.target.value })} placeholder="V60, Aeropress…" />
+            </Field>
+            <Field label={t('recipe.totalTime')}>
+              <input className="input" type="number" value={form.totalTimeSec ?? ''} onChange={(e) => set({ totalTimeSec: num(e.target.value) })} />
+            </Field>
+          </div>
+          <div>
+            <span className="label">{t('recipe.steps')}</span>
+            <BrewSteps value={form.steps ?? []} onChange={(steps) => set({ steps })} />
+          </div>
         </div>
       )}
 

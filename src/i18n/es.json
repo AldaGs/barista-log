@@ -50,7 +50,28 @@
     "bloom": "Pre-humectado (s)",
     "pours": "Vertidos",
     "notes": "Notas",
-    "saved": "Receta guardada"
+    "saved": "Receta guardada",
+    "steps": "Esquema de vertidos",
+    "addStep": "Agregar paso",
+    "stepWater": "Agua (g)",
+    "stepTime": "En el tiempo",
+    "runningTotal": "Agua total",
+    "stepNote": "Nota"
+  },
+  "step": {
+    "bloom": "Pre-humectado",
+    "pour": "Vertido",
+    "agitation": "Agitación",
+    "wait": "Espera",
+    "drawdown": "Drenado",
+    "other": "Otro",
+    "light": "Suave",
+    "medium": "Media",
+    "strong": "Fuerte",
+    "swirl": "Giro",
+    "stir": "Revolver",
+    "mechanical": "Mecánica",
+    "tap": "Golpecito"
   },
   "session": {
     "rating": "Calificación",

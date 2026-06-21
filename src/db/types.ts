@@ -48,6 +48,23 @@ export interface Grinder extends SyncMeta {
   estimated?: number
 }
 
+export type BrewStepType = 'bloom' | 'pour' | 'agitation' | 'wait' | 'drawdown' | 'other'
+export type AgitationIntensity = 'light' | 'medium' | 'strong'
+export type AgitationMethod = 'swirl' | 'stir' | 'mechanical' | 'tap'
+
+export interface BrewStep {
+  id: string
+  type: BrewStepType
+  /** grams of water added — for bloom / pour */
+  water?: number
+  /** cumulative target time from start, in seconds */
+  atTimeSec?: number
+  /** for agitation steps */
+  intensity?: AgitationIntensity
+  method?: AgitationMethod
+  note?: string
+}
+
 export interface FlavorScores {
   acidity?: number // 0-5
   body?: number
@@ -82,6 +99,8 @@ export interface Recipe extends SyncMeta {
   totalTimeSec?: number
   bloomSec?: number
   pours?: number
+  /** ordered pour/agitation schedule for brew recipes */
+  steps?: BrewStep[]
 
   notes?: string
 }
