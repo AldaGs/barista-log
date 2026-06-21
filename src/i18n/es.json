@@ -135,7 +135,14 @@
     "swirl": "Giro",
     "stir": "Revolver",
     "mechanical": "Mecánica",
-    "tap": "Golpecito"
+    "tap": "Golpecito",
+    "pourPattern": "Patrón",
+    "pourHeight": "Altura",
+    "circular": "Circular",
+    "elliptical": "Elíptico",
+    "direct": "Directo (centro)",
+    "low": "Vertido bajo",
+    "high": "Vertido alto"
   },
   "play": {
     "title": "Preparar",
@@ -147,6 +154,9 @@
     "now": "Ahora",
     "done": "Listo",
     "complete": "Preparación completa",
+    "countdown": "Cuenta regresiva",
+    "off": "Apagada",
+    "getReady": "Prepárate…",
     "noSteps": "Esta receta no tiene esquema de vertidos. Agrega pasos para usar la guía."
   },
   "session": {

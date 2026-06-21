@@ -70,7 +70,14 @@ export function RecipeCard({
                       ? [s.method && t('step.' + s.method), s.intensity && t('step.' + s.intensity)]
                           .filter(Boolean)
                           .join(' · ')
-                      : [s.water != null ? `${s.water} g` : null, s.note].filter(Boolean).join(' · ')}
+                      : [
+                          s.water != null ? `${s.water} g` : null,
+                          s.pourPattern && t('step.' + s.pourPattern),
+                          s.pourHeight && t('step.' + s.pourHeight),
+                          s.note,
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')}
                   </span>
                   {s.atTimeSec != null && (
                     <span className="ml-auto tabular-nums text-muted">{formatSeconds(s.atTimeSec)}</span>

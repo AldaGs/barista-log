@@ -5,6 +5,8 @@ import type {
   AgitationMethod,
   BrewStep,
   BrewStepType,
+  PourHeight,
+  PourPattern,
 } from '@/db/types'
 import { uid } from '@/db/dexie'
 import { ClockInput } from './ClockInput'
@@ -12,6 +14,8 @@ import { ClockInput } from './ClockInput'
 const STEP_TYPES: BrewStepType[] = ['bloom', 'pour', 'agitation', 'wait', 'drawdown', 'other']
 const INTENSITIES: AgitationIntensity[] = ['light', 'medium', 'strong']
 const METHODS: AgitationMethod[] = ['swirl', 'stir', 'mechanical', 'tap']
+const POUR_PATTERNS: PourPattern[] = ['circular', 'elliptical', 'direct']
+const POUR_HEIGHTS: PourHeight[] = ['low', 'high']
 
 const hasWater = (t: BrewStepType) => t === 'bloom' || t === 'pour'
 const isAgitation = (t: BrewStepType) => t === 'agitation'
@@ -81,14 +85,36 @@ export function BrewSteps({
 
           <div className="grid grid-cols-2 gap-2 pl-6">
             {hasWater(s.type) && (
-              <input
-                className="input !py-1.5"
-                type="number"
-                inputMode="decimal"
-                placeholder={t('recipe.stepWater')}
-                value={s.water ?? ''}
-                onChange={(e) => update(s.id, { water: e.target.value === '' ? undefined : Number(e.target.value) })}
-              />
+              <>
+                <input
+                  className="input !py-1.5"
+                  type="number"
+                  inputMode="decimal"
+                  placeholder={t('recipe.stepWater')}
+                  value={s.water ?? ''}
+                  onChange={(e) => update(s.id, { water: e.target.value === '' ? undefined : Number(e.target.value) })}
+                />
+                <select
+                  className="input !py-1.5"
+                  value={s.pourPattern ?? ''}
+                  onChange={(e) => update(s.id, { pourPattern: (e.target.value || undefined) as PourPattern | undefined })}
+                >
+                  <option value="">{t('step.pourPattern')}</option>
+                  {POUR_PATTERNS.map((x) => (
+                    <option key={x} value={x}>{t(`step.${x}`)}</option>
+                  ))}
+                </select>
+                <select
+                  className="input !py-1.5"
+                  value={s.pourHeight ?? ''}
+                  onChange={(e) => update(s.id, { pourHeight: (e.target.value || undefined) as PourHeight | undefined })}
+                >
+                  <option value="">{t('step.pourHeight')}</option>
+                  {POUR_HEIGHTS.map((x) => (
+                    <option key={x} value={x}>{t(`step.${x}`)}</option>
+                  ))}
+                </select>
+              </>
             )}
             {isAgitation(s.type) && (
               <>
