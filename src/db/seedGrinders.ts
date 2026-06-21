@@ -17,7 +17,7 @@ import type { Grinder } from './types'
  */
 type SeedGrinder = Pick<
   Grinder,
-  'name' | 'type' | 'burr' | 'micronsPerClick' | 'maxClicks' | 'source'
+  'name' | 'type' | 'burr' | 'micronsPerClick' | 'maxClicks' | 'source' | 'estimated'
 >
 
 export const SEED_GRINDERS: SeedGrinder[] = [
@@ -32,9 +32,9 @@ export const SEED_GRINDERS: SeedGrinder[] = [
   { name: 'Baratza Encore', type: 'electric', burr: 'conical', micronsPerClick: 24, maxClicks: 40, source: 'community (~24µm, beean/HCG)' },
   { name: 'Baratza Virtuoso+', type: 'electric', burr: 'conical', micronsPerClick: 24, maxClicks: 40, source: 'community (same burrs as Encore)' },
   { name: 'Fellow Ode (Gen 2)', type: 'electric', burr: 'flat', micronsPerClick: 30, maxClicks: 33, source: 'community' },
-  { name: 'DF64', type: 'electric', burr: 'flat', micronsPerClick: 25, maxClicks: 100, source: 'community (stepless, est.)' },
+  { name: 'DF64', type: 'electric', burr: 'flat', micronsPerClick: 25, maxClicks: 100, source: 'community (stepless, est.)', estimated: 1 },
   { name: 'Mahlkönig X54', type: 'electric', burr: 'flat', micronsPerClick: 20, maxClicks: 80, source: 'community' },
-  { name: 'Eureka Mignon Specialita', type: 'electric', burr: 'flat', micronsPerClick: 10, maxClicks: 100, source: 'community (stepless, est.)' },
-  { name: 'Niche Zero', type: 'electric', burr: 'conical', micronsPerClick: 15, maxClicks: 50, source: 'community (stepless, est.)' },
+  { name: 'Eureka Mignon Specialita', type: 'electric', burr: 'flat', micronsPerClick: 10, maxClicks: 100, source: 'community (stepless, est.)', estimated: 1 },
+  { name: 'Niche Zero', type: 'electric', burr: 'conical', micronsPerClick: 15, maxClicks: 50, source: 'community (stepless, est.)', estimated: 1 },
   { name: 'Wilfa Uniform', type: 'electric', burr: 'flat', micronsPerClick: 25, maxClicks: 41, source: 'community' },
 ]

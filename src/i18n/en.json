@@ -104,7 +104,20 @@
     "microns": "≈ {{microns}} µm",
     "disclaimer": "Starting point only — not exact. Burrs, wear and conical-vs-flat geometry differ. Expect to adjust 1–3 clicks and taste.",
     "roughWarning": "Different burr type (conical ↔ flat): the cup may differ even at the same micron size.",
+    "estimated": "estimate",
+    "estimatedWarning": "This grinder's microns-per-click is a rough estimate (stepless or sparsely documented). Treat the result loosely.",
+    "landsIn": "Lands in",
     "addCustom": "Add custom grinder"
+  },
+  "band": {
+    "turkish": "Turkish",
+    "espresso": "Espresso",
+    "moka": "Moka",
+    "aeropress": "AeroPress",
+    "v60": "V60",
+    "pour-over": "Pour over",
+    "french-press": "French press",
+    "cold-brew": "Cold brew"
   },
   "settings": {
     "title": "Settings",

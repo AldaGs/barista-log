@@ -37,11 +37,25 @@ export function convertGrind(
   }
 }
 
-/** Rough micron bands per brew method, used as sanity rails in the UI. */
-export const METHOD_MICRON_BANDS: Record<string, [number, number]> = {
-  espresso: [200, 400],
-  'pour-over': [400, 700],
-  aeropress: [300, 600],
-  'french-press': [900, 1200],
-  'cold-brew': [1000, 1400],
+/**
+ * Micron ranges per brew method, used as sanity rails in the UI
+ * ("does this setting land in the espresso range?").
+ * Source: Honest Coffee Guide grind-size chart.
+ */
+export const METHOD_MICRON_BANDS: { key: string; range: [number, number] }[] = [
+  { key: 'turkish', range: [40, 220] },
+  { key: 'espresso', range: [180, 380] },
+  { key: 'moka', range: [360, 660] },
+  { key: 'aeropress', range: [320, 960] },
+  { key: 'v60', range: [400, 700] },
+  { key: 'pour-over', range: [410, 930] },
+  { key: 'french-press', range: [690, 1300] },
+  { key: 'cold-brew', range: [800, 1400] },
+]
+
+/** Which brew methods a given micron size falls within. */
+export function methodsForMicrons(microns: number): string[] {
+  return METHOD_MICRON_BANDS.filter(
+    ({ range }) => microns >= range[0] && microns <= range[1],
+  ).map(({ key }) => key)
 }

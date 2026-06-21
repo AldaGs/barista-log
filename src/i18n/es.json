@@ -104,7 +104,20 @@
     "microns": "≈ {{microns}} µm",
     "disclaimer": "Solo es un punto de partida, no exacto. Las muelas, el desgaste y la geometría cónica vs. plana varían. Espera ajustar 1–3 clics y probar.",
     "roughWarning": "Tipo de muela distinto (cónica ↔ plana): la taza puede variar aunque la micra sea igual.",
+    "estimated": "estimado",
+    "estimatedWarning": "Las micras por clic de este molino son una estimación aproximada (sin pasos o poco documentado). Toma el resultado con cautela.",
+    "landsIn": "Corresponde a",
     "addCustom": "Agregar molino personalizado"
+  },
+  "band": {
+    "turkish": "Turco",
+    "espresso": "Espresso",
+    "moka": "Moka",
+    "aeropress": "AeroPress",
+    "v60": "V60",
+    "pour-over": "Filtrado",
+    "french-press": "Prensa francesa",
+    "cold-brew": "Cold brew"
   },
   "settings": {
     "title": "Ajustes",

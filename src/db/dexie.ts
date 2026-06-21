@@ -65,7 +65,8 @@ export async function ensureSeedData() {
       current.micronsPerClick !== seed.micronsPerClick ||
       current.burr !== seed.burr ||
       current.maxClicks !== seed.maxClicks ||
-      current.source !== seed.source
+      current.source !== seed.source ||
+      (current.estimated ?? 0) !== (seed.estimated ?? 0)
     ) {
       // refresh corrected reference data
       await db.grinders.update(current.id, { ...seed, updatedAt: ts })

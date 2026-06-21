@@ -44,6 +44,8 @@ export interface Grinder extends SyncMeta {
   maxClicks?: number
   source?: string
   seeded?: number // 1 if shipped with the app
+  /** 1 = µm/click is a rough estimate (e.g. stepless grinder) — flag in UI */
+  estimated?: number
 }
 
 export interface FlavorScores {

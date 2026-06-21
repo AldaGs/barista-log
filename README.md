@@ -49,6 +49,11 @@ The app never talks to a server unless you connect one. To enable:
 1. Create a Supabase project and run [`supabase/schema.sql`](supabase/schema.sql).
 2. In the app: **Settings → Cloud sync**, paste your project URL and anon key.
 
+Brew-method micron ranges are from the
+[Honest Coffee Guide grind-size chart](https://honestcoffeeguide.com/coffee-grind-size-chart/).
+Grinders whose microns-per-click is a loose estimate (stepless or sparsely
+documented) are flagged with an **estimate** badge in the app.
+
 > ⚠️ **Grinder conversion disclaimer:** conversions are estimates pivoted through
 > published micron-per-click values. Burr wear, alignment, and conical-vs-flat
 > geometry mean results are a *starting point only* — expect to adjust a few

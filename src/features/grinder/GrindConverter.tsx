@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { ArrowRight, AlertTriangle, Info } from 'lucide-react'
 import { db } from '@/db/dexie'
-import { convertGrind } from '@/lib/grindConvert'
+import { convertGrind, methodsForMicrons } from '@/lib/grindConvert'
 
 /**
  * Pivot-through-microns grind converter. Used standalone on the Grinders page
@@ -72,6 +72,14 @@ export function GrindConverter({
           <p className="mt-1 text-center text-xs text-muted">
             {t('grinder.microns', { microns: result.microns })}
           </p>
+          {methodsForMicrons(result.microns).length > 0 && (
+            <p className="mt-1 text-center text-xs text-muted">
+              {t('grinder.landsIn')}:{' '}
+              {methodsForMicrons(result.microns)
+                .map((m) => t(`band.${m}`))
+                .join(', ')}
+            </p>
+          )}
           {onApply && (
             <button
               type="button"
@@ -88,6 +96,12 @@ export function GrindConverter({
         <p className="flex gap-2 text-xs text-amber-600 dark:text-amber-400">
           <AlertTriangle size={14} className="mt-0.5 shrink-0" />
           {t('grinder.roughWarning')}
+        </p>
+      )}
+      {result && (from?.estimated || to?.estimated) && (
+        <p className="flex gap-2 text-xs text-amber-600 dark:text-amber-400">
+          <AlertTriangle size={14} className="mt-0.5 shrink-0" />
+          {t('grinder.estimatedWarning')}
         </p>
       )}
       <p className="flex gap-2 text-xs text-muted">

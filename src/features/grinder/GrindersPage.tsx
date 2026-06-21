@@ -80,7 +80,14 @@ export default function GrindersPage() {
         {grinders?.map((g) => (
           <div key={g.id} className="card flex items-center justify-between p-3">
             <button className="text-left" onClick={() => setDraft(g)}>
-              <p className="font-medium">{g.name}</p>
+              <p className="flex items-center gap-2 font-medium">
+                {g.name}
+                {g.estimated ? (
+                  <span className="chip !bg-amber-500/15 !py-0.5 text-xs text-amber-600 dark:text-amber-400">
+                    {t('grinder.estimated')}
+                  </span>
+                ) : null}
+              </p>
               <p className="text-sm text-muted">
                 {t('grinder.' + g.burr)} · {g.micronsPerClick} µm/{t('recipe.clicks')}
                 {g.seeded ? '' : ' · ★'}
