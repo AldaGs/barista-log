@@ -139,6 +139,20 @@
     "connect": "Connect",
     "disconnect": "Disconnect",
     "connected": "Connected",
-    "notConnected": "Not connected"
+    "notConnected": "Not connected",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "signUp": "Create account",
+    "signOut": "Sign out",
+    "signedInAs": "Signed in as",
+    "syncNow": "Sync now",
+    "syncing": "Syncing…",
+    "synced": "Synced",
+    "lastSynced": "Last synced",
+    "syncOffline": "Offline — will sync when back online",
+    "syncError": "Sync error",
+    "signUpCheckEmail": "Account created. Check your email if confirmation is required, then sign in.",
+    "localFirstNote": "Your data is saved on this device first; the cloud is a backup you can restore on another device."
   }
 }

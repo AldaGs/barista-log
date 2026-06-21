@@ -1,71 +1,40 @@
--- Barista Log — optional Supabase schema (for power users who enable cloud sync).
--- The app works 100% offline without this. Run these statements in the
--- Supabase SQL editor of your own project, then paste the project URL + anon
--- key into Settings → Cloud sync.
+-- Barista Log — optional Supabase schema for cloud BACKUP / sync.
 --
--- Tables mirror the local Dexie tables. Every row carries updated_at/synced_at
--- so the client can do last-write-wins sync (see src/sync/syncEngine.ts).
+-- The app is local-first: every change is written to the browser (IndexedDB)
+-- first, and the cloud is a backup you can restore on another device. Nothing
+-- here is required to use the app.
+--
+-- Run this whole file once in your Supabase project's SQL editor. Then in the
+-- app: Settings → Cloud sync → paste your Project URL + anon key, and sign in.
+--
+-- Design: a single generic table stores every record as JSON, tagged by its
+-- collection (recipes, sessions, beans, waters, grinders). This keeps the sync
+-- client simple and means schema changes never need a migration here.
 
--- Enable RLS so each user only sees their own rows.
--- Each table has a user_id defaulting to the authenticated user.
-
-create extension if not exists "uuid-ossp";
-
-create table if not exists beans (
-  id uuid primary key,
-  user_id uuid not null default auth.uid(),
-  name text not null,
-  roaster text, origin text, process text,
-  roast_level text, roast_date date, notes text,
-  updated_at bigint, created_at bigint
+create table if not exists sync_records (
+  id          uuid not null,
+  user_id     uuid not null default auth.uid(),
+  collection  text not null,
+  updated_at  bigint not null,
+  deleted     int  not null default 0,
+  data        jsonb,
+  primary key (user_id, id)
 );
 
-create table if not exists waters (
-  id uuid primary key,
-  user_id uuid not null default auth.uid(),
-  name text not null, supplier text,
-  tds numeric, gh numeric, kh numeric, notes text,
-  updated_at bigint, created_at bigint
-);
+create index if not exists sync_records_pull_idx
+  on sync_records (user_id, updated_at);
 
-create table if not exists grinders (
-  id uuid primary key,
-  user_id uuid not null default auth.uid(),
-  name text not null, type text, burr text,
-  microns_per_click numeric, max_clicks int, source text,
-  updated_at bigint, created_at bigint
-);
+-- Row Level Security: each user only ever sees and writes their own rows.
+alter table sync_records enable row level security;
 
-create table if not exists recipes (
-  id uuid primary key,
-  user_id uuid not null default auth.uid(),
-  title text, method text,
-  bean_id uuid, water_id uuid, grinder_id uuid,
-  data jsonb,                       -- full recipe payload
-  updated_at bigint, created_at bigint
-);
+drop policy if exists "owner_select" on sync_records;
+drop policy if exists "owner_modify" on sync_records;
 
-create table if not exists sessions (
-  id uuid primary key,
-  user_id uuid not null default auth.uid(),
-  recipe_id uuid, bean_id uuid, water_id uuid, grinder_id uuid,
-  method text, date bigint,
-  data jsonb,                       -- params, flavors, tags, rating
-  updated_at bigint, created_at bigint
-);
+create policy "owner_select" on sync_records
+  for select using (auth.uid() = user_id);
 
--- Row Level Security: owner-only access.
-do $$
-declare t text;
-begin
-  foreach t in array array['beans','waters','grinders','recipes','sessions'] loop
-    execute format('alter table %I enable row level security;', t);
-    execute format($p$
-      create policy "owner_all_%1$s" on %1$I
-      for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
-    $p$, t);
-  end loop;
-end $$;
+create policy "owner_modify" on sync_records
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
--- NOTE: photos (Blob) are not synced by the current stub. Store them in a
--- Supabase Storage bucket keyed by session id when you implement full sync.
+-- NOTE: session photos (Blobs) are not synced yet. Store them in a Supabase
+-- Storage bucket keyed by session id when you implement photo sync.

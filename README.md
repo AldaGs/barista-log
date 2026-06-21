@@ -44,10 +44,18 @@ later without migration.
 
 ### Optional cloud sync (Supabase)
 
-The app never talks to a server unless you connect one. To enable:
+Local-first: every change is written to this device first; the cloud is a
+**backup** you can restore on another device. The app never talks to a server
+unless you connect one. To enable:
 
-1. Create a Supabase project and run [`supabase/schema.sql`](supabase/schema.sql).
-2. In the app: **Settings → Cloud sync**, paste your project URL and anon key.
+1. Create a Supabase project and run [`supabase/schema.sql`](supabase/schema.sql)
+   in its SQL editor (creates the `sync_records` table + row-level security).
+2. In the app: **Settings → Cloud sync**, paste your project **URL** and **anon key**.
+3. **Create an account / sign in** (email + password). Each account only sees its
+   own rows (enforced by RLS).
+4. Syncs automatically after changes and when you come back online; **Sync now**
+   forces it. Conflicts resolve last-write-wins by `updatedAt`; deletes propagate
+   via tombstones. (Session photos aren't synced yet.)
 
 Brew-method micron ranges are from the
 [Honest Coffee Guide grind-size chart](https://honestcoffeeguide.com/coffee-grind-size-chart/).

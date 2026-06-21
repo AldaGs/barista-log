@@ -139,6 +139,20 @@
     "connect": "Conectar",
     "disconnect": "Desconectar",
     "connected": "Conectado",
-    "notConnected": "Sin conexión"
+    "notConnected": "Sin conexión",
+    "email": "Correo",
+    "password": "Contraseña",
+    "signIn": "Iniciar sesión",
+    "signUp": "Crear cuenta",
+    "signOut": "Cerrar sesión",
+    "signedInAs": "Sesión iniciada como",
+    "syncNow": "Sincronizar ahora",
+    "syncing": "Sincronizando…",
+    "synced": "Sincronizado",
+    "lastSynced": "Última sincronización",
+    "syncOffline": "Sin conexión — se sincronizará al reconectar",
+    "syncError": "Error de sincronización",
+    "signUpCheckEmail": "Cuenta creada. Revisa tu correo si se requiere confirmación y luego inicia sesión.",
+    "localFirstNote": "Tus datos se guardan primero en este dispositivo; la nube es un respaldo que puedes restaurar en otro dispositivo."
   }
 }

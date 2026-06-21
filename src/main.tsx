@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
 import { ensureSeedData } from './db/dexie'
+import { initSync } from './sync/syncManager'
 import { applyTheme, useSettings } from './store/settings'
 import './i18n'
 import './styles/index.css'
@@ -15,6 +16,7 @@ window
   .addEventListener('change', () => applyTheme(useSettings.getState().theme))
 
 ensureSeedData()
+initSync()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

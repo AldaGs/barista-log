@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Download, Upload, Cloud, CloudOff } from 'lucide-react'
-import { PageHeader, Field } from '@/components/ui'
+import { Download, Upload } from 'lucide-react'
+import { PageHeader } from '@/components/ui'
 import { useSettings, type Lang, type ThemeMode } from '@/store/settings'
 import type { TempUnit } from '@/lib/units'
 import { exportBackup, importBackup } from '@/lib/backup'
+import { CloudSync } from './CloudSync'
 
 function SegGroup<T extends string>({
   value,
@@ -34,8 +35,6 @@ export default function SettingsPage() {
   const { t } = useTranslation()
   const s = useSettings()
   const fileRef = useRef<HTMLInputElement>(null)
-  const [url, setUrl] = useState(s.supabase?.url ?? '')
-  const [key, setKey] = useState(s.supabase?.anonKey ?? '')
 
   return (
     <div className="space-y-6">
@@ -107,43 +106,7 @@ export default function SettingsPage() {
       </section>
 
       {/* Cloud */}
-      <section className="card space-y-3 p-4">
-        <div className="flex items-center gap-2">
-          {s.supabase ? <Cloud size={18} className="text-accent" /> : <CloudOff size={18} className="text-muted" />}
-          <h2 className="font-semibold">{t('settings.cloud')}</h2>
-          <span className="ml-auto text-sm text-muted">
-            {s.supabase ? t('settings.connected') : t('settings.notConnected')}
-          </span>
-        </div>
-        <p className="text-sm text-muted">{t('settings.cloudIntro')}</p>
-        <Field label={t('settings.supabaseUrl')}>
-          <input className="input" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://xxxx.supabase.co" />
-        </Field>
-        <Field label={t('settings.supabaseKey')}>
-          <input className="input" type="password" value={key} onChange={(e) => setKey(e.target.value)} />
-        </Field>
-        <div className="flex gap-2">
-          <button
-            className="btn-primary flex-1"
-            disabled={!url || !key}
-            onClick={() => s.setSupabase({ url: url.trim(), anonKey: key.trim() })}
-          >
-            {t('settings.connect')}
-          </button>
-          {s.supabase && (
-            <button
-              className="btn-ghost"
-              onClick={() => {
-                s.setSupabase(null)
-                setUrl('')
-                setKey('')
-              }}
-            >
-              {t('settings.disconnect')}
-            </button>
-          )}
-        </div>
-      </section>
+      <CloudSync />
     </div>
   )
 }

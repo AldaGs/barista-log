@@ -9,6 +9,13 @@ import type {
 } from './types'
 import { SEED_GRINDERS } from './seedGrinders'
 
+/** Tombstone so deletes propagate to the cloud and to other devices. */
+export interface Deletion {
+  id: string // same id as the deleted record
+  collection: string
+  updatedAt: number
+}
+
 export const uid = () =>
   (crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`)
 
@@ -21,6 +28,7 @@ class BaristaDB extends Dexie {
   recipes!: Table<Recipe, string>
   sessions!: Table<BrewSession, string>
   flavorTags!: Table<FlavorTag, string>
+  deletions!: Table<Deletion, string>
 
   constructor() {
     super('barista-log')
@@ -31,6 +39,9 @@ class BaristaDB extends Dexie {
       recipes: 'id, title, method, beanId, updatedAt, dirty',
       sessions: 'id, recipeId, beanId, method, date, rating, dirty',
       flavorTags: 'id, label',
+    })
+    this.version(2).stores({
+      deletions: 'id, collection, updatedAt',
     })
   }
 }
