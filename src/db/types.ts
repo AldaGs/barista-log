@@ -65,6 +65,17 @@ export interface BrewStep {
   note?: string
 }
 
+export type GearType = 'machine' | 'brewer'
+
+export interface Gear extends SyncMeta {
+  id: string
+  name: string
+  type: GearType
+  brand?: string
+  notes?: string
+  seeded?: number
+}
+
 export interface FlavorScores {
   acidity?: number // 0-5
   body?: number
@@ -79,6 +90,8 @@ export interface Recipe extends SyncMeta {
   beanId?: string
   waterId?: string
   grinderId?: string
+  /** espresso machine (method=espresso) or brewer (method=brew), from the gear library */
+  gearId?: string
   /** raw grinder clicks/setting used */
   grindClicks?: number
   grindLabel?: string // free text fallback ("medium-fine")

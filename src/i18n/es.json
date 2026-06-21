@@ -106,7 +106,7 @@
     "shotTime": "Tiempo de extracción",
     "pressure": "Presión (bar)",
     "preInfusion": "Preinfusión (s)",
-    "brewer": "Cafetera",
+    "brewer": "Método",
     "totalTime": "Tiempo total",
     "bloom": "Pre-humectado (s)",
     "pours": "Vertidos",
@@ -122,10 +122,10 @@
     "brew": "Preparar"
   },
   "step": {
-    "bloom": "Pre-humectado",
+    "bloom": "Bloom/Pre infusión",
     "pour": "Vertido",
     "agitation": "Agitación",
-    "wait": "Espera",
+    "wait": "Pausa",
     "drawdown": "Drenado",
     "other": "Otro",
     "light": "Suave",
@@ -214,6 +214,18 @@
     "pour-over": "Filtrado",
     "french-press": "Prensa francesa",
     "cold-brew": "Cold brew"
+  },
+  "gear": {
+    "title": "Equipo",
+    "machine": "Máquina",
+    "machines": "Máquinas",
+    "brewerKind": "Método",
+    "brewers": "Métodos",
+    "type": "Tipo",
+    "brand": "Marca",
+    "addMachine": "Agregar máquina",
+    "addBrewer": "Agregar método",
+    "empty": "Aún no hay equipo."
   },
   "settings": {
     "title": "Ajustes",

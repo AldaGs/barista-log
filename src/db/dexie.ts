@@ -3,11 +3,13 @@ import type {
   Bean,
   BrewSession,
   FlavorTag,
+  Gear,
   Grinder,
   Recipe,
   WaterProfile,
 } from './types'
 import { SEED_GRINDERS } from './seedGrinders'
+import { SEED_GEAR } from './seedGear'
 
 /** Tombstone so deletes propagate to the cloud and to other devices. */
 export interface Deletion {
@@ -28,6 +30,7 @@ class BaristaDB extends Dexie {
   recipes!: Table<Recipe, string>
   sessions!: Table<BrewSession, string>
   flavorTags!: Table<FlavorTag, string>
+  gear!: Table<Gear, string>
   deletions!: Table<Deletion, string>
 
   constructor() {
@@ -42,6 +45,9 @@ class BaristaDB extends Dexie {
     })
     this.version(2).stores({
       deletions: 'id, collection, updatedAt',
+    })
+    this.version(3).stores({
+      gear: 'id, name, type, seeded, updatedAt, dirty',
     })
   }
 }
@@ -82,5 +88,20 @@ export async function ensureSeedData() {
       // refresh corrected reference data
       await db.grinders.update(current.id, { ...seed, updatedAt: ts })
     }
+  }
+
+  // Seed common brewers once (names are stable, so no reconcile needed).
+  if ((await db.gear.count()) === 0) {
+    await db.gear.bulkAdd(
+      SEED_GEAR.map((g) => ({
+        ...g,
+        id: uid(),
+        seeded: 1,
+        dirty: 0,
+        syncedAt: null,
+        createdAt: ts,
+        updatedAt: ts,
+      })),
+    )
   }
 }

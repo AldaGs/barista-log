@@ -5,9 +5,10 @@ const tabs = [
   { to: '/beans', key: 'beans', i18n: 'beans.title' },
   { to: '/water', key: 'water', i18n: 'water.title' },
   { to: '/grinders', key: 'grinders', i18n: 'grinder.title' },
+  { to: '/gear', key: 'gear', i18n: 'gear.title' },
 ] as const
 
-export function SubNav({ active }: { active: 'beans' | 'water' | 'grinders' }) {
+export function SubNav({ active }: { active: 'beans' | 'water' | 'grinders' | 'gear' }) {
   const { t } = useTranslation()
   return (
     <div className="flex gap-2">

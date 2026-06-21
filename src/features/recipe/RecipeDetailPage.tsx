@@ -20,6 +20,10 @@ export default function RecipeDetailPage() {
     () => (recipe?.beanId ? db.beans.get(recipe.beanId) : undefined),
     [recipe?.beanId],
   )
+  const gear = useLiveQuery(
+    () => (recipe?.gearId ? db.gear.get(recipe.gearId) : undefined),
+    [recipe?.gearId],
+  )
 
   if (recipe === undefined) return null
   if (!recipe) return <p className="text-muted">Not found.</p>
@@ -57,7 +61,7 @@ export default function RecipeDetailPage() {
       )}
 
       <div ref={cardRef}>
-        <RecipeCard recipe={recipe} beanName={bean?.name} />
+        <RecipeCard recipe={recipe} beanName={bean?.name} gearName={gear?.name} />
       </div>
 
       <div className="flex gap-2">

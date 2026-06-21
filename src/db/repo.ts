@@ -2,6 +2,7 @@ import { db, now, uid } from './dexie'
 import type {
   Bean,
   BrewSession,
+  Gear,
   Grinder,
   Recipe,
   WaterProfile,
@@ -127,3 +128,21 @@ export async function saveGrinder(
   return id
 }
 export const deleteGrinder = (id: string) => deleteWithTombstone('grinders', id)
+
+// ---- Gear (machines & brewers) ------------------------------------------
+export async function saveGear(
+  data: Omit<Gear, keyof NewMeta | 'seeded'> & Partial<Pick<Gear, 'id' | 'seeded'>>,
+): Promise<string> {
+  let id: string
+  if (data.id) {
+    await db.gear.update(data.id, { ...data, dirty: 1, updatedAt: now() })
+    id = data.id
+  } else {
+    const rec = { seeded: 0, ...data, ...freshMeta() } as Gear
+    await db.gear.add(rec)
+    id = rec.id
+  }
+  triggerSync()
+  return id
+}
+export const deleteGear = (id: string) => deleteWithTombstone('gear', id)

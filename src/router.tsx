@@ -10,6 +10,7 @@ import ComparePage from './features/compare/ComparePage'
 import BeansPage from './features/beans/BeansPage'
 import WaterPage from './features/water/WaterPage'
 import GrindersPage from './features/grinder/GrindersPage'
+import GearPage from './features/gear/GearPage'
 import SettingsPage from './features/settings/SettingsPage'
 import HelpPage from './features/help/HelpPage'
 
@@ -29,6 +30,7 @@ export const router = createBrowserRouter([
       { path: 'beans', element: <BeansPage /> },
       { path: 'water', element: <WaterPage /> },
       { path: 'grinders', element: <GrindersPage /> },
+      { path: 'gear', element: <GearPage /> },
       { path: 'settings', element: <SettingsPage /> },
       { path: 'help', element: <HelpPage /> },
       { path: '*', element: <Navigate to="/" replace /> },

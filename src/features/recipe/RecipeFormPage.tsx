@@ -26,6 +26,7 @@ export default function RecipeFormPage() {
   const beans = useLiveQuery(() => db.beans.orderBy('name').toArray(), [])
   const waters = useLiveQuery(() => db.waters.orderBy('name').toArray(), [])
   const grinders = useLiveQuery(() => db.grinders.orderBy('name').toArray(), [])
+  const gear = useLiveQuery(() => db.gear.orderBy('name').toArray(), [])
 
   const [form, setForm] = useState<Partial<Recipe>>({ method: 'brew' })
   // session fields (logged alongside the recipe)
@@ -74,6 +75,7 @@ export default function RecipeFormPage() {
       beanId: form.beanId,
       waterId: form.waterId,
       grinderId: form.grinderId,
+      gearId: form.gearId,
       grindClicks: form.grindClicks,
       grindLabel: form.grindLabel,
       doseIn: form.doseIn,
@@ -219,6 +221,15 @@ export default function RecipeFormPage() {
 
       {/* method-specific */}
       {isEspresso ? (
+        <div className="space-y-3">
+        <Field label={t('gear.machine')} hint={t('common.optional')}>
+          <select className="input" value={form.gearId ?? ''} onChange={(e) => set({ gearId: e.target.value || undefined })}>
+            <option value="">{t('common.none')}</option>
+            {gear?.filter((g) => g.type === 'machine').map((g) => (
+              <option key={g.id} value={g.id}>{g.name}</option>
+            ))}
+          </select>
+        </Field>
         <div className="grid grid-cols-3 gap-3">
           <Field label={t('recipe.shotTime')}>
             <input className="input" type="number" value={form.shotTimeSec ?? ''} onChange={(e) => set({ shotTimeSec: num(e.target.value) })} />
@@ -230,11 +241,17 @@ export default function RecipeFormPage() {
             <input className="input" type="number" value={form.preInfusionSec ?? ''} onChange={(e) => set({ preInfusionSec: num(e.target.value) })} />
           </Field>
         </div>
+        </div>
       ) : (
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <Field label={t('recipe.brewer')}>
-              <input className="input" value={form.brewer ?? ''} onChange={(e) => set({ brewer: e.target.value })} placeholder="V60, Aeropress…" />
+              <select className="input" value={form.gearId ?? ''} onChange={(e) => set({ gearId: e.target.value || undefined })}>
+                <option value="">{t('common.none')}</option>
+                {gear?.filter((g) => g.type === 'brewer').map((g) => (
+                  <option key={g.id} value={g.id}>{g.name}</option>
+                ))}
+              </select>
             </Field>
             <Field label={t('recipe.totalTime')}>
               <ClockInput value={form.totalTimeSec} onChange={(secs) => set({ totalTimeSec: secs })} />

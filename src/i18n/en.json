@@ -215,6 +215,18 @@
     "french-press": "French press",
     "cold-brew": "Cold brew"
   },
+  "gear": {
+    "title": "Gear",
+    "machine": "Machine",
+    "machines": "Machines",
+    "brewerKind": "Brewer",
+    "brewers": "Brewers",
+    "type": "Type",
+    "brand": "Brand",
+    "addMachine": "Add machine",
+    "addBrewer": "Add brewer",
+    "empty": "No gear yet."
+  },
   "settings": {
     "title": "Settings",
     "appearance": "Appearance",

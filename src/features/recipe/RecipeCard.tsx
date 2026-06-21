@@ -14,7 +14,15 @@ function Row({ label, value }: { label: string; value?: string | number | null }
 }
 
 /** The shareable recipe card (also rendered to PNG). */
-export function RecipeCard({ recipe, beanName }: { recipe: Recipe; beanName?: string }) {
+export function RecipeCard({
+  recipe,
+  beanName,
+  gearName,
+}: {
+  recipe: Recipe
+  beanName?: string
+  gearName?: string
+}) {
   const { t } = useTranslation()
   const unit = useSettings((s) => s.tempUnit)
   const isEspresso = recipe.method === 'espresso'
@@ -34,13 +42,14 @@ export function RecipeCard({ recipe, beanName }: { recipe: Recipe; beanName?: st
         <Row label={t('recipe.waterTemp')} value={recipe.waterTemp != null ? formatTemp(recipe.waterTemp, unit) : null} />
         {isEspresso ? (
           <>
+            <Row label={t('gear.machine')} value={gearName} />
             <Row label={t('recipe.shotTime')} value={formatSeconds(recipe.shotTimeSec)} />
             <Row label={t('recipe.pressure')} value={recipe.pressureBar} />
             <Row label={t('recipe.preInfusion')} value={recipe.preInfusionSec} />
           </>
         ) : (
           <>
-            <Row label={t('recipe.brewer')} value={recipe.brewer} />
+            <Row label={t('recipe.brewer')} value={gearName ?? recipe.brewer} />
             <Row label={t('recipe.totalTime')} value={formatSeconds(recipe.totalTimeSec)} />
             <Row label={t('recipe.bloom')} value={recipe.bloomSec} />
             <Row label={t('recipe.pours')} value={recipe.pours} />
