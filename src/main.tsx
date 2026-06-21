@@ -23,6 +23,15 @@ window
 ensureSeedData()
 initSync()
 
+// Suppress the native long-press / right-click context menu for a more
+// app-like feel (text selection callouts, "save image", etc.), while still
+// allowing it on text fields so right-click paste keeps working.
+window.addEventListener('contextmenu', (e) => {
+  const el = e.target as HTMLElement | null
+  if (el?.closest('input, textarea, [contenteditable="true"]')) return
+  e.preventDefault()
+})
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <RouterProvider router={router} />

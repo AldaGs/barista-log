@@ -15,7 +15,7 @@ export function PageHeader({
   return (
     <header className="mb-4 flex items-center gap-3">
       {back && (
-        <button onClick={() => navigate(-1)} className="btn-ghost !px-2" aria-label="back">
+        <button onClick={() => navigate('/')} className="btn-ghost !px-2" aria-label="back">
           <ArrowLeft size={20} />
         </button>
       )}
