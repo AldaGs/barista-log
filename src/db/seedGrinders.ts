@@ -22,15 +22,15 @@ type SeedGrinder = Pick<
 
 export const SEED_GRINDERS: SeedGrinder[] = [
   { name: 'Timemore Chestnut C2', type: 'hand', burr: 'conical', micronsPerClick: 36, maxClicks: 36, source: 'community (~33-36µm, aligned to reference converters)' },
-  { name: 'Timemore Chestnut C3 / C3S', type: 'hand', burr: 'conical', micronsPerClick: 83, maxClicks: 30, source: 'manufacturer (0.083mm/click)' },
+  { name: 'Timemore Chestnut C3 / C3S', type: 'hand', burr: 'conical', micronsPerClick: 36, maxClicks: 36, source: 'community (≈C2, mechanically near-identical)' },
   { name: 'Comandante C40 (MK4)', type: 'hand', burr: 'conical', micronsPerClick: 30, maxClicks: 40, source: 'community (~30µm/click)' },
   { name: '1Zpresso JX', type: 'hand', burr: 'conical', micronsPerClick: 25, maxClicks: 40, source: 'manufacturer' },
   { name: '1Zpresso JX-Pro', type: 'hand', burr: 'conical', micronsPerClick: 12.5, maxClicks: 50, source: 'manufacturer' },
   { name: '1Zpresso J-Max', type: 'hand', burr: 'conical', micronsPerClick: 8.8, maxClicks: 90, source: 'manufacturer' },
   { name: '1Zpresso K-Plus', type: 'hand', burr: 'conical', micronsPerClick: 22, maxClicks: 90, source: 'manufacturer' },
   { name: 'Kingrinder K6', type: 'hand', burr: 'conical', micronsPerClick: 16, maxClicks: 60, source: 'manufacturer' },
-  { name: 'Baratza Encore', type: 'electric', burr: 'conical', micronsPerClick: 38, maxClicks: 40, source: 'community' },
-  { name: 'Baratza Virtuoso+', type: 'electric', burr: 'conical', micronsPerClick: 38, maxClicks: 40, source: 'community' },
+  { name: 'Baratza Encore', type: 'electric', burr: 'conical', micronsPerClick: 24, maxClicks: 40, source: 'community (~24µm, beean/HCG)' },
+  { name: 'Baratza Virtuoso+', type: 'electric', burr: 'conical', micronsPerClick: 24, maxClicks: 40, source: 'community (same burrs as Encore)' },
   { name: 'Fellow Ode (Gen 2)', type: 'electric', burr: 'flat', micronsPerClick: 30, maxClicks: 33, source: 'community' },
   { name: 'DF64', type: 'electric', burr: 'flat', micronsPerClick: 25, maxClicks: 100, source: 'community (stepless, est.)' },
   { name: 'Mahlkönig X54', type: 'electric', burr: 'flat', micronsPerClick: 20, maxClicks: 80, source: 'community' },
