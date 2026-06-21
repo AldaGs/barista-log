@@ -27,7 +27,7 @@ export default function RecipeFormPage() {
   const waters = useLiveQuery(() => db.waters.orderBy('name').toArray(), [])
   const grinders = useLiveQuery(() => db.grinders.orderBy('name').toArray(), [])
 
-  const [form, setForm] = useState<Partial<Recipe>>({ method: 'espresso' })
+  const [form, setForm] = useState<Partial<Recipe>>({ method: 'brew' })
   // session fields (logged alongside the recipe)
   const [rating, setRating] = useState(0)
   const [flavors, setFlavors] = useState({ acidity: 0, body: 0, sweetness: 0, bitterness: 0 })
@@ -192,7 +192,10 @@ export default function RecipeFormPage() {
         <Field label={t('recipe.doseIn')}>
           <input className="input" type="number" inputMode="decimal" value={form.doseIn ?? ''} onChange={(e) => set({ doseIn: num(e.target.value) })} />
         </Field>
-        <Field label={isEspresso ? t('recipe.yieldOut') : t('recipe.waterAmount')}>
+        <Field
+          label={isEspresso ? t('recipe.yieldOut') : t('recipe.waterAmount')}
+          hint={isEspresso ? t('recipe.yieldHint') : t('recipe.waterHint')}
+        >
           <input className="input" type="number" inputMode="decimal" value={form.yieldOut ?? ''} onChange={(e) => set({ yieldOut: num(e.target.value) })} />
         </Field>
         <div className="pb-2 text-center">

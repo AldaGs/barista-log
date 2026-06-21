@@ -11,7 +11,7 @@
           "Toca Nueva (＋) en la barra inferior y elige Espresso o Filtrado.",
           "Opcionalmente elige un grano y un perfil de agua — agrégalos antes si aún no los tienes (más abajo).",
           "Elige tu molino e ingresa el ajuste de molienda en clics. Usa el Conversor de molienda si vas a calibrar en otro molino.",
-          "Ingresa la dosis y la salida / agua — el ratio se calcula solo.",
+          "Ingresa la dosis y la salida / agua — el ratio se calcula solo. En espresso la salida es lo que pesas en la taza al final; en filtrado es el agua total que viertes.",
           "Para Filtrado, arma el esquema de vertidos paso a paso (pre-humectado, vertidos, agitación) con agua y tiempo, y toca Aplicar totales.",
           "Opcionalmente califícala y agrega sabores/etiquetas ahora, o regístrala después de preparar.",
           "Toca Guardar. Tu receta más reciente aparece en Inicio por defecto."
@@ -99,6 +99,8 @@
     "doseIn": "Dosis (g)",
     "yieldOut": "Salida (g)",
     "waterAmount": "Agua (g)",
+    "yieldHint": "se mide al final",
+    "waterHint": "agua total que viertes",
     "ratio": "Ratio",
     "waterTemp": "Temp. del agua",
     "shotTime": "Tiempo de extracción",

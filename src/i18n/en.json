@@ -11,7 +11,7 @@
           "Tap New (＋) in the bottom bar and pick Espresso or Brew.",
           "Optionally choose a bean and water profile — add them first if you haven't (see below).",
           "Pick your grinder and enter the grind setting in clicks. Use the Grind converter if you're dialing on a different grinder.",
-          "Enter dose in and yield / water out — the ratio is calculated automatically.",
+          "Enter dose in and yield / water out — the ratio is calculated automatically. For espresso the yield is what you weigh in the cup at the end; for brew it's the total water you pour in.",
           "For Brew, build the pour schedule step by step (bloom, pours, agitation) with water and time, then tap Apply totals.",
           "Optionally rate it and add flavors/tags now, or log it after brewing.",
           "Tap Save. Your newest recipe appears on Home by default."
@@ -99,6 +99,8 @@
     "doseIn": "Dose in (g)",
     "yieldOut": "Yield out (g)",
     "waterAmount": "Water (g)",
+    "yieldHint": "measured at the end",
+    "waterHint": "total water you pour",
     "ratio": "Ratio",
     "waterTemp": "Water temp",
     "shotTime": "Shot time",
