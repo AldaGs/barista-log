@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/dexie'
@@ -8,6 +8,13 @@ import { PageHeader, Field, StarRating, ScoreSlider } from '@/components/ui'
 import { TagInput } from '@/components/TagInput'
 import { FlavorWheel } from '@/components/FlavorWheel'
 import { PhotoInput } from '@/components/PhotoInput'
+import { formatSeconds } from '@/lib/units'
+
+/** Actual timeline handed over from the guided brew player via router state. */
+interface BrewActual {
+  actualTotalSec?: number
+  actualLaps?: number[]
+}
 
 /** Epoch ms → `YYYY-MM-DDTHH:mm` in the device's local timezone, for datetime-local inputs. */
 function toLocalInput(ms: number) {
@@ -16,11 +23,19 @@ function toLocalInput(ms: number) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
+/** Signed mm:ss delta, e.g. +0:12 / −0:05 / on time. */
+function deltaLabel(deltaSec: number): string {
+  if (deltaSec === 0) return '±0:00'
+  const sign = deltaSec > 0 ? '+' : '−'
+  return sign + formatSeconds(Math.abs(deltaSec))
+}
+
 /** Hand-off target from the guided brew player: rate & log a session. */
 export default function LogSessionPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { id } = useParams()
+  const actual = (useLocation().state ?? {}) as BrewActual
   const recipe = useLiveQuery(() => (id ? db.recipes.get(id) : undefined), [id])
   const bean = useLiveQuery(
     () => (recipe?.beanId ? db.beans.get(recipe.beanId) : undefined),
@@ -55,6 +70,8 @@ export default function LogSessionPage() {
       flavorTags: tags,
       tds: tds === '' ? undefined : Number(tds),
       beverageWeight: beverageWeight === '' ? undefined : Number(beverageWeight),
+      actualTotalSec: actual.actualTotalSec,
+      actualLaps: actual.actualLaps?.length ? actual.actualLaps : undefined,
       photo,
       notes,
     })
@@ -71,6 +88,28 @@ export default function LogSessionPage() {
           {[bean?.name, recipe.ratio ? `1:${recipe.ratio}` : null].filter(Boolean).join(' · ')}
         </p>
       </div>
+
+      {actual.actualTotalSec != null && (
+        <div className="card space-y-1 p-4">
+          <h2 className="font-semibold">{t('session.actualTitle')}</h2>
+          <p className="text-2xl font-bold tabular-nums text-brand">
+            {formatSeconds(actual.actualTotalSec)}
+            {recipe.totalTimeSec ? (
+              <span className="ml-2 text-sm font-medium text-muted">
+                {t('session.vsPlan', {
+                  plan: formatSeconds(recipe.totalTimeSec),
+                  delta: deltaLabel(actual.actualTotalSec - recipe.totalTimeSec),
+                })}
+              </span>
+            ) : null}
+          </p>
+          {actual.actualLaps?.length ? (
+            <p className="text-xs tabular-nums text-muted">
+              {t('session.marks')}: {actual.actualLaps.map((l) => formatSeconds(l)).join(' · ')}
+            </p>
+          ) : null}
+        </div>
+      )}
 
       <Field label={t('session.when')}>
         <input

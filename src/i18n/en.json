@@ -203,6 +203,9 @@
     "countdown": "Countdown",
     "off": "Off",
     "getReady": "Get ready…",
+    "mark": "Mark",
+    "markedCount_one": "{{count}} mark",
+    "markedCount_other": "{{count}} marks",
     "noSteps": "This recipe has no pour schedule. Add steps to use guided brewing."
   },
   "session": {
@@ -217,6 +220,9 @@
     "addTag": "Add tag",
     "logBrew": "Log this brew",
     "when": "Date & time",
+    "actualTitle": "Actual brew time",
+    "vsPlan": "vs {{plan}} planned · {{delta}}",
+    "marks": "Marks",
     "measured": "Measured",
     "measuredHint": "Got a refractometer? Log a TDS reading to plot your real extraction.",
     "tds": "TDS %",
@@ -249,7 +255,8 @@
     "unlinked": "Unlinked brews",
     "confirmDelete": "Delete this logged brew?",
     "tdsValue": "{{value}}% TDS",
-    "bevValue": "{{value}} g out"
+    "bevValue": "{{value}} g out",
+    "actualValue": "{{value}} brew time"
   },
   "stats": {
     "title": "Stats",

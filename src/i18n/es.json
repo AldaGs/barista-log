@@ -203,6 +203,9 @@
     "countdown": "Cuenta regresiva",
     "off": "Apagada",
     "getReady": "Prepárate…",
+    "mark": "Marcar",
+    "markedCount_one": "{{count}} marca",
+    "markedCount_other": "{{count}} marcas",
     "noSteps": "Esta receta no tiene esquema de vertidos. Agrega pasos para usar la guía."
   },
   "session": {
@@ -217,6 +220,9 @@
     "addTag": "Agregar etiqueta",
     "logBrew": "Registrar preparación",
     "when": "Fecha y hora",
+    "actualTitle": "Tiempo real de preparación",
+    "vsPlan": "vs {{plan}} planeado · {{delta}}",
+    "marks": "Marcas",
     "measured": "Medido",
     "measuredHint": "¿Tienes refractómetro? Registra el TDS para graficar tu extracción real.",
     "tds": "TDS %",
@@ -249,7 +255,8 @@
     "unlinked": "Preparaciones sin receta",
     "confirmDelete": "¿Eliminar esta preparación registrada?",
     "tdsValue": "{{value}}% TDS",
-    "bevValue": "{{value}} g de bebida"
+    "bevValue": "{{value}} g de bebida",
+    "actualValue": "{{value}} de preparación"
   },
   "stats": {
     "title": "Estadísticas",

@@ -10,6 +10,7 @@ import { PageHeader } from '@/components/ui'
 import { RecipeCard } from './RecipeCard'
 import { BrewChart } from '@/components/BrewChart'
 import { estimateBrew, measuredBrew, type BrewPoint } from '@/lib/brewModel'
+import { formatSeconds } from '@/lib/units'
 import { freshness } from '@/lib/freshness'
 import { shareRecipePng } from '@/lib/share'
 import { ShareRecipeSheet } from './ShareRecipeSheet'
@@ -172,9 +173,12 @@ export default function RecipeDetailPage() {
                       </span>
                     ) : null}
                   </div>
-                  {(s.tds != null || s.beverageWeight != null) && (
+                  {(s.tds != null || s.beverageWeight != null || s.actualTotalSec != null) && (
                     <p className="mt-1 text-xs tabular-nums text-muted">
                       {[
+                        s.actualTotalSec != null
+                          ? t('history.actualValue', { value: formatSeconds(s.actualTotalSec) })
+                          : null,
                         s.tds != null ? t('history.tdsValue', { value: tdsFmt(s.tds) }) : null,
                         s.beverageWeight != null ? t('history.bevValue', { value: s.beverageWeight }) : null,
                       ]

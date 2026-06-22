@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Play, Pause, RotateCcw, Check } from 'lucide-react'
+import { Play, Pause, RotateCcw, Check, Flag } from 'lucide-react'
 import { db } from '@/db/dexie'
 import type { BrewStep, FlowRate } from '@/db/types'
 import { PageHeader, EmptyState } from '@/components/ui'
@@ -52,6 +52,7 @@ export default function BrewPlayPage() {
 
   const [elapsed, setElapsed] = useState(0)
   const [running, setRunning] = useState(false)
+  const [laps, setLaps] = useState<number[]>([])
   const ref = useRef<number | null>(null)
 
   // Optional pre-start countdown (0 = off, 3 or 5 seconds).
@@ -110,6 +111,13 @@ export default function BrewPlayPage() {
     setRunning(false)
     setCounting(null)
     setElapsed(0)
+    setLaps([])
+  }
+
+  /** Stamp the current elapsed time as a checkpoint (e.g. when a pour finishes). */
+  function markLap() {
+    cue()
+    setLaps((l) => [...l, elapsed])
   }
 
   const steps = useMemo(
@@ -238,10 +246,24 @@ export default function BrewPlayPage() {
                   ? t('play.resume')
                   : t('play.start')}
             </button>
+            <button
+              className="btn-ghost"
+              onClick={markLap}
+              disabled={!running}
+              aria-label={t('play.mark')}
+            >
+              <Flag size={18} /> {t('play.mark')}
+            </button>
             <button className="btn-ghost" onClick={reset}>
               <RotateCcw size={18} /> {t('play.reset')}
             </button>
           </div>
+
+          {laps.length > 0 && (
+            <p className="text-center text-xs text-muted">
+              {t('play.markedCount', { count: laps.length })}: {laps.map((l) => formatSeconds(l)).join(' · ')}
+            </p>
+          )}
 
           {/* Pre-start countdown preference */}
           {elapsed === 0 && counting == null && !running && (
@@ -261,9 +283,14 @@ export default function BrewPlayPage() {
             </div>
           )}
 
-          {/* Finish → log this brew */}
+          {/* Finish → log this brew, carrying the captured actual timeline */}
           <Link
             to={`/recipe/${recipe.id}/log`}
+            state={
+              elapsed > 0
+                ? { actualTotalSec: elapsed, actualLaps: laps }
+                : undefined
+            }
             className={isComplete ? 'btn-primary w-full' : 'btn-ghost w-full'}
           >
             <Check size={18} /> {t('session.logBrew')}

@@ -9,6 +9,7 @@ import { deleteSession } from '@/db/repo'
 import type { BrewMethod, BrewSession, Recipe } from '@/db/types'
 import { PageHeader, EmptyState } from '@/components/ui'
 import { BlobImage } from '@/components/PhotoInput'
+import { formatSeconds } from '@/lib/units'
 
 type View = 'all' | 'group'
 
@@ -103,9 +104,12 @@ export default function HistoryPage() {
             {format(s.date, 'PP')} · {beanName(s.beanId) ?? '—'}
             {s.params?.ratio ? ` · 1:${s.params.ratio}` : ''}
           </p>
-          {(s.tds != null || s.beverageWeight != null) && (
+          {(s.tds != null || s.beverageWeight != null || s.actualTotalSec != null) && (
             <p className="mt-1 text-xs tabular-nums text-muted">
               {[
+                s.actualTotalSec != null
+                  ? t('history.actualValue', { value: formatSeconds(s.actualTotalSec) })
+                  : null,
                 s.tds != null ? t('history.tdsValue', { value: s.tds }) : null,
                 s.beverageWeight != null ? t('history.bevValue', { value: s.beverageWeight }) : null,
               ]

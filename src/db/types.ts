@@ -152,6 +152,10 @@ export interface BrewSession extends SyncMeta {
   tds?: number
   /** measured beverage weight in the cup, g (improves extraction calc) */
   beverageWeight?: number
+  /** actual total brew time as run in the guided player, seconds */
+  actualTotalSec?: number
+  /** actual checkpoint times the brewer marked during the pour, seconds from start */
+  actualLaps?: number[]
   notes?: string
   photo?: Blob
 }
