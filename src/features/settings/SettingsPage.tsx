@@ -1,15 +1,82 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Download, Upload, HelpCircle, ChevronRight } from 'lucide-react'
+import { Download, Upload, HelpCircle, ChevronRight, ShieldCheck, ShieldAlert } from 'lucide-react'
 import { PageHeader } from '@/components/ui'
 import { getProfile } from '@/db/repo'
 import { ProfileAvatar } from '@/features/profile/ProfileAvatar'
 import { ACCENTS, useSettings, type AccentId, type Lang, type ThemeMode } from '@/store/settings'
 import type { TempUnit } from '@/lib/units'
-import { exportBackup, importBackup } from '@/lib/backup'
+import { exportBackup, importBackup, lastBackupAt } from '@/lib/backup'
+import { ensurePersistence, formatBytes, getStorageStatus, type StorageStatus } from '@/lib/storage'
 import { CloudSync } from './CloudSync'
+
+/** Days after which we nudge the user to make a fresh backup. */
+const BACKUP_STALE_DAYS = 30
+
+function StorageSection({ onBackup }: { onBackup: number }) {
+  const { t } = useTranslation()
+  const [status, setStatus] = useState<StorageStatus | null>(null)
+  const [requesting, setRequesting] = useState(false)
+
+  const refresh = () => getStorageStatus().then(setStatus)
+  useEffect(() => {
+    refresh()
+  }, [onBackup])
+
+  if (!status?.supported) return null
+
+  const last = lastBackupAt()
+  const staleMs = BACKUP_STALE_DAYS * 86_400_000
+  const backupStale = last == null || Date.now() - last > staleMs
+
+  const request = async () => {
+    setRequesting(true)
+    await ensurePersistence()
+    await refresh()
+    setRequesting(false)
+  }
+
+  return (
+    <section className="card space-y-3 p-4">
+      <h2 className="font-semibold">{t('settings.storage')}</h2>
+
+      <div className="flex items-start gap-3">
+        {status.persisted ? (
+          <ShieldCheck size={20} className="mt-0.5 shrink-0 text-emerald-500" />
+        ) : (
+          <ShieldAlert size={20} className="mt-0.5 shrink-0 text-amber-500" />
+        )}
+        <div className="flex-1 text-sm">
+          <p className="font-medium">
+            {status.persisted ? t('settings.storagePersisted') : t('settings.storageBestEffort')}
+          </p>
+          <p className="text-muted">
+            {status.persisted ? t('settings.storagePersistedHint') : t('settings.storageBestEffortHint')}
+          </p>
+          {status.usage != null && (
+            <p className="mt-1 text-xs text-muted">
+              {t('settings.storageUsage', { used: formatBytes(status.usage) })}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {!status.persisted && (
+        <button className="btn-ghost w-full" onClick={request} disabled={requesting}>
+          {t('settings.storageRequest')}
+        </button>
+      )}
+
+      <div className={`rounded-lg p-2 text-xs ${backupStale ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' : 'text-muted'}`}>
+        {last == null
+          ? t('settings.backupNever')
+          : t('settings.backupLast', { date: new Date(last).toLocaleDateString() })}
+      </div>
+    </section>
+  )
+}
 
 function SegGroup<T extends string>({
   value,
@@ -40,6 +107,7 @@ export default function SettingsPage() {
   const s = useSettings()
   const fileRef = useRef<HTMLInputElement>(null)
   const profile = useLiveQuery(getProfile, [])
+  const [backupTick, setBackupTick] = useState(0)
 
   return (
     <div className="space-y-6">
@@ -189,7 +257,13 @@ export default function SettingsPage() {
       <section className="card space-y-3 p-4">
         <h2 className="font-semibold">{t('settings.data')}</h2>
         <div className="flex flex-col gap-2 sm:flex-row">
-          <button className="btn-ghost flex-1" onClick={exportBackup}>
+          <button
+            className="btn-ghost flex-1"
+            onClick={async () => {
+              await exportBackup()
+              setBackupTick((n) => n + 1)
+            }}
+          >
             <Download size={18} /> {t('settings.exportJson')}
           </button>
           <button className="btn-ghost flex-1" onClick={() => fileRef.current?.click()}>
@@ -210,6 +284,9 @@ export default function SettingsPage() {
           />
         </div>
       </section>
+
+      {/* Storage durability */}
+      <StorageSection onBackup={backupTick} />
 
       {/* Cloud */}
       <CloudSync />

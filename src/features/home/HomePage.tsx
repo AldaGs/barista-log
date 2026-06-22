@@ -5,6 +5,7 @@ import { Plus, BarChart3, HelpCircle, Search } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { RecipeSummaryCard } from '@/features/recipe/RecipeSummaryCard'
 import { EmptyState } from '@/components/ui'
+import { HomeNudges } from '@/components/HomeNudges'
 
 export default function HomePage() {
   const { t } = useTranslation()
@@ -36,6 +37,8 @@ export default function HomePage() {
           </Link>
         </div>
       </header>
+
+      <HomeNudges hasData={!!latest} />
 
       {recipes === undefined ? null : latest ? (
         <section>

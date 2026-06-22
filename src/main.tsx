@@ -5,6 +5,8 @@ import { router } from './router'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { ensureSeedData } from './db/dexie'
 import { initSync } from './sync/syncManager'
+import { ensurePersistence } from './lib/storage'
+import './lib/pwa' // registers the beforeinstallprompt capture early
 import { applyAccent, applyTheme, useSettings } from './store/settings'
 import './i18n'
 import './styles/index.css'
@@ -23,6 +25,8 @@ window
 
 ensureSeedData()
 initSync()
+// Ask the browser to keep our IndexedDB data durable (not auto-evicted).
+ensurePersistence()
 
 // Suppress the native long-press / right-click context menu for a more
 // app-like feel (text selection callouts, "save image", etc.), while still

@@ -124,7 +124,20 @@
     "search": "Search",
     "share": "Share",
     "export": "Export",
-    "import": "Import"
+    "import": "Import",
+    "dismiss": "Dismiss"
+  },
+  "install": {
+    "title": "Install Slurry Stats",
+    "body": "Add it to your home screen for one-tap access — and to keep your brews safe from being cleared by the browser.",
+    "action": "Install app",
+    "iosHint": "Tap Share, then “Add to Home Screen”."
+  },
+  "backup": {
+    "nudgeTitle": "Back up your brews",
+    "nudgeNever": "You haven't exported a backup yet. Keep a copy somewhere safe.",
+    "nudgeStale": "Your last backup was {{date}}. Export a fresh copy to stay safe.",
+    "nudgeAction": "Export backup"
   },
   "method": {
     "espresso": "Espresso",
@@ -502,6 +515,15 @@
     "data": "Data",
     "exportJson": "Export backup (JSON)",
     "importJson": "Import backup (JSON)",
+    "storage": "Storage",
+    "storagePersisted": "Storage is durable",
+    "storagePersistedHint": "Your brews are protected from being cleared automatically by the browser.",
+    "storageBestEffort": "Storage is not durable",
+    "storageBestEffortHint": "The browser may clear your data if the device runs low on space. Install the app to your home screen and back up regularly.",
+    "storageRequest": "Make storage durable",
+    "storageUsage": "Using {{used}} on this device",
+    "backupNever": "You haven't exported a backup yet. Export one to keep a copy off this device.",
+    "backupLast": "Last backup: {{date}}",
     "cloud": "Cloud sync (optional)",
     "cloudIntro": "Slurry Stats works fully offline. Power users can connect Supabase to back up and sync across devices.",
     "supabaseUrl": "Supabase URL",

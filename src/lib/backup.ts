@@ -2,6 +2,14 @@ import { db } from '@/db/dexie'
 
 const TABLES = ['beans', 'waters', 'grinders', 'gear', 'recipes', 'sessions', 'flavorTags', 'profile'] as const
 
+const LAST_BACKUP_KEY = 'barista-last-backup-at'
+
+/** Epoch ms of the last JSON export, or null if never backed up on this device. */
+export function lastBackupAt(): number | null {
+  const v = Number(localStorage.getItem(LAST_BACKUP_KEY))
+  return v > 0 ? v : null
+}
+
 interface Backup {
   app: 'barista-log'
   version: 1
@@ -31,6 +39,7 @@ export async function exportBackup() {
   a.download = `slurry-stats-backup-${new Date().toISOString().slice(0, 10)}.json`
   a.click()
   URL.revokeObjectURL(a.href)
+  localStorage.setItem(LAST_BACKUP_KEY, String(Date.now()))
 }
 
 export async function importBackup(file: File) {

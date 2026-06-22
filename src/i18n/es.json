@@ -124,7 +124,20 @@
     "search": "Buscar",
     "share": "Compartir",
     "export": "Exportar",
-    "import": "Importar"
+    "import": "Importar",
+    "dismiss": "Descartar"
+  },
+  "install": {
+    "title": "Instala Slurry Stats",
+    "body": "Agrégala a tu pantalla de inicio para acceder con un toque, y para evitar que el navegador borre tus preparaciones.",
+    "action": "Instalar app",
+    "iosHint": "Toca Compartir y luego «Agregar a inicio»."
+  },
+  "backup": {
+    "nudgeTitle": "Respalda tus preparaciones",
+    "nudgeNever": "Aún no has exportado un respaldo. Guarda una copia en un lugar seguro.",
+    "nudgeStale": "Tu último respaldo fue el {{date}}. Exporta una copia nueva para estar a salvo.",
+    "nudgeAction": "Exportar respaldo"
   },
   "method": {
     "espresso": "Espresso",
@@ -502,6 +515,15 @@
     "data": "Datos",
     "exportJson": "Exportar respaldo (JSON)",
     "importJson": "Importar respaldo (JSON)",
+    "storage": "Almacenamiento",
+    "storagePersisted": "Almacenamiento duradero",
+    "storagePersistedHint": "Tus preparaciones están protegidas para que el navegador no las borre automáticamente.",
+    "storageBestEffort": "Almacenamiento no duradero",
+    "storageBestEffortHint": "El navegador podría borrar tus datos si el dispositivo se queda sin espacio. Instala la app en tu pantalla de inicio y haz respaldos con frecuencia.",
+    "storageRequest": "Hacer el almacenamiento duradero",
+    "storageUsage": "Usando {{used}} en este dispositivo",
+    "backupNever": "Aún no has exportado un respaldo. Exporta uno para guardar una copia fuera de este dispositivo.",
+    "backupLast": "Último respaldo: {{date}}",
     "cloud": "Sincronización en la nube (opcional)",
     "cloudIntro": "Slurry Stats funciona sin conexión. Los usuarios avanzados pueden conectar Supabase para respaldar y sincronizar entre dispositivos.",
     "supabaseUrl": "URL de Supabase",
