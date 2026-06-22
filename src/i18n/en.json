@@ -127,6 +127,7 @@
     "firstRunHelp": "New here? See how Slurry Stats works",
     "brewAgain": "Brew again",
     "newRecipe": "New recipe",
+    "favorites": "Favorites",
     "recent": "Recent"
   },
   "recipes": {
@@ -134,6 +135,9 @@
     "search": "Search recipes, beans, brewers…",
     "allBeans": "All beans",
     "allBrewers": "All brewers",
+    "favoritesOnly": "Favorites",
+    "pin": "Add to favorites",
+    "unpin": "Remove from favorites",
     "empty": "No recipes yet.",
     "noMatch": "No recipes match your filters.",
     "seeAll": "See all",

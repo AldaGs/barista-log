@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Search, Plus, X } from 'lucide-react'
+import { Search, Plus, X, Star } from 'lucide-react'
 import { db } from '@/db/dexie'
 import type { BrewMethod } from '@/db/types'
 import { PageHeader, EmptyState } from '@/components/ui'
@@ -19,6 +19,7 @@ export default function RecipesPage() {
   const [method, setMethod] = useState<BrewMethod | 'all'>('all')
   const [beanId, setBeanId] = useState<string>('all')
   const [gearId, setGearId] = useState<string>('all')
+  const [favOnly, setFavOnly] = useState(false)
 
   const beanName = (id?: string) => beans?.find((b) => b.id === id)?.name
   const gearName = (id?: string) => gear?.find((g) => g.id === id)?.name
@@ -35,21 +36,26 @@ export default function RecipesPage() {
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase()
-    return (recipes ?? []).filter((r) => {
-      if (method !== 'all' && r.method !== method) return false
-      if (beanId !== 'all' && r.beanId !== beanId) return false
-      if (gearId !== 'all' && r.gearId !== gearId) return false
-      if (needle) {
-        const hay = [r.title, beanName(r.beanId), gearName(r.gearId), r.brewer, r.notes]
-          .filter(Boolean)
-          .join(' ')
-          .toLowerCase()
-        if (!hay.includes(needle)) return false
-      }
-      return true
-    })
+    return (recipes ?? [])
+      .filter((r) => {
+        if (favOnly && !r.favorite) return false
+        if (method !== 'all' && r.method !== method) return false
+        if (beanId !== 'all' && r.beanId !== beanId) return false
+        if (gearId !== 'all' && r.gearId !== gearId) return false
+        if (needle) {
+          const hay = [r.title, beanName(r.beanId), gearName(r.gearId), r.brewer, r.notes]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase()
+          if (!hay.includes(needle)) return false
+        }
+        return true
+      })
+      // Pinned recipes float to the top; updatedAt order is otherwise preserved
+      // (Array.sort is stable, and the source is already newest-first).
+      .sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recipes, beans, gear, q, method, beanId, gearId])
+  }, [recipes, beans, gear, q, method, beanId, gearId, favOnly])
 
   const loading = recipes === undefined
   const hasAny = (recipes ?? []).length > 0
@@ -98,6 +104,13 @@ export default function RecipesPage() {
             {m === 'all' ? t('history.filterAll') : t('method.' + m)}
           </button>
         ))}
+        <button
+          onClick={() => setFavOnly((v) => !v)}
+          className={`chip ml-auto inline-flex items-center gap-1 ${favOnly ? '!bg-brand !text-brand-fg' : ''}`}
+          aria-pressed={favOnly}
+        >
+          <Star size={14} fill={favOnly ? 'currentColor' : 'none'} /> {t('recipes.favoritesOnly')}
+        </button>
       </div>
 
       {/* Bean / brewer filters — only when there's something to pick */}

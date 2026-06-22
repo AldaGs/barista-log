@@ -5,7 +5,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { format } from 'date-fns'
 import { Pencil, Copy, Trash2, Share2, Play, Check, GitFork, AlertTriangle, Send, Star, GitCompare } from 'lucide-react'
 import { db } from '@/db/dexie'
-import { deleteRecipe } from '@/db/repo'
+import { deleteRecipe, toggleFavorite } from '@/db/repo'
 import { PageHeader } from '@/components/ui'
 import { RecipeCard } from './RecipeCard'
 import { BrewChart } from '@/components/BrewChart'
@@ -71,6 +71,14 @@ export default function RecipeDetailPage() {
         back
         action={
           <div className="flex gap-1">
+            <button
+              onClick={() => toggleFavorite(recipe.id)}
+              className={`btn-ghost !px-2 ${recipe.favorite ? 'text-brand' : ''}`}
+              aria-label={recipe.favorite ? t('recipes.unpin') : t('recipes.pin')}
+              aria-pressed={!!recipe.favorite}
+            >
+              <Star size={18} fill={recipe.favorite ? 'currentColor' : 'none'} />
+            </button>
             <button onClick={() => setShowShare(true)} className="btn-ghost !px-2" aria-label={t('share.recipeTitle')}>
               <Send size={18} />
             </button>

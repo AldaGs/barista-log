@@ -9,12 +9,16 @@ import { EmptyState } from '@/components/ui'
 export default function HomePage() {
   const { t } = useTranslation()
   const recipes = useLiveQuery(
-    () => db.recipes.orderBy('updatedAt').reverse().limit(6).toArray(),
+    () => db.recipes.orderBy('updatedAt').reverse().toArray(),
     [],
   )
 
   const latest = recipes?.[0]
-  const recent = recipes?.slice(1) ?? []
+  // Pinned recipes (minus the featured latest, to avoid showing it twice).
+  const favorites = (recipes ?? []).filter((r) => r.id !== latest?.id && r.favorite)
+  const favIds = new Set(favorites.map((r) => r.id))
+  // Recent excludes the latest and anything already pinned above.
+  const recent = (recipes ?? []).slice(1, 7).filter((r) => !favIds.has(r.id))
 
   return (
     <div className="space-y-6">
@@ -50,6 +54,19 @@ export default function HomePage() {
             <HelpCircle size={16} /> {t('home.firstRunHelp')}
           </Link>
         </EmptyState>
+      )}
+
+      {favorites.length > 0 && (
+        <section>
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">
+            {t('home.favorites')}
+          </h2>
+          <div className="space-y-3">
+            {favorites.map((r) => (
+              <RecipeSummaryCard key={r.id} recipe={r} />
+            ))}
+          </div>
+        </section>
       )}
 
       {recent.length > 0 && (

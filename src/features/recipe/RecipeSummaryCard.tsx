@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Coffee, Droplets, Timer } from 'lucide-react'
+import { Coffee, Droplets, Timer, Star } from 'lucide-react'
 import type { Recipe } from '@/db/types'
 import { db } from '@/db/dexie'
+import { toggleFavorite } from '@/db/repo'
 import { useSettings } from '@/store/settings'
 import { formatSeconds, formatTemp } from '@/lib/units'
 
@@ -26,7 +27,21 @@ export function RecipeSummaryCard({ recipe, featured }: { recipe: Recipe; featur
           <h3 className="text-lg font-semibold">{recipe.title || t('method.' + recipe.method)}</h3>
           {bean && <p className="text-sm text-muted">{bean.name}</p>}
         </div>
-        <span className="chip capitalize">{t('method.' + recipe.method)}</span>
+        <div className="flex shrink-0 items-center gap-2">
+          <span className="chip capitalize">{t('method.' + recipe.method)}</span>
+          <button
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              toggleFavorite(recipe.id)
+            }}
+            className={recipe.favorite ? 'text-brand' : 'text-muted hover:text-brand'}
+            aria-label={recipe.favorite ? t('recipes.unpin') : t('recipes.pin')}
+            aria-pressed={!!recipe.favorite}
+          >
+            <Star size={18} fill={recipe.favorite ? 'currentColor' : 'none'} />
+          </button>
+        </div>
       </div>
       <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted">
         {recipe.ratio && (

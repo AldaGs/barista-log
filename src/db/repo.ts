@@ -58,6 +58,14 @@ export const latestRecipe = () =>
 
 export const deleteRecipe = (id: string) => deleteWithTombstone('recipes', id)
 
+/** Pin/unpin a recipe to the top of Home & the browse view. */
+export async function toggleFavorite(id: string) {
+  const r = await db.recipes.get(id)
+  if (!r) return
+  await db.recipes.update(id, { favorite: r.favorite ? 0 : 1, dirty: 1, updatedAt: now() })
+  triggerSync()
+}
+
 // ---- Sessions ------------------------------------------------------------
 export async function saveSession(
   data: Omit<BrewSession, keyof NewMeta> & Partial<Pick<BrewSession, 'id'>>,

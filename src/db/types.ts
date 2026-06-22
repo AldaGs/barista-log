@@ -102,6 +102,8 @@ export interface Recipe extends SyncMeta {
   id: string
   title: string
   method: BrewMethod
+  /** pinned to the top of Home & browse (1 = favorite) */
+  favorite?: number
   /** id of the recipe this was forked from, if any — tracks lineage */
   forkedFromId?: string
   beanId?: string

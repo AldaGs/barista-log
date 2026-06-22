@@ -127,6 +127,7 @@
     "firstRunHelp": "¿Primera vez? Mira cómo funciona Slurry Stats",
     "brewAgain": "Preparar de nuevo",
     "newRecipe": "Nueva receta",
+    "favorites": "Favoritas",
     "recent": "Recientes"
   },
   "recipes": {
@@ -134,6 +135,9 @@
     "search": "Buscar recetas, granos, métodos…",
     "allBeans": "Todos los granos",
     "allBrewers": "Todos los métodos",
+    "favoritesOnly": "Favoritas",
+    "pin": "Agregar a favoritas",
+    "unpin": "Quitar de favoritas",
     "empty": "Aún no hay recetas.",
     "noMatch": "Ninguna receta coincide con los filtros.",
     "seeAll": "Ver todas",
