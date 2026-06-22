@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useTranslation } from 'react-i18next'
-import { Plus, BarChart3 } from 'lucide-react'
+import { Plus, BarChart3, HelpCircle } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { RecipeSummaryCard } from '@/features/recipe/RecipeSummaryCard'
 import { EmptyState } from '@/components/ui'
@@ -42,6 +42,9 @@ export default function HomePage() {
           <p>{t('home.empty')}</p>
           <Link to="/recipe/new" className="btn-primary mt-2">
             <Plus size={18} /> {t('home.newRecipe')}
+          </Link>
+          <Link to="/help" className="mt-1 inline-flex items-center gap-1.5 text-sm text-brand">
+            <HelpCircle size={16} /> {t('home.firstRunHelp')}
           </Link>
         </EmptyState>
       )}

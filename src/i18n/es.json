@@ -124,6 +124,7 @@
   "home": {
     "latest": "Última receta",
     "empty": "Aún no hay recetas. ¡Prepara la primera!",
+    "firstRunHelp": "¿Primera vez? Mira cómo funciona Slurry Stats",
     "brewAgain": "Preparar de nuevo",
     "newRecipe": "Nueva receta",
     "recent": "Recientes"

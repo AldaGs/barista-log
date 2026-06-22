@@ -124,6 +124,7 @@
   "home": {
     "latest": "Latest recipe",
     "empty": "No recipes yet. Brew your first one!",
+    "firstRunHelp": "New here? See how Slurry Stats works",
     "brewAgain": "Brew again",
     "newRecipe": "New recipe",
     "recent": "Recent"
