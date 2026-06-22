@@ -12,10 +12,13 @@ export function PageHeader({
   action?: ReactNode
 }) {
   const navigate = useNavigate()
+  // Step back through history when we can; fall back to Home on a fresh load
+  // (e.g. a deep link or shared recipe opened directly).
+  const goBack = () => (window.history.length > 1 ? navigate(-1) : navigate('/'))
   return (
     <header className="mb-4 flex items-center gap-3">
       {back && (
-        <button onClick={() => navigate('/')} className="btn-ghost !px-2" aria-label="back">
+        <button onClick={goBack} className="btn-ghost !px-2" aria-label="back">
           <ArrowLeft size={20} />
         </button>
       )}
