@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { GripVertical, Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react'
+import { GripVertical, Plus, Trash2, ArrowUp, ArrowDown, Copy, Repeat } from 'lucide-react'
 import type {
   AgitationIntensity,
   AgitationMethod,
@@ -38,6 +39,14 @@ export function BrewSteps({
   const update = (id: string, patch: Partial<BrewStep>) =>
     onChange(steps.map((s) => (s.id === id ? { ...s, ...patch } : s)))
   const remove = (id: string) => onChange(steps.filter((s) => s.id !== id))
+
+  /** Insert a copy of step i right after it, advanced by its own time interval. */
+  const duplicate = (i: number) => {
+    const s = steps[i]
+    const interval = (s.atTimeSec ?? 0) - (steps[i - 1]?.atTimeSec ?? 0)
+    const copy: BrewStep = { ...s, id: uid(), atTimeSec: (s.atTimeSec ?? 0) + Math.max(interval, 0) }
+    onChange([...steps.slice(0, i + 1), copy, ...steps.slice(i + 1)])
+  }
   const move = (i: number, dir: -1 | 1) => {
     const j = i + dir
     if (j < 0 || j >= steps.length) return
@@ -51,6 +60,27 @@ export function BrewSteps({
       ...steps,
       { id: uid(), type: steps.length === 0 ? 'bloom' : 'pour', atTimeSec: last?.atTimeSec },
     ])
+  }
+
+  // "Add repeating pours" generator: N equal pours, fixed seconds apart.
+  const [repeatOpen, setRepeatOpen] = useState(false)
+  const [rCount, setRCount] = useState('4')
+  const [rWater, setRWater] = useState('50')
+  const [rEvery, setREvery] = useState('30')
+
+  const addRepeat = () => {
+    const count = Math.min(Math.max(Math.round(Number(rCount) || 0), 1), 30)
+    const water = Number(rWater) || 0
+    const every = Number(rEvery) || 0
+    const start = steps[steps.length - 1]?.atTimeSec ?? 0
+    const pours: BrewStep[] = Array.from({ length: count }, (_, k) => ({
+      id: uid(),
+      type: 'pour',
+      water: water > 0 ? water : undefined,
+      atTimeSec: start + (k + 1) * every,
+    }))
+    onChange([...steps, ...pours])
+    setRepeatOpen(false)
   }
 
   const totalWater = steps.reduce((sum, s) => sum + (hasWater(s.type) ? s.water ?? 0 : 0), 0)
@@ -81,6 +111,9 @@ export function BrewSteps({
               </button>
               <button type="button" className="text-muted hover:text-text disabled:opacity-30" disabled={i === steps.length - 1} onClick={() => move(i, 1)}>
                 <ArrowDown size={16} />
+              </button>
+              <button type="button" className="text-muted hover:text-text" aria-label={t('recipe.duplicateStep')} onClick={() => duplicate(i)}>
+                <Copy size={16} />
               </button>
               <button type="button" className="text-muted hover:text-red-500" onClick={() => remove(s.id)}>
                 <Trash2 size={16} />
@@ -180,10 +213,44 @@ export function BrewSteps({
         </div>
       ))}
 
+      {repeatOpen && (
+        <div className="card space-y-2 p-3">
+          <p className="text-sm font-medium">{t('recipe.repeatTitle')}</p>
+          <div className="grid grid-cols-3 gap-2">
+            <label className="block">
+              <span className="label !mb-1 text-xs">{t('recipe.repeatCount')}</span>
+              <input className="input !py-1.5" type="number" inputMode="numeric" min={1} max={30} value={rCount} onChange={(e) => setRCount(e.target.value)} />
+            </label>
+            <label className="block">
+              <span className="label !mb-1 text-xs">{t('recipe.repeatWater')}</span>
+              <input className="input !py-1.5" type="number" inputMode="decimal" value={rWater} onChange={(e) => setRWater(e.target.value)} />
+            </label>
+            <label className="block">
+              <span className="label !mb-1 text-xs">{t('recipe.repeatEvery')}</span>
+              <input className="input !py-1.5" type="number" inputMode="numeric" value={rEvery} onChange={(e) => setREvery(e.target.value)} />
+            </label>
+          </div>
+          <p className="text-xs text-muted">{t('recipe.repeatHint')}</p>
+          <div className="flex gap-2">
+            <button type="button" className="btn-primary !py-1.5 flex-1" onClick={addRepeat}>
+              {t('recipe.repeatAdd')}
+            </button>
+            <button type="button" className="btn-ghost !py-1.5" onClick={() => setRepeatOpen(false)}>
+              {t('common.cancel')}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
-        <button type="button" className="btn-ghost !py-1.5" onClick={add}>
-          <Plus size={16} /> {t('recipe.addStep')}
-        </button>
+        <div className="flex gap-2">
+          <button type="button" className="btn-ghost !py-1.5" onClick={add}>
+            <Plus size={16} /> {t('recipe.addStep')}
+          </button>
+          <button type="button" className="btn-ghost !py-1.5" onClick={() => setRepeatOpen((o) => !o)}>
+            <Repeat size={16} /> {t('recipe.repeatPours')}
+          </button>
+        </div>
         {totalWater > 0 && (
           <span className="text-sm text-muted">
             {t('recipe.runningTotal')}: <span className="font-semibold text-text">{totalWater} g</span>
