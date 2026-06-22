@@ -535,6 +535,8 @@
     "micronsPerClick": "Microns per click",
     "convert": "Grind converter",
     "from": "From grinder",
+    "micronsDirect": "Enter microns directly",
+    "micronsLabel": "Microns (µm)",
     "to": "To grinder",
     "result": "Suggested start",
     "microns": "≈ {{microns}} µm",

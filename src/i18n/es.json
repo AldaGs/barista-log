@@ -535,6 +535,8 @@
     "micronsPerClick": "Micras por clic",
     "convert": "Conversor de molienda",
     "from": "Molino de origen",
+    "micronsDirect": "Ingresar micras directamente",
+    "micronsLabel": "Micras (µm)",
     "to": "Molino de destino",
     "result": "Punto de partida sugerido",
     "microns": "≈ {{microns}} µm",
