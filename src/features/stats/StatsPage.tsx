@@ -85,7 +85,8 @@ export default function StatsPage() {
 
     // method split
     const espresso = all.filter((x) => x.method === 'espresso').length
-    const brew = all.length - espresso
+    const coldbrew = all.filter((x) => x.method === 'coldbrew').length
+    const brew = all.length - espresso - coldbrew
 
     // last 7 / 30 days
     const last7 = all.filter((x) => now - x.date <= 7 * 86_400_000).length
@@ -153,6 +154,7 @@ export default function StatsPage() {
       ratingDist,
       espresso,
       brew,
+      coldbrew,
       topRecipes,
       topBeans,
       topTags,
@@ -187,12 +189,13 @@ export default function StatsPage() {
             <Bars data={s.weekly} />
           </Section>
 
-          {(s.espresso > 0 || s.brew > 0) && (
+          {(s.espresso > 0 || s.brew > 0 || s.coldbrew > 0) && (
             <Section title={t('stats.methodSplit')}>
               <div className="space-y-2">
                 {[
                   { label: t('method.espresso'), value: s.espresso, color: 'rgb(var(--brand))' },
                   { label: t('method.brew'), value: s.brew, color: 'rgb(var(--accent))' },
+                  { label: t('method.coldbrew'), value: s.coldbrew, color: 'rgb(56 189 248)' },
                 ].map((m) => (
                   <div key={m.label} className="flex items-center gap-2 text-sm">
                     <span className="w-20 shrink-0 text-muted">{m.label}</span>

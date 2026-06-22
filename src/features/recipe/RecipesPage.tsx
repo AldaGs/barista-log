@@ -95,7 +95,7 @@ export default function RecipesPage() {
 
       {/* Method filter */}
       <div className="flex gap-2">
-        {(['all', 'espresso', 'brew'] as const).map((m) => (
+        {(['all', 'espresso', 'brew', 'coldbrew'] as const).map((m) => (
           <button
             key={m}
             onClick={() => setMethod(m)}

@@ -186,7 +186,7 @@ export default function ProfilePage() {
         <p className="text-sm text-muted">{t('profile.defaultsIntro')}</p>
 
         <Field label={t('profile.defaultMethod')}>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => set({ defaultMethod: undefined })}
@@ -194,7 +194,7 @@ export default function ProfilePage() {
             >
               {t('common.none')}
             </button>
-            {(['espresso', 'brew'] as BrewMethod[]).map((m) => (
+            {(['espresso', 'brew', 'coldbrew'] as BrewMethod[]).map((m) => (
               <button
                 key={m}
                 type="button"
