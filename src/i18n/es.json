@@ -246,6 +246,16 @@
     "repeatAdd": "Agregar vertidos",
     "brew": "Preparar",
     "forkedFrom": "Bifurcada de {{title}}",
+    "compareToParent": "Comparar con la original",
+    "adopt": {
+      "title": "Adoptar en la original",
+      "hint": "Copia los valores marcados de esta bifurcación a \"{{title}}\". La bifurcación no se modifica.",
+      "parent": "Original",
+      "fork": "Esta bifurcación",
+      "noDiff": "Esta bifurcación coincide con su original: nada que adoptar.",
+      "apply_one": "Aplicar {{count}} cambio",
+      "apply_other": "Aplicar {{count}} cambios"
+    },
     "log": {
       "title": "Registro de preparaciones",
       "empty": "Aún no hay preparaciones registradas. Registra una para empezar a seguir cómo cambia esta receta con el tiempo.",

@@ -246,6 +246,16 @@
     "repeatAdd": "Add pours",
     "brew": "Brew",
     "forkedFrom": "Forked from {{title}}",
+    "compareToParent": "Compare to original",
+    "adopt": {
+      "title": "Adopt into original",
+      "hint": "Copy the checked values from this fork back into \"{{title}}\". The fork is left unchanged.",
+      "parent": "Original",
+      "fork": "This fork",
+      "noDiff": "This fork matches its original — nothing to adopt.",
+      "apply_one": "Apply {{count}} change",
+      "apply_other": "Apply {{count}} changes"
+    },
     "log": {
       "title": "Brew log",
       "empty": "No brews logged yet. Log one to start tracking how this recipe changes over time.",
