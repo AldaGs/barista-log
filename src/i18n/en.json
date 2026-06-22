@@ -10,7 +10,7 @@
       "recipe": {
         "title": "Record a new recipe",
         "steps": [
-          "Tap New (＋) in the bottom bar and pick Espresso or Brew.",
+          "Tap New (＋) in the bottom bar and pick Espresso, Brew or Cold brew.",
           "Optionally choose a bean and water profile — add them first if you haven't (see below).",
           "Pick your grinder and enter the grind setting in clicks. Use the Grind converter if you're dialing on a different grinder.",
           "Enter dose in and yield / water out — the ratio is calculated automatically. For espresso the yield is what you weigh in the cup at the end; for brew it's the total water you pour in.",
@@ -27,6 +27,16 @@
           "The screen stays awake; it beeps as each step begins, counts down the last seconds before a step ends, and signals when to finish a pour — toggle these in Settings → Brewing.",
           "Tap Mark each time you finish a pour to record real checkpoints.",
           "The brew keeps running even if you leave the screen — resume it any time from the bar above the menu. Tap × to discard it."
+        ]
+      },
+      "coldbrew": {
+        "title": "Cold brew",
+        "steps": [
+          "Pick Cold brew when creating a recipe, then choose a style: Immersion (grounds steeping in a jar/Toddy), Slow drip (a Kyoto/Dutch tower), or Flash (hot-brewed straight onto ice).",
+          "Immersion & slow drip set a steep time in hours instead of a pour timer, and use cold water — grind coarse. Flash keeps the hot pour schedule and water temp, just with ice in the carafe.",
+          "Optionally add a hot bloom (a small hot pour to kick off degassing before the cold fill), the ice weight, and — for a concentrate — tick Concentrate and set the serving dilution (e.g. 1:3).",
+          "On the recipe, tap Start steeping. A persistent pill shows it's brewing and when it'll be ready — it keeps counting even if you close the app (handy on iOS, where you'll want the app on your Home Screen).",
+          "When it's done, tap the pill or Log this brew; the actual steep time is filled in for you and saved like any other cup."
         ]
       },
       "logging": {

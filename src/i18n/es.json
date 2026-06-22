@@ -10,7 +10,7 @@
       "recipe": {
         "title": "Registrar una receta nueva",
         "steps": [
-          "Toca Nueva (＋) en la barra inferior y elige Espresso o Filtrado.",
+          "Toca Nueva (＋) en la barra inferior y elige Espresso, Filtrado o Cold brew.",
           "Opcionalmente elige un grano y un perfil de agua — agrégalos antes si aún no los tienes (más abajo).",
           "Elige tu molino e ingresa el ajuste de molienda en clics. Usa el Conversor de molienda si vas a calibrar en otro molino.",
           "Ingresa la dosis y la salida / agua — el ratio se calcula solo. En espresso la salida es lo que pesas en la taza al final; en filtrado es el agua total que viertes.",
@@ -27,6 +27,16 @@
           "La pantalla se mantiene encendida; pita al iniciar cada paso, cuenta los últimos segundos antes de que un paso termine, y avisa cuándo terminar un vertido — actívalos en Ajustes → Preparación.",
           "Toca Marcar cada vez que termines un vertido para registrar puntos reales.",
           "La preparación sigue corriendo aunque salgas de la pantalla — retómala cuando quieras desde la barra sobre el menú. Toca × para descartarla."
+        ]
+      },
+      "coldbrew": {
+        "title": "Cold brew",
+        "steps": [
+          "Elige Cold brew al crear una receta y luego un estilo: Inmersión (café reposando en frasco/Toddy), Goteo lento (torre Kyoto/holandesa) o Flash (preparado en caliente directo sobre hielo).",
+          "Inmersión y goteo lento usan un tiempo de reposo en horas en vez de temporizador de vertidos, y agua fría — muele grueso. Flash mantiene el esquema de vertidos en caliente y la temperatura, solo que con hielo en la jarra.",
+          "Opcionalmente agrega una preinfusión caliente (un pequeño vertido caliente para iniciar la desgasificación antes de llenar con agua fría), el peso del hielo y — para concentrado — marca Concentrado y fija la dilución de servicio (p. ej. 1:3).",
+          "En la receta, toca Iniciar reposo. Una píldora persistente muestra que está reposando y cuándo estará listo — sigue contando aunque cierres la app (útil en iOS, donde conviene tener la app en la pantalla de inicio).",
+          "Cuando termine, toca la píldora o Registrar preparación; el tiempo real de reposo se completa por ti y se guarda como cualquier otra taza."
         ]
       },
       "logging": {
