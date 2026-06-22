@@ -9,6 +9,7 @@ import { TagInput } from '@/components/TagInput'
 import { FlavorWheel } from '@/components/FlavorWheel'
 import { PhotoInput } from '@/components/PhotoInput'
 import { formatSeconds } from '@/lib/units'
+import { useBrewPlayer } from '@/store/brewPlayer'
 
 /** Actual timeline handed over from the guided brew player via router state. */
 interface BrewActual {
@@ -36,6 +37,8 @@ export default function LogSessionPage() {
   const navigate = useNavigate()
   const { id } = useParams()
   const actual = (useLocation().state ?? {}) as BrewActual
+  const closeBrew = useBrewPlayer((s) => s.close)
+  const activeRecipeId = useBrewPlayer((s) => s.recipeId)
   const recipe = useLiveQuery(() => (id ? db.recipes.get(id) : undefined), [id])
   const bean = useLiveQuery(
     () => (recipe?.beanId ? db.beans.get(recipe.beanId) : undefined),
@@ -75,6 +78,8 @@ export default function LogSessionPage() {
       photo,
       notes,
     })
+    // The brew is now recorded — tear down the persistent player session.
+    if (activeRecipeId === recipe.id) closeBrew()
     navigate('/history')
   }
 

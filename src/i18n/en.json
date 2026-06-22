@@ -204,6 +204,8 @@
     "off": "Off",
     "getReady": "Get ready…",
     "mark": "Mark",
+    "discard": "Discard brew",
+    "discardConfirm": "Discard this in-progress brew?",
     "markedCount_one": "{{count}} mark",
     "markedCount_other": "{{count}} marks",
     "noSteps": "This recipe has no pour schedule. Add steps to use guided brewing."

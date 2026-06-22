@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { BottomNav } from './BottomNav'
+import { BrewResumeBar } from './BrewResumeBar'
 
 /**
  * Force the hardware/browser back button to return to Home from any other
@@ -27,6 +28,7 @@ export function AppLayout() {
       <main className="flex-1 px-4 pb-24 pt-4">
         <Outlet />
       </main>
+      <BrewResumeBar />
       <BottomNav />
     </div>
   )

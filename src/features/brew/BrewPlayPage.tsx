@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Play, Pause, RotateCcw, Check, Flag } from 'lucide-react'
+import { Play, Pause, RotateCcw, Check, Flag, X } from 'lucide-react'
 import { db } from '@/db/dexie'
 import type { BrewStep, FlowRate } from '@/db/types'
 import { PageHeader, EmptyState } from '@/components/ui'
 import { formatSeconds } from '@/lib/units'
 import { cue, useWakeLock } from '@/lib/feedback'
 import { useSettings } from '@/store/settings'
+import { useBrewPlayer, elapsedSec } from '@/store/brewPlayer'
 
 /**
  * How many seconds a step's pour should take, from its water amount and flow
@@ -47,13 +48,31 @@ function stepLabel(s: BrewStep, t: (k: string) => string) {
 export default function BrewPlayPage() {
   const { t } = useTranslation()
   const { id } = useParams()
+  const navigate = useNavigate()
   const recipe = useLiveQuery(() => (id ? db.recipes.get(id) : undefined), [id])
   const pourRates = useSettings((s) => s.pourRates)
 
-  const [elapsed, setElapsed] = useState(0)
-  const [running, setRunning] = useState(false)
-  const [laps, setLaps] = useState<number[]>([])
-  const ref = useRef<number | null>(null)
+  // Durable, wall-clock brew state — survives navigating away & back.
+  const player = useBrewPlayer()
+  const { running, laps } = player
+
+  // Adopt this recipe's brew. If a brew for *this* recipe is already open we
+  // keep it (the whole point — accidental navigation must not reset it);
+  // otherwise start a fresh idle brew for it.
+  useEffect(() => {
+    if (id && player.recipeId !== id) player.begin(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id])
+
+  // Re-render every tick while running so the wall-clock elapsed updates.
+  const [, tick] = useReducer((c) => c + 1, 0)
+  useEffect(() => {
+    if (!running) return
+    const iv = window.setInterval(tick, 500)
+    return () => window.clearInterval(iv)
+  }, [running])
+
+  const elapsed = player.recipeId === id ? elapsedSec(player) : 0
 
   // Optional pre-start countdown (0 = off, 3 or 5 seconds).
   const [countdownPref, setCountdownPref] = useState<number>(() => {
@@ -67,20 +86,13 @@ export default function BrewPlayPage() {
     localStorage.setItem('brewCountdown', String(countdownPref))
   }, [countdownPref])
 
-  useEffect(() => {
-    if (running) ref.current = window.setInterval(() => setElapsed((e) => e + 1), 1000)
-    return () => {
-      if (ref.current) window.clearInterval(ref.current)
-    }
-  }, [running])
-
   // Tick down the pre-start countdown, then begin the brew.
   useEffect(() => {
     if (counting == null) return
     if (counting <= 0) {
       setCounting(null)
       cue(true)
-      setRunning(true)
+      player.startRunning()
       return
     }
     cue()
@@ -88,11 +100,12 @@ export default function BrewPlayPage() {
     return () => {
       if (countRef.current) window.clearTimeout(countRef.current)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [counting])
 
   function handlePlayPause() {
     if (running) {
-      setRunning(false)
+      player.pause()
       return
     }
     if (counting != null) {
@@ -104,20 +117,24 @@ export default function BrewPlayPage() {
       setCounting(countdownPref)
       return
     }
-    setRunning(true)
+    player.startRunning()
   }
 
   function reset() {
-    setRunning(false)
     setCounting(null)
-    setElapsed(0)
-    setLaps([])
+    player.restart()
+  }
+
+  /** Close the brew entirely and leave the page. */
+  function discard() {
+    player.close()
+    navigate('/')
   }
 
   /** Stamp the current elapsed time as a checkpoint (e.g. when a pour finishes). */
   function markLap() {
     cue()
-    setLaps((l) => [...l, elapsed])
+    player.addLap(elapsed)
   }
 
   const steps = useMemo(
@@ -191,7 +208,21 @@ export default function BrewPlayPage() {
 
   return (
     <div className="space-y-5">
-      <PageHeader title={recipe.title || t('play.title')} back />
+      <PageHeader
+        title={recipe.title || t('play.title')}
+        back
+        action={
+          <button
+            onClick={() => {
+              if (elapsed === 0 || confirm(t('play.discardConfirm'))) discard()
+            }}
+            className="btn-ghost !px-2"
+            aria-label={t('play.discard')}
+          >
+            <X size={18} />
+          </button>
+        }
+      />
 
       {steps.length === 0 ? (
         <EmptyState>{t('play.noSteps')}</EmptyState>

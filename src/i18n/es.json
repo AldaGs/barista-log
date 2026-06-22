@@ -204,6 +204,8 @@
     "off": "Apagada",
     "getReady": "Prepárate…",
     "mark": "Marcar",
+    "discard": "Descartar preparación",
+    "discardConfirm": "¿Descartar esta preparación en curso?",
     "markedCount_one": "{{count}} marca",
     "markedCount_other": "{{count}} marcas",
     "noSteps": "Esta receta no tiene esquema de vertidos. Agrega pasos para usar la guía."
