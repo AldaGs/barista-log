@@ -14,18 +14,29 @@
           "Optionally choose a bean and water profile — add them first if you haven't (see below).",
           "Pick your grinder and enter the grind setting in clicks. Use the Grind converter if you're dialing on a different grinder.",
           "Enter dose in and yield / water out — the ratio is calculated automatically. For espresso the yield is what you weigh in the cup at the end; for brew it's the total water you pour in.",
-          "For Brew, build the pour schedule step by step (bloom, pours, agitation) with water and time, then tap Apply totals.",
+          "For Brew, build the pour schedule step by step (bloom, pours, agitation) with water and time. To add many pours fast, use Repeat pours (count × grams every N seconds) or the duplicate icon on any step, then tap Apply totals.",
           "Optionally rate it and add flavors/tags now, or log it after brewing.",
           "Tap Save. Your newest recipe appears on Home by default."
         ]
       },
       "brewing": {
-        "title": "Brew & log a cup",
+        "title": "Guided brewing",
         "steps": [
-          "Open a brew recipe and tap Brew for the guided timer.",
-          "The screen stays awake and beeps/vibrates as each step starts.",
-          "When done, tap Log this brew to rate it and save it to History.",
-          "Review past cups in History, and use Compare to see what changed between days."
+          "Open a brew recipe and tap Brew for the guided timer. You can set an optional 3s/5s start countdown.",
+          "The timer, controls and Log button stay pinned on top while the step list scrolls and follows the current step.",
+          "The screen stays awake; it beeps as each step begins, counts down the last seconds before a step ends, and signals when to finish a pour — toggle these in Settings → Brewing.",
+          "Tap Mark each time you finish a pour to record real checkpoints.",
+          "The brew keeps running even if you leave the screen — resume it any time from the bar above the menu. Tap × to discard it."
+        ]
+      },
+      "logging": {
+        "title": "Logging & history",
+        "steps": [
+          "After brewing, tap Log this brew to rate the cup, score flavors, add tags and — with a refractometer — a TDS reading.",
+          "The date & time is filled in for you, but you can edit it to backdate a brew.",
+          "If you used the guided timer, your actual brew time is saved and compared against the recipe's planned time.",
+          "Every recipe keeps its own brew log, so you can see how the same recipe drifts over time.",
+          "Use History to browse all cups, Compare to line up two brews side by side, and Stats for trends."
         ]
       },
       "beans": {

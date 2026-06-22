@@ -14,18 +14,29 @@
           "Opcionalmente elige un grano y un perfil de agua — agrégalos antes si aún no los tienes (más abajo).",
           "Elige tu molino e ingresa el ajuste de molienda en clics. Usa el Conversor de molienda si vas a calibrar en otro molino.",
           "Ingresa la dosis y la salida / agua — el ratio se calcula solo. En espresso la salida es lo que pesas en la taza al final; en filtrado es el agua total que viertes.",
-          "Para Filtrado, arma el esquema de vertidos paso a paso (pre-humectado, vertidos, agitación) con agua y tiempo, y toca Aplicar totales.",
+          "Para Filtrado, arma el esquema de vertidos paso a paso (pre-humectado, vertidos, agitación) con agua y tiempo. Para agregar muchos vertidos rápido, usa Repetir vertidos (cantidad × gramos cada N segundos) o el ícono de duplicar en cualquier paso, y toca Aplicar totales.",
           "Opcionalmente califícala y agrega sabores/etiquetas ahora, o regístrala después de preparar.",
           "Toca Guardar. Tu receta más reciente aparece en Inicio por defecto."
         ]
       },
       "brewing": {
-        "title": "Preparar y registrar una taza",
+        "title": "Preparación guiada",
         "steps": [
-          "Abre una receta de filtrado y toca Preparar para la guía con temporizador.",
-          "La pantalla se mantiene encendida y suena/vibra al iniciar cada paso.",
-          "Al terminar, toca Registrar preparación para calificarla y guardarla en el Historial.",
-          "Revisa tazas pasadas en Historial y usa Comparar para ver qué cambió entre días."
+          "Abre una receta de filtrado y toca Preparar para la guía con temporizador. Puedes fijar una cuenta regresiva de inicio de 3s/5s.",
+          "El temporizador, los controles y el botón Registrar quedan fijos arriba mientras la lista de pasos se desplaza y sigue al paso actual.",
+          "La pantalla se mantiene encendida; pita al iniciar cada paso, cuenta los últimos segundos antes de que un paso termine, y avisa cuándo terminar un vertido — actívalos en Ajustes → Preparación.",
+          "Toca Marcar cada vez que termines un vertido para registrar puntos reales.",
+          "La preparación sigue corriendo aunque salgas de la pantalla — retómala cuando quieras desde la barra sobre el menú. Toca × para descartarla."
+        ]
+      },
+      "logging": {
+        "title": "Registro e historial",
+        "steps": [
+          "Al terminar, toca Registrar preparación para calificar la taza, puntuar sabores, agregar etiquetas y — con refractómetro — una lectura de TDS.",
+          "La fecha y hora se completa por ti, pero puedes editarla para registrar una preparación con fecha anterior.",
+          "Si usaste la guía con temporizador, tu tiempo real se guarda y se compara con el tiempo planeado de la receta.",
+          "Cada receta conserva su propio registro de preparaciones, para ver cómo cambia la misma receta con el tiempo.",
+          "Usa Historial para ver todas las tazas, Comparar para poner dos preparaciones lado a lado, y Estadísticas para tendencias."
         ]
       },
       "beans": {

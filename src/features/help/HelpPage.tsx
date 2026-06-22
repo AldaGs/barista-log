@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { PageHeader } from '@/components/ui'
 
-const SECTIONS = ['recipe', 'brewing', 'beans', 'water', 'grinder', 'sync'] as const
+const SECTIONS = ['recipe', 'brewing', 'logging', 'beans', 'water', 'grinder', 'sync'] as const
 
 export default function HelpPage() {
   const { t } = useTranslation()
