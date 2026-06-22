@@ -1,10 +1,22 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { TempUnit } from '@/lib/units'
+import type { FlowRate } from '@/db/types'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 export type Lang = 'en' | 'es'
 export type AccentId = 'midnight' | 'plum' | 'teal' | 'coffee'
+
+/**
+ * Default pour speeds in grams of water per second, by flow rate. Used to
+ * estimate how long each pour should take so the brew player can show when to
+ * finish (finalize) the pour within a step's time window.
+ */
+export const DEFAULT_POUR_RATES: Record<FlowRate, number> = {
+  slow: 3,
+  medium: 5,
+  fast: 8,
+}
 
 /** Accent presets. `brand`/`accent` are "r g b" triplets used in CSS vars. */
 export const ACCENTS: Record<
@@ -27,11 +39,15 @@ interface SettingsState {
   lang: Lang
   accent: AccentId
   tempUnit: TempUnit
+  /** grams of water per second for each pour flow rate */
+  pourRates: Record<FlowRate, number>
   supabase: SupabaseConfig | null
   setTheme: (t: ThemeMode) => void
   setLang: (l: Lang) => void
   setAccent: (a: AccentId) => void
   setTempUnit: (u: TempUnit) => void
+  setPourRate: (rate: FlowRate, gramsPerSec: number) => void
+  resetPourRates: () => void
   setSupabase: (c: SupabaseConfig | null) => void
 }
 
@@ -42,11 +58,15 @@ export const useSettings = create<SettingsState>()(
       lang: (navigator.language?.startsWith('es') ? 'es' : 'en') as Lang,
       accent: 'midnight',
       tempUnit: 'C',
+      pourRates: { ...DEFAULT_POUR_RATES },
       supabase: null,
       setTheme: (theme) => set({ theme }),
       setLang: (lang) => set({ lang }),
       setAccent: (accent) => set({ accent }),
       setTempUnit: (tempUnit) => set({ tempUnit }),
+      setPourRate: (rate, gramsPerSec) =>
+        set((s) => ({ pourRates: { ...s.pourRates, [rate]: gramsPerSec } })),
+      resetPourRates: () => set({ pourRates: { ...DEFAULT_POUR_RATES } }),
       setSupabase: (supabase) => set({ supabase }),
     }),
     { name: 'barista-settings' },

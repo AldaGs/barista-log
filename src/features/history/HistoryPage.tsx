@@ -106,6 +106,11 @@ export default function HistoryPage() {
           {s.flavorTags && s.flavorTags.length > 0 && (
             <p className="mt-1 text-xs text-muted">{s.flavorTags.join(', ')}</p>
           )}
+          {s.notes?.trim() && (
+            <p className="mt-1 line-clamp-2 whitespace-pre-wrap text-xs italic text-muted">
+              {s.notes}
+            </p>
+          )}
         </div>
         {s.rating ? (
           <span className="inline-flex items-center gap-1 text-brand">
