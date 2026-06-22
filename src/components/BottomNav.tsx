@@ -1,11 +1,10 @@
 import { NavLink } from 'react-router-dom'
-import { Home, PlusCircle, History, Boxes, Settings, Dumbbell } from 'lucide-react'
+import { Home, History, Boxes, Settings, Dumbbell } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 const items = [
   { to: '/', icon: Home, key: 'home', end: true },
   { to: '/history', icon: History, key: 'history', end: false },
-  { to: '/recipe/new', icon: PlusCircle, key: 'new', end: false },
   { to: '/gym', icon: Dumbbell, key: 'gym', end: false },
   { to: '/beans', icon: Boxes, key: 'library', end: false },
   { to: '/settings', icon: Settings, key: 'settings', end: false },
