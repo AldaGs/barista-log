@@ -129,6 +129,17 @@
     "newRecipe": "Nueva receta",
     "recent": "Recientes"
   },
+  "recipes": {
+    "title": "Todas las recetas",
+    "search": "Buscar recetas, granos, métodos…",
+    "allBeans": "Todos los granos",
+    "allBrewers": "Todos los métodos",
+    "empty": "Aún no hay recetas.",
+    "noMatch": "Ninguna receta coincide con los filtros.",
+    "seeAll": "Ver todas",
+    "count_one": "{{count}} receta",
+    "count_other": "{{count}} recetas"
+  },
   "recipe": {
     "title": "Nombre de la receta",
     "bean": "Grano",

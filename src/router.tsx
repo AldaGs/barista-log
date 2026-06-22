@@ -3,6 +3,7 @@ import { AppLayout } from './components/AppLayout'
 import HomePage from './features/home/HomePage'
 import RecipeFormPage from './features/recipe/RecipeFormPage'
 import RecipeDetailPage from './features/recipe/RecipeDetailPage'
+import RecipesPage from './features/recipe/RecipesPage'
 import BrewPlayPage from './features/brew/BrewPlayPage'
 import LogSessionPage from './features/recipe/LogSessionPage'
 import ImportRecipePage from './features/recipe/ImportRecipePage'
@@ -23,6 +24,7 @@ export const router = createBrowserRouter([
     element: <AppLayout />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: 'recipes', element: <RecipesPage /> },
       { path: 'recipe/new', element: <RecipeFormPage /> },
       { path: 'import', element: <ImportRecipePage /> },
       { path: 'recipe/:id', element: <RecipeDetailPage /> },

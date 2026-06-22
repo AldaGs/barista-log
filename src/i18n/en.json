@@ -129,6 +129,17 @@
     "newRecipe": "New recipe",
     "recent": "Recent"
   },
+  "recipes": {
+    "title": "All recipes",
+    "search": "Search recipes, beans, brewers…",
+    "allBeans": "All beans",
+    "allBrewers": "All brewers",
+    "empty": "No recipes yet.",
+    "noMatch": "No recipes match your filters.",
+    "seeAll": "See all",
+    "count_one": "{{count}} recipe",
+    "count_other": "{{count}} recipes"
+  },
   "recipe": {
     "title": "Recipe name",
     "bean": "Bean",

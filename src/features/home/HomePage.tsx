@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useTranslation } from 'react-i18next'
-import { Plus, BarChart3, HelpCircle } from 'lucide-react'
+import { Plus, BarChart3, HelpCircle, Search } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { RecipeSummaryCard } from '@/features/recipe/RecipeSummaryCard'
 import { EmptyState } from '@/components/ui'
@@ -21,6 +21,9 @@ export default function HomePage() {
       <header className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{t('app.name')}</h1>
         <div className="flex items-center gap-2">
+          <Link to="/recipes" className="btn-ghost !px-2" aria-label={t('recipes.title')}>
+            <Search size={18} />
+          </Link>
           <Link to="/stats" className="btn-ghost !px-2" aria-label={t('stats.title')}>
             <BarChart3 size={18} />
           </Link>
@@ -51,9 +54,14 @@ export default function HomePage() {
 
       {recent.length > 0 && (
         <section>
-          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">
-            {t('home.recent')}
-          </h2>
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+              {t('home.recent')}
+            </h2>
+            <Link to="/recipes" className="text-sm text-brand">
+              {t('recipes.seeAll')}
+            </Link>
+          </div>
           <div className="space-y-3">
             {recent.map((r) => (
               <RecipeSummaryCard key={r.id} recipe={r} />
