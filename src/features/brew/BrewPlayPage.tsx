@@ -266,9 +266,10 @@ export default function BrewPlayPage() {
         <EmptyState>{t('play.noSteps')}</EmptyState>
       ) : (
         <>
-          {/* Big timer + current instruction — pinned so it stays visible
-              while the step list scrolls underneath. */}
-          <div className="card sticky top-0 z-10 flex flex-col items-center gap-2 p-6 text-center shadow-sm">
+          {/* Timer + controls pinned together, so they stay reachable while
+              the step list scrolls underneath. Full-bleed bg masks the list. */}
+          <div className="sticky top-0 z-10 -mx-4 space-y-3 bg-bg px-4 pb-3 pt-1 shadow-sm">
+          <div className="card relative flex flex-col items-center gap-2 p-6 text-center">
             {counting != null && (
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-[inherit] bg-surface/95">
                 <span className="font-mono text-7xl font-bold tabular-nums text-brand">{counting}</span>
@@ -327,6 +328,7 @@ export default function BrewPlayPage() {
             <button className="btn-ghost" onClick={reset}>
               <RotateCcw size={18} /> {t('play.reset')}
             </button>
+          </div>
           </div>
 
           {laps.length > 0 && (
