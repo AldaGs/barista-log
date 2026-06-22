@@ -242,21 +242,19 @@ export function BrewSteps({
         </div>
       )}
 
-      <div className="flex items-center justify-between">
-        <div className="flex gap-2">
-          <button type="button" className="btn-ghost !py-1.5" onClick={add}>
-            <Plus size={16} /> {t('recipe.addStep')}
-          </button>
-          <button type="button" className="btn-ghost !py-1.5" onClick={() => setRepeatOpen((o) => !o)}>
-            <Repeat size={16} /> {t('recipe.repeatPours')}
-          </button>
-        </div>
-        {totalWater > 0 && (
-          <span className="text-sm text-muted">
-            {t('recipe.runningTotal')}: <span className="font-semibold text-text">{totalWater} g</span>
-          </span>
-        )}
+      <div className="flex gap-2">
+        <button type="button" className="btn-ghost flex-1 !py-1.5" onClick={add}>
+          <Plus size={16} /> {t('recipe.addStep')}
+        </button>
+        <button type="button" className="btn-ghost flex-1 !py-1.5" onClick={() => setRepeatOpen((o) => !o)}>
+          <Repeat size={16} /> {t('recipe.repeatPours')}
+        </button>
       </div>
+      {totalWater > 0 && (
+        <p className="text-center text-sm text-muted">
+          {t('recipe.runningTotal')}: <span className="font-semibold text-text">{totalWater} g</span>
+        </p>
+      )}
     </div>
   )
 }
