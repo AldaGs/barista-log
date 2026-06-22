@@ -11,6 +11,7 @@ import { FlavorWheel } from '@/components/FlavorWheel'
 import { PhotoInput } from '@/components/PhotoInput'
 import { BrewTimer } from '@/components/BrewTimer'
 import { BrewSteps } from '@/components/BrewSteps'
+import { RecipeInsights } from '@/components/RecipeInsights'
 import { ClockInput } from '@/components/ClockInput'
 import { GrindConverter } from '@/features/grinder/GrindConverter'
 import { InlineGearAdd } from '@/features/gear/InlineGearAdd'
@@ -450,6 +451,12 @@ export default function RecipeFormPage() {
       )}
 
       <BrewTimer onUse={(s) => set(isEspresso ? { shotTimeSec: s } : { totalTimeSec: s })} />
+
+      {/* live suggestions from the numbers entered so far */}
+      <RecipeInsights
+        recipe={form}
+        micronsPerClick={grinders?.find((g) => g.id === form.grinderId)?.micronsPerClick}
+      />
 
       {/* tasting */}
       <section className="card space-y-4 p-4">

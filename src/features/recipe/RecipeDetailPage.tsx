@@ -10,6 +10,7 @@ import { useColdSteep } from '@/store/coldSteep'
 import { PageHeader } from '@/components/ui'
 import { RecipeCard } from './RecipeCard'
 import { BrewChart } from '@/components/BrewChart'
+import { RecipeInsights } from '@/components/RecipeInsights'
 import { estimateBrew, measuredBrew, type BrewPoint } from '@/lib/brewModel'
 import { formatSeconds } from '@/lib/units'
 import { freshness } from '@/lib/freshness'
@@ -165,6 +166,8 @@ export default function RecipeDetailPage() {
       <div ref={cardRef}>
         <RecipeCard recipe={recipe} beanName={bean?.name} gearName={gear?.name} />
       </div>
+
+      <RecipeInsights recipe={recipe} micronsPerClick={grinder?.micronsPerClick} />
 
       {(estimate || measured.length > 0) && (
         <div className="card space-y-3 p-4">

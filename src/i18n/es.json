@@ -122,6 +122,23 @@
     "coldbrew": "Cold brew",
     "label": "Método"
   },
+  "insights": {
+    "title": "Sugerencias",
+    "disclaimer": "Estimaciones a partir de tus datos — una guía, no un veredicto.",
+    "exLow": "La extracción estimada {{ext}}% está por debajo del punto ideal {{lo}}–{{hi}}% — muele más fino, usa agua más caliente o alarga el tiempo.",
+    "exHigh": "La extracción estimada {{ext}}% supera {{lo}}–{{hi}}% — riesgo de amargor; muele más grueso o acorta la preparación.",
+    "exGood": "La extracción estimada {{ext}}% está en el punto ideal {{lo}}–{{hi}}%.",
+    "tdsLow": "La intensidad estimada {{tds}}% es más ligera que el objetivo {{lo}}–{{hi}}% — ajusta el ratio (menos agua) para más cuerpo.",
+    "tdsHigh": "La intensidad estimada {{tds}}% es más fuerte que {{lo}}–{{hi}}% — afloja el ratio (más agua) al gusto.",
+    "tdsGood": "La intensidad estimada {{tds}}% está justo en el objetivo {{lo}}–{{hi}}%.",
+    "ratioTight": "Un ratio 1:{{ratio}} es cerrado aquí (típico {{lo}}–{{hi}}) — espera una taza intensa.",
+    "ratioLoose": "Un ratio 1:{{ratio}} es abierto aquí (típico {{lo}}–{{hi}}) — espera una taza más ligera.",
+    "tempLow": "{{temp}} es algo frío (típico {{range}}) — puede subextraer; súbela un poco.",
+    "tempHigh": "{{temp}} es caliente (típico {{range}}) — cuidado con la aspereza.",
+    "steepShort": "Un reposo de {{h}}h es corto (típico {{lo}}–{{hi}}h) — la taza puede salir aguada.",
+    "steepLong": "Un reposo de {{h}}h es largo (típico {{lo}}–{{hi}}h) — puede volverse amargo o amaderado.",
+    "dilutionTip": "Para acercarte a {{target}}% en el vaso, diluye este concentrado aprox. 1:{{dil}}."
+  },
   "coldbrew": {
     "style": "Estilo",
     "styleImmersion": "Inmersión",

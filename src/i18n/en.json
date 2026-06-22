@@ -122,6 +122,23 @@
     "coldbrew": "Cold brew",
     "label": "Method"
   },
+  "insights": {
+    "title": "Suggestions",
+    "disclaimer": "Estimates from your inputs — a guide, not a verdict.",
+    "exLow": "Estimated extraction {{ext}}% is below the {{lo}}–{{hi}}% sweet spot — grind finer, brew hotter, or extend the time to pull more.",
+    "exHigh": "Estimated extraction {{ext}}% is above {{lo}}–{{hi}}% — risk of bitterness; grind coarser or shorten the brew.",
+    "exGood": "Estimated extraction {{ext}}% sits in the {{lo}}–{{hi}}% sweet spot.",
+    "tdsLow": "Estimated strength {{tds}}% is lighter than the {{lo}}–{{hi}}% target — tighten the ratio (less water) for more body.",
+    "tdsHigh": "Estimated strength {{tds}}% is stronger than {{lo}}–{{hi}}% — loosen the ratio (more water) to taste.",
+    "tdsGood": "Estimated strength {{tds}}% is right in the {{lo}}–{{hi}}% target.",
+    "ratioTight": "A 1:{{ratio}} ratio is tight here (typical {{lo}}–{{hi}}) — expect a heavy, intense cup.",
+    "ratioLoose": "A 1:{{ratio}} ratio is loose here (typical {{lo}}–{{hi}}) — expect a lighter cup.",
+    "tempLow": "{{temp}} is on the cool side (typical {{range}}) — may underextract; nudge it up.",
+    "tempHigh": "{{temp}} is hot (typical {{range}}) — watch for harshness.",
+    "steepShort": "A {{h}}h steep is short (typical {{lo}}–{{hi}}h) — the cup may taste thin.",
+    "steepLong": "A {{h}}h steep is long (typical {{lo}}–{{hi}}h) — it can turn woody or over-extracted.",
+    "dilutionTip": "To land near {{target}}% in the glass, dilute this concentrate roughly 1:{{dil}}."
+  },
   "coldbrew": {
     "style": "Style",
     "styleImmersion": "Immersion",
