@@ -103,6 +103,16 @@ export default function HistoryPage() {
             {format(s.date, 'PP')} · {beanName(s.beanId) ?? '—'}
             {s.params?.ratio ? ` · 1:${s.params.ratio}` : ''}
           </p>
+          {(s.tds != null || s.beverageWeight != null) && (
+            <p className="mt-1 text-xs tabular-nums text-muted">
+              {[
+                s.tds != null ? t('history.tdsValue', { value: s.tds }) : null,
+                s.beverageWeight != null ? t('history.bevValue', { value: s.beverageWeight }) : null,
+              ]
+                .filter(Boolean)
+                .join(' · ')}
+            </p>
+          )}
           {s.flavorTags && s.flavorTags.length > 0 && (
             <p className="mt-1 text-xs text-muted">{s.flavorTags.join(', ')}</p>
           )}

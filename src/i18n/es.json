@@ -239,7 +239,9 @@
     "forkCount_one": "{{count}} bifurcación",
     "forkCount_other": "{{count}} bifurcaciones",
     "unlinked": "Preparaciones sin receta",
-    "confirmDelete": "¿Eliminar esta preparación registrada?"
+    "confirmDelete": "¿Eliminar esta preparación registrada?",
+    "tdsValue": "{{value}}% TDS",
+    "bevValue": "{{value}} g de bebida"
   },
   "stats": {
     "title": "Estadísticas",

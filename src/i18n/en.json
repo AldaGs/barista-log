@@ -239,7 +239,9 @@
     "forkCount_one": "{{count}} fork",
     "forkCount_other": "{{count}} forks",
     "unlinked": "Unlinked brews",
-    "confirmDelete": "Delete this logged brew?"
+    "confirmDelete": "Delete this logged brew?",
+    "tdsValue": "{{value}}% TDS",
+    "bevValue": "{{value}} g out"
   },
   "stats": {
     "title": "Stats",
