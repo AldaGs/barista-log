@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { ArrowRight, AlertTriangle, Info } from 'lucide-react'
 import { db } from '@/db/dexie'
-import { convertGrind, methodsForMicrons } from '@/lib/grindConvert'
+import { convertGrind, convertFromMicrons, methodsForMicrons } from '@/lib/grindConvert'
 
 /**
  * Pivot-through-microns grind converter. Used standalone on the Grinders page
@@ -22,13 +22,17 @@ export function GrindConverter({
   const [toId, setToId] = useState(defaultToId ?? '')
   const [clicks, setClicks] = useState<number | ''>('')
 
+  const MICRONS = '__microns__'
+  const fromMicrons = fromId === MICRONS
   const from = grinders?.find((g) => g.id === fromId)
   const to = grinders?.find((g) => g.id === toId)
 
   const result = useMemo(() => {
-    if (!from || !to || clicks === '') return null
+    if (!to || clicks === '') return null
+    if (fromMicrons) return convertFromMicrons(Number(clicks), to)
+    if (!from) return null
     return convertGrind(from, Number(clicks), to)
-  }, [from, to, clicks])
+  }, [from, to, clicks, fromMicrons])
 
   return (
     <div className="card space-y-3 p-4">
@@ -37,6 +41,7 @@ export function GrindConverter({
           <span className="label">{t('grinder.from')}</span>
           <select className="input" value={fromId} onChange={(e) => setFromId(e.target.value)}>
             <option value="">—</option>
+            <option value={MICRONS}>{t('grinder.micronsDirect')}</option>
             {grinders?.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
           </select>
         </label>
@@ -50,7 +55,9 @@ export function GrindConverter({
       </div>
 
       <label className="block">
-        <span className="label">{t('recipe.grind')} ({t('recipe.clicks')})</span>
+        <span className="label">
+          {fromMicrons ? t('grinder.micronsLabel') : `${t('recipe.grind')} (${t('recipe.clicks')})`}
+        </span>
         <input
           className="input"
           type="number"
@@ -63,7 +70,7 @@ export function GrindConverter({
       {result && to && (
         <div className="rounded-xl bg-surface-2 p-3">
           <div className="flex items-center justify-center gap-3 text-lg font-semibold">
-            <span>{clicks} {t('recipe.clicks')}</span>
+            <span>{fromMicrons ? t('grinder.microns', { microns: clicks }) : `${clicks} ${t('recipe.clicks')}`}</span>
             <ArrowRight size={18} className="text-muted" />
             <span className="text-brand">
               {result.targetClicksRounded} {t('recipe.clicks')}

@@ -38,6 +38,25 @@ export function convertGrind(
 }
 
 /**
+ * Convert a known micron value straight to a target grinder's clicks, skipping
+ * the source-grinder lookup. For when a grinder isn't in the cellar (or the user
+ * doesn't want to add it) but its setting is already expressed in microns.
+ *
+ *   targetClicks = microns / to.micronsPerClick
+ *
+ * Confidence stays 'ok' — we have no source burr geometry to flag a mismatch.
+ */
+export function convertFromMicrons(microns: number, to: Grinder): ConversionResult {
+  const targetClicks = microns / to.micronsPerClick
+  return {
+    microns: Math.round(microns),
+    targetClicks: Math.round(targetClicks * 10) / 10,
+    targetClicksRounded: Math.max(0, Math.round(targetClicks)),
+    confidence: 'ok',
+  }
+}
+
+/**
  * Estimated median particle size for a grind setting, in microns.
  * Returns null when we lack the data to compute it (no grinder / no clicks).
  *
