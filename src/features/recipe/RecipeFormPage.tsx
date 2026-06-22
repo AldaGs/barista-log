@@ -18,6 +18,7 @@ import { InlineGearAdd } from '@/features/gear/InlineGearAdd'
 import { useSettings } from '@/store/settings'
 import { cToF, fToC, formatSeconds } from '@/lib/units'
 import { estimateMicrons } from '@/lib/grindConvert'
+import { freshness } from '@/lib/freshness'
 
 const num = (v: string) => (v === '' ? undefined : Number(v))
 
@@ -466,6 +467,10 @@ export default function RecipeFormPage() {
       <RecipeInsights
         recipe={form}
         micronsPerClick={grinders?.find((g) => g.id === form.grinderId)?.micronsPerClick}
+        freshness={(() => {
+          const b = beans?.find((x) => x.id === form.beanId)
+          return b ? freshness(b) : undefined
+        })()}
       />
 
       {/* tasting */}

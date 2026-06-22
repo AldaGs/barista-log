@@ -119,6 +119,7 @@
     "open": "Open",
     "add": "Add",
     "none": "None",
+    "close": "Close",
     "optional": "optional",
     "back": "Back",
     "search": "Search",
@@ -160,7 +161,29 @@
     "tempHigh": "{{temp}} is hot (typical {{range}}) — watch for harshness.",
     "steepShort": "A {{h}}h steep is short (typical {{lo}}–{{hi}}h) — the cup may taste thin.",
     "steepLong": "A {{h}}h steep is long (typical {{lo}}–{{hi}}h) — it can turn woody or over-extracted.",
-    "dilutionTip": "To land near {{target}}% in the glass, dilute this concentrate roughly 1:{{dil}}."
+    "dilutionTip": "To land near {{target}}% in the glass, dilute this concentrate roughly 1:{{dil}}.",
+    "beanFading": "This bean is {{age}} days off roast and starting to fade — grind a touch finer or brew a little hotter to keep extraction up.",
+    "beanStale": "This bean is {{age}} days off roast — past its best. Expect a flat cup; grind finer to compensate, or reach for a fresher bag."
+  },
+  "dialIn": {
+    "title": "Dial-in",
+    "disclaimer": "Suggestions from your last shot — taste is the final judge.",
+    "empty": "Pull a shot and log it (time, yield, and taste) to get your next grind adjustment.",
+    "fast": "Last shot gushed in {{time}}s, faster than your {{lo}}–{{hi}}s target — the puck is letting water through too easily.",
+    "slow": "Last shot dragged at {{time}}s, slower than your {{lo}}–{{hi}}s target — flow is choked.",
+    "sour": "Shot time looks good at {{time}}s but it tasted sour — it's under-extracted. Raise the temperature and tighten the grind slightly.",
+    "bitter": "Shot time looks good at {{time}}s but it tasted bitter — it's over-extracted. Drop the temperature and open the grind slightly.",
+    "dialed": "Dialed in — {{time}}s and balanced. Lock this grind setting into the recipe.",
+    "grind": {
+      "finer": "Grind finer",
+      "coarser": "Grind coarser",
+      "finerClicks": "≈{{clicks}} clicks finer",
+      "coarserClicks": "≈{{clicks}} clicks coarser"
+    },
+    "temp": {
+      "up": "Nudge temp up",
+      "down": "Nudge temp down"
+    }
   },
   "coldbrew": {
     "style": "Style",
@@ -316,6 +339,22 @@
     "markedCount_one": "{{count}} mark",
     "markedCount_other": "{{count}} marks",
     "noSteps": "This recipe has no pour schedule. Add steps to use guided brewing."
+  },
+  "shot": {
+    "title": "Pull shot",
+    "ready": "Ready",
+    "start": "Start shot",
+    "stop": "Stop",
+    "redo": "Redo",
+    "done": "Shot done",
+    "preinfusion": "Pre-infusion",
+    "preinfusionPlan": "Pre-infusion {{secs}}s",
+    "extraction": "Extraction",
+    "inWindow": "In the window",
+    "past": "Past target",
+    "targetTime": "Target {{lo}}–{{hi}}s",
+    "yield": "Yield out (g)",
+    "logShot": "Log shot"
   },
   "session": {
     "rating": "Rating",
