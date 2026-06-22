@@ -205,6 +205,12 @@ export default function BrewPlayPage() {
   const pourRemaining =
     currentPourDur != null ? Math.max(0, Math.ceil(currentPourDur - pourElapsed)) : null
 
+  // Keep the active step in view as the brew advances through a long list.
+  const activeStepRef = useRef<HTMLLIElement | null>(null)
+  useEffect(() => {
+    activeStepRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [activeIndex])
+
   // Soft beep down the final seconds before the current step ends.
   const lastEndBeep = useRef<number | null>(null)
   useEffect(() => {
@@ -260,8 +266,9 @@ export default function BrewPlayPage() {
         <EmptyState>{t('play.noSteps')}</EmptyState>
       ) : (
         <>
-          {/* Big timer + current instruction */}
-          <div className="card relative flex flex-col items-center gap-2 p-6 text-center">
+          {/* Big timer + current instruction — pinned so it stays visible
+              while the step list scrolls underneath. */}
+          <div className="card sticky top-0 z-10 flex flex-col items-center gap-2 p-6 text-center shadow-sm">
             {counting != null && (
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-[inherit] bg-surface/95">
                 <span className="font-mono text-7xl font-bold tabular-nums text-brand">{counting}</span>
@@ -369,9 +376,10 @@ export default function BrewPlayPage() {
               return (
                 <li
                   key={s.id}
+                  ref={active ? activeStepRef : undefined}
                   className={`card relative flex items-center gap-3 overflow-hidden p-3 transition ${
                     active ? 'border-brand ring-1 ring-brand/40' : passed ? 'opacity-60' : ''
-                  }`}
+                  } scroll-mt-44`}
                 >
                   {/* Elapsed-time fill overlay */}
                   <div
