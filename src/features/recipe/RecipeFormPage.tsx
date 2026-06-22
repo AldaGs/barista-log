@@ -91,6 +91,17 @@ export default function RecipeFormPage() {
     [form.doseIn, form.yieldOut],
   )
 
+  // form.ratio can hold a stale default (e.g. the brew-oriented profile default)
+  // until save recomputes it. Mirror saveRecipe's recompute here so the live
+  // suggestions/estimates key off the same ratio the user actually sees.
+  const previewRecipe = useMemo(
+    () =>
+      form.doseIn && form.yieldOut
+        ? { ...form, ratio: Math.round((form.yieldOut / form.doseIn) * 100) / 100 }
+        : form,
+    [form],
+  )
+
   // Totals derived from the pour schedule, for one-tap auto-fill.
   const stepTotals = useMemo(() => {
     const steps = form.steps ?? []
@@ -465,7 +476,7 @@ export default function RecipeFormPage() {
 
       {/* live suggestions from the numbers entered so far */}
       <RecipeInsights
-        recipe={form}
+        recipe={previewRecipe}
         micronsPerClick={grinders?.find((g) => g.id === form.grinderId)?.micronsPerClick}
         freshness={(() => {
           const b = beans?.find((x) => x.id === form.beanId)
