@@ -190,6 +190,8 @@
     "next": "Next",
     "now": "Now",
     "done": "Done",
+    "finishPourIn": "Finish pour in {{secs}}s",
+    "pourDone": "Pour done — hold",
     "complete": "Brew complete",
     "countdown": "Countdown",
     "off": "Off",
@@ -237,7 +239,9 @@
     "forkCount_one": "{{count}} fork",
     "forkCount_other": "{{count}} forks",
     "unlinked": "Unlinked brews",
-    "confirmDelete": "Delete this logged brew?"
+    "confirmDelete": "Delete this logged brew?",
+    "tdsValue": "{{value}}% TDS",
+    "bevValue": "{{value}} g out"
   },
   "stats": {
     "title": "Stats",
@@ -374,6 +378,10 @@
     "accentCoffee": "Coffee",
     "units": "Units",
     "tempUnit": "Temperature",
+    "brewing": "Brewing",
+    "pourRatesHint": "Pour speeds in grams of water per second. Used to show when to finish each pour during a guided brew.",
+    "gramsPerSec": "g/s",
+    "resetDefaults": "Reset to defaults",
     "data": "Data",
     "exportJson": "Export backup (JSON)",
     "importJson": "Import backup (JSON)",

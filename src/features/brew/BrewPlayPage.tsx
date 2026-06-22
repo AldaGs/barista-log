@@ -4,10 +4,22 @@ import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Play, Pause, RotateCcw, Check } from 'lucide-react'
 import { db } from '@/db/dexie'
-import type { BrewStep } from '@/db/types'
+import type { BrewStep, FlowRate } from '@/db/types'
 import { PageHeader, EmptyState } from '@/components/ui'
 import { formatSeconds } from '@/lib/units'
 import { cue, useWakeLock } from '@/lib/feedback'
+import { useSettings } from '@/store/settings'
+
+/**
+ * How many seconds a step's pour should take, from its water amount and flow
+ * rate (g/s). Only pour/bloom steps with water have a pour; returns null
+ * otherwise. Unspecified flow rates fall back to the medium pour rate.
+ */
+function pourDurationSec(step: BrewStep, rates: Record<FlowRate, number>): number | null {
+  if ((step.type !== 'pour' && step.type !== 'bloom') || !step.water || step.water <= 0) return null
+  const rate = rates[step.flowRate ?? 'medium'] || rates.medium
+  return rate > 0 ? step.water / rate : null
+}
 
 function stepLabel(s: BrewStep, t: (k: string) => string) {
   if (s.type === 'agitation') {
@@ -36,6 +48,7 @@ export default function BrewPlayPage() {
   const { t } = useTranslation()
   const { id } = useParams()
   const recipe = useLiveQuery(() => (id ? db.recipes.get(id) : undefined), [id])
+  const pourRates = useSettings((s) => s.pourRates)
 
   const [elapsed, setElapsed] = useState(0)
   const [running, setRunning] = useState(false)
@@ -135,16 +148,35 @@ export default function BrewPlayPage() {
   // Seconds left in the current step (i.e. until the next one begins).
   const countdown = currentStep ? (currentStep.atTimeSec ?? 0) - elapsed : null
 
+  const stepStart = (i: number) => (i === 0 ? 0 : steps[i - 1].atTimeSec ?? 0)
+
   // Fraction [0,1] of a step's time window that has elapsed — drives the pill fill.
   const stepFill = (i: number) => {
     if (i < activeIndex) return 1
     if (i > activeIndex) return 0
-    const start = i === 0 ? 0 : steps[i - 1].atTimeSec ?? 0
+    const start = stepStart(i)
     const end = steps[i].atTimeSec ?? 0
     if (end <= start) return 1
     return Math.min(1, Math.max(0, (elapsed - start) / (end - start)))
   }
+
+  // Fraction of a step's time window that should be spent actively pouring — the
+  // "finalize the pour" zone shown as an extra overlay on the pill.
+  const pourFrac = (i: number) => {
+    const dur = pourDurationSec(steps[i], pourRates)
+    if (dur == null) return 0
+    const window = (steps[i].atTimeSec ?? 0) - stepStart(i)
+    if (window <= 0) return 1
+    return Math.min(1, dur / window)
+  }
+
   const targetWater = isComplete ? cumWater[cumWater.length - 1] : cumWater[currentIndex]
+
+  // Pour status for the current step: how long to keep pouring and how much is done.
+  const currentPourDur = currentStep ? pourDurationSec(currentStep, pourRates) : null
+  const pourElapsed = currentStep ? elapsed - stepStart(currentIndex) : 0
+  const pourRemaining =
+    currentPourDur != null ? Math.max(0, Math.ceil(currentPourDur - pourElapsed)) : null
 
   if (recipe === undefined) return null
   if (!recipe) return <p className="text-muted">Not found.</p>
@@ -174,9 +206,21 @@ export default function BrewPlayPage() {
             {targetWater > 0 && (
               <p className="text-2xl font-bold tabular-nums text-brand">{targetWater} g</p>
             )}
+            {currentPourDur != null && (
+              <p
+                className={`text-sm font-semibold ${pourRemaining ? 'text-accent' : 'text-muted'}`}
+              >
+                {pourRemaining
+                  ? t('play.finishPourIn', { secs: pourRemaining })
+                  : t('play.pourDone')}
+              </p>
+            )}
             {nextStep && (
               <p className="mt-1 text-sm text-muted">
                 {t('play.next')}: {stepLabel(nextStep, t)}
+                {cumWater[currentIndex + 1] > cumWater[currentIndex] && (
+                  <span className="ml-1 tabular-nums">→ {cumWater[currentIndex + 1]} g</span>
+                )}
                 {countdown != null && countdown > 0 && (
                   <span className="ml-2 font-semibold text-brand">{t('play.now')} +{countdown}s</span>
                 )}
@@ -231,6 +275,7 @@ export default function BrewPlayPage() {
               const passed = i < activeIndex
               const active = i === activeIndex
               const fill = stepFill(i)
+              const pFrac = pourFrac(i)
               return (
                 <li
                   key={s.id}
@@ -244,6 +289,22 @@ export default function BrewPlayPage() {
                     style={{ width: `${fill * 100}%` }}
                     aria-hidden
                   />
+                  {/* Extra overlay: the active pour fills its "finalize pour" zone,
+                      with a marker showing where pouring should be finished. */}
+                  {active && pFrac > 0 && (
+                    <>
+                      <div
+                        className="absolute inset-y-0 left-0 bg-accent/30"
+                        style={{ width: `${Math.min(fill, pFrac) * 100}%` }}
+                        aria-hidden
+                      />
+                      <div
+                        className="absolute inset-y-0 w-0.5 bg-accent"
+                        style={{ left: `${pFrac * 100}%` }}
+                        aria-hidden
+                      />
+                    </>
+                  )}
                   <span className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-2 text-xs font-semibold">
                     {passed ? <Check size={14} className="text-accent" /> : i + 1}
                   </span>

@@ -128,6 +128,36 @@ export default function SettingsPage() {
         </div>
       </section>
 
+      {/* Brewing */}
+      <section className="card space-y-4 p-4">
+        <div>
+          <h2 className="font-semibold">{t('settings.brewing')}</h2>
+          <p className="text-xs text-muted">{t('settings.pourRatesHint')}</p>
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          {(['slow', 'medium', 'fast'] as const).map((rate) => (
+            <label key={rate} className="flex flex-col gap-1">
+              <span className="label !mb-0">{t('step.flow_' + rate)}</span>
+              <div className="flex items-center gap-1">
+                <input
+                  className="input"
+                  type="number"
+                  inputMode="decimal"
+                  min={0.5}
+                  step={0.5}
+                  value={s.pourRates[rate]}
+                  onChange={(e) => s.setPourRate(rate, Math.max(0, Number(e.target.value)))}
+                />
+                <span className="text-xs text-muted">{t('settings.gramsPerSec')}</span>
+              </div>
+            </label>
+          ))}
+        </div>
+        <button className="btn-ghost w-full" onClick={s.resetPourRates}>
+          {t('settings.resetDefaults')}
+        </button>
+      </section>
+
       {/* Data */}
       <section className="card space-y-3 p-4">
         <h2 className="font-semibold">{t('settings.data')}</h2>

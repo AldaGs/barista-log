@@ -60,7 +60,10 @@ export default function ComparePage() {
                     <th className="p-2 font-medium text-muted">{t('compare.field')}</th>
                     {chosen.map((s) => (
                       <th key={s.id} className="p-2 font-medium">
-                        {format(s.date, 'MMM d')}
+                        <span className="block">{s.params?.title || t('method.' + s.method)}</span>
+                        <span className="block text-xs font-normal text-muted">
+                          {format(s.date, 'MMM d')}
+                        </span>
                       </th>
                     ))}
                   </tr>
