@@ -6,13 +6,27 @@ import { db } from '@/db/dexie'
 import type { BrewSession } from '@/db/types'
 import { PageHeader, EmptyState } from '@/components/ui'
 import { formatSeconds } from '@/lib/units'
+import { estimateMicrons } from '@/lib/grindConvert'
 
-const ROWS: { key: string; get: (s: BrewSession) => string | number | undefined }[] = [
+/** Per-row accessor; `microns` resolves the session's grinder µm/click. */
+interface Row {
+  key: string
+  get: (s: BrewSession, microns: (s: BrewSession) => number | null) => string | number | undefined
+}
+
+const ROWS: Row[] = [
   { key: 'method.label', get: (s) => s.method },
   { key: 'recipe.ratio', get: (s) => (s.params?.ratio ? `1:${s.params.ratio}` : undefined) },
   { key: 'recipe.doseIn', get: (s) => s.params?.doseIn },
   { key: 'recipe.yieldOut', get: (s) => s.params?.yieldOut },
-  { key: 'recipe.grind', get: (s) => s.params?.grindClicks },
+  {
+    key: 'recipe.grind',
+    get: (s, microns) => {
+      if (s.params?.grindClicks == null) return undefined
+      const um = microns(s)
+      return um != null ? `${s.params.grindClicks} · ≈ ${um} µm` : s.params.grindClicks
+    },
+  },
   { key: 'recipe.waterTemp', get: (s) => s.params?.waterTemp },
   { key: 'recipe.shotTime', get: (s) => formatSeconds(s.params?.shotTimeSec ?? s.params?.totalTimeSec) },
   { key: 'session.actualTitle', get: (s) => (s.actualTotalSec != null ? formatSeconds(s.actualTotalSec) : undefined) },
@@ -26,7 +40,15 @@ const ROWS: { key: string; get: (s: BrewSession) => string | number | undefined 
 export default function ComparePage() {
   const { t } = useTranslation()
   const sessions = useLiveQuery(() => db.sessions.orderBy('date').reverse().toArray(), [])
+  const grinders = useLiveQuery(() => db.grinders.toArray(), [])
   const [selected, setSelected] = useState<string[]>([])
+
+  // Estimated grind size for a session: clicks × the grinder's µm/click.
+  const micronsFor = (s: BrewSession) =>
+    estimateMicrons(
+      s.params?.grindClicks,
+      grinders?.find((g) => g.id === s.grinderId)?.micronsPerClick,
+    )
 
   const toggle = (id: string) =>
     setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]))
@@ -74,7 +96,7 @@ export default function ComparePage() {
                     <tr key={row.key} className="border-b border-border/50 last:border-0">
                       <td className="p-2 text-muted">{t(row.key)}</td>
                       {chosen.map((s) => {
-                        const v = row.get(s)
+                        const v = row.get(s, micronsFor)
                         const display =
                           row.key === 'method.label' && typeof v === 'string' ? t('method.' + v) : v
                         return (

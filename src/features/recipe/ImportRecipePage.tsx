@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Download, Coffee } from 'lucide-react'
 import { PageHeader, EmptyState } from '@/components/ui'
 import { decodePayload, importPayload } from '@/lib/recipeShare'
+import { estimateMicrons } from '@/lib/grindConvert'
 
 /** Landing page for shared-recipe links: /import#<payload>. Previews then imports. */
 export default function ImportRecipePage() {
@@ -37,7 +38,11 @@ export default function ImportRecipePage() {
     [t('recipe.ratio'), r.ratio ? `1:${r.ratio}` : undefined],
     [t('recipe.doseIn'), r.doseIn],
     [r.method === 'espresso' ? t('recipe.yieldOut') : t('recipe.waterAmount'), r.yieldOut],
-    [t('recipe.grind'), r.grindClicks ?? r.grindLabel],
+    [t('recipe.grind'), (() => {
+      if (r.grindClicks == null) return r.grindLabel
+      const microns = estimateMicrons(r.grindClicks, payload.grinder?.micronsPerClick)
+      return microns != null ? `${r.grindClicks} · ${t('grinder.microns', { microns })}` : r.grindClicks
+    })()],
   ]
 
   return (

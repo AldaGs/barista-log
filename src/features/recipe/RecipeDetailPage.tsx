@@ -164,7 +164,7 @@ export default function RecipeDetailPage() {
       })()}
 
       <div ref={cardRef}>
-        <RecipeCard recipe={recipe} beanName={bean?.name} gearName={gear?.name} />
+        <RecipeCard recipe={recipe} beanName={bean?.name} gearName={gear?.name} micronsPerClick={grinder?.micronsPerClick} />
       </div>
 
       <RecipeInsights recipe={recipe} micronsPerClick={grinder?.micronsPerClick} />

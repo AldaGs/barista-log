@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import type { Recipe } from '@/db/types'
 import { useSettings } from '@/store/settings'
 import { formatSeconds, formatTemp } from '@/lib/units'
+import { estimateMicrons } from '@/lib/grindConvert'
 
 function Row({ label, value }: { label: string; value?: string | number | null }) {
   if (value == null || value === '') return null
@@ -18,13 +19,17 @@ export function RecipeCard({
   recipe,
   beanName,
   gearName,
+  micronsPerClick,
 }: {
   recipe: Recipe
   beanName?: string
   gearName?: string
+  /** µm/click of the recipe's grinder, to show an estimated grind size */
+  micronsPerClick?: number
 }) {
   const { t } = useTranslation()
   const unit = useSettings((s) => s.tempUnit)
+  const microns = estimateMicrons(recipe.grindClicks, micronsPerClick)
   const isEspresso = recipe.method === 'espresso'
   const isCold = recipe.method === 'coldbrew'
   // Flash (iced) is hot-brewed onto ice, so it keeps the brew pour schedule;
@@ -47,7 +52,14 @@ export function RecipeCard({
         />
         <Row label={t('recipe.doseIn')} value={recipe.doseIn} />
         <Row label={isEspresso ? t('recipe.yieldOut') : t('recipe.waterAmount')} value={recipe.yieldOut} />
-        <Row label={t('recipe.grind')} value={recipe.grindClicks ?? recipe.grindLabel} />
+        <Row
+          label={t('recipe.grind')}
+          value={
+            recipe.grindClicks != null
+              ? `${recipe.grindClicks}${microns != null ? ` · ${t('grinder.microns', { microns })}` : ''}`
+              : recipe.grindLabel
+          }
+        />
         {/* immersion/slow-drip use cold water; only the optional bloom is hot */}
         {!isSteep && (
           <Row label={t('recipe.waterTemp')} value={recipe.waterTemp != null ? formatTemp(recipe.waterTemp, unit) : null} />

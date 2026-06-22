@@ -9,6 +9,7 @@ import { TagInput } from '@/components/TagInput'
 import { FlavorWheel } from '@/components/FlavorWheel'
 import { PhotoInput } from '@/components/PhotoInput'
 import { formatSeconds } from '@/lib/units'
+import { estimateMicrons } from '@/lib/grindConvert'
 import { useBrewPlayer } from '@/store/brewPlayer'
 import { useColdSteep, steepElapsedMs } from '@/store/coldSteep'
 
@@ -47,6 +48,10 @@ export default function LogSessionPage() {
   const bean = useLiveQuery(
     () => (recipe?.beanId ? db.beans.get(recipe.beanId) : undefined),
     [recipe?.beanId],
+  )
+  const grinder = useLiveQuery(
+    () => (recipe?.grinderId ? db.grinders.get(recipe.grinderId) : undefined),
+    [recipe?.grinderId],
   )
 
   const [when, setWhen] = useState(() => toLocalInput(Date.now()))
@@ -108,7 +113,18 @@ export default function LogSessionPage() {
       <div className="card p-4">
         <p className="font-semibold">{recipe.title || t('method.' + recipe.method)}</p>
         <p className="text-sm text-muted">
-          {[bean?.name, recipe.ratio ? `1:${recipe.ratio}` : null].filter(Boolean).join(' · ')}
+          {[
+            bean?.name,
+            recipe.ratio ? `1:${recipe.ratio}` : null,
+            (() => {
+              if (recipe.grindClicks == null) return null
+              const microns = estimateMicrons(recipe.grindClicks, grinder?.micronsPerClick)
+              const grind = `${recipe.grindClicks} ${t('recipe.clicks')}`
+              return microns != null ? `${grind} · ${t('grinder.microns', { microns })}` : grind
+            })(),
+          ]
+            .filter(Boolean)
+            .join(' · ')}
         </p>
       </div>
 

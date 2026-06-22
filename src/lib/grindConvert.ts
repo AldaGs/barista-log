@@ -38,6 +38,25 @@ export function convertGrind(
 }
 
 /**
+ * Estimated median particle size for a grind setting, in microns.
+ * Returns null when we lack the data to compute it (no grinder / no clicks).
+ *
+ *   microns = clicks * micronsPerClick
+ *
+ * Same pivot the converter uses — see the disclaimer in the UI: this is a
+ * rough starting point, not a lab measurement.
+ */
+export function estimateMicrons(
+  clicks?: number | null,
+  micronsPerClick?: number | null,
+): number | null {
+  if (clicks == null || micronsPerClick == null || !Number.isFinite(clicks)) {
+    return null
+  }
+  return Math.round(clicks * micronsPerClick)
+}
+
+/**
  * Micron ranges per brew method, used as sanity rails in the UI
  * ("does this setting land in the espresso range?").
  * Source: Honest Coffee Guide grind-size chart.

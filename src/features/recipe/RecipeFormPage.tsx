@@ -17,6 +17,7 @@ import { GrindConverter } from '@/features/grinder/GrindConverter'
 import { InlineGearAdd } from '@/features/gear/InlineGearAdd'
 import { useSettings } from '@/store/settings'
 import { cToF, fToC, formatSeconds } from '@/lib/units'
+import { estimateMicrons } from '@/lib/grindConvert'
 
 const num = (v: string) => (v === '' ? undefined : Number(v))
 
@@ -226,7 +227,16 @@ export default function RecipeFormPage() {
             ))}
           </select>
         </Field>
-        <Field label={`${t('recipe.grind')} (${t('recipe.clicks')})`}>
+        <Field
+          label={`${t('recipe.grind')} (${t('recipe.clicks')})`}
+          hint={(() => {
+            const microns = estimateMicrons(
+              form.grindClicks,
+              grinders?.find((g) => g.id === form.grinderId)?.micronsPerClick,
+            )
+            return microns != null ? t('grinder.microns', { microns }) : undefined
+          })()}
+        >
           <input
             className="input"
             type="number"
