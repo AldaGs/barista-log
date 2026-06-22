@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/dexie'
 import { getProfile, saveRecipe, saveSession } from '@/db/repo'
-import type { BrewMethod, Recipe } from '@/db/types'
+import type { BrewMethod, ColdBrewStyle, Recipe } from '@/db/types'
 import { PageHeader, Field, StarRating, ScoreSlider } from '@/components/ui'
 import { TagInput } from '@/components/TagInput'
 import { FlavorWheel } from '@/components/FlavorWheel'
@@ -75,6 +75,13 @@ export default function RecipeFormPage() {
 
   const set = (patch: Partial<Recipe>) => setForm((f) => ({ ...f, ...patch }))
   const isEspresso = form.method === 'espresso'
+  const isCold = form.method === 'coldbrew'
+  // Flash (Japanese iced) is hot-brewed onto ice, so it keeps the second-clock
+  // pour schedule; immersion & slow-drip swap it for a steep duration.
+  const isFlash = isCold && form.coldBrewStyle === 'flash'
+  const usesSteep = isCold && !isFlash
+  const setBloom = (patch: Partial<NonNullable<Recipe['hotBloom']>>) =>
+    set({ hotBloom: { water: 0, ...form.hotBloom, ...patch } })
 
   const ratio = useMemo(
     () => (form.doseIn && form.yieldOut ? (form.yieldOut / form.doseIn).toFixed(2) : null),
@@ -107,15 +114,24 @@ export default function RecipeFormPage() {
       grindLabel: form.grindLabel,
       doseIn: form.doseIn,
       yieldOut: form.yieldOut,
-      waterTemp: form.waterTemp,
+      // immersion/slow-drip have no hot water or second-clock schedule — drop
+      // any brew-only fields so a method switch doesn't leave stale data behind.
+      waterTemp: usesSteep ? undefined : form.waterTemp,
       shotTimeSec: form.shotTimeSec,
       pressureBar: form.pressureBar,
       preInfusionSec: form.preInfusionSec,
       brewer: form.brewer,
-      totalTimeSec: form.totalTimeSec,
-      bloomSec: form.bloomSec,
-      pours: form.pours,
-      steps: form.steps,
+      totalTimeSec: usesSteep ? undefined : form.totalTimeSec,
+      bloomSec: usesSteep ? undefined : form.bloomSec,
+      pours: usesSteep ? undefined : form.pours,
+      steps: usesSteep ? undefined : form.steps,
+      // cold-brew
+      coldBrewStyle: form.coldBrewStyle,
+      steepHours: form.steepHours,
+      hotBloom: form.hotBloom?.water ? form.hotBloom : undefined,
+      concentrate: form.concentrate,
+      dilutionRatio: form.dilutionRatio,
+      iceGrams: form.iceGrams,
       notes: form.notes,
       forkedFromId: form.forkedFromId,
       id: id ?? undefined,
@@ -150,12 +166,20 @@ export default function RecipeFormPage() {
       <PageHeader title={id ? t('common.edit') : t('home.newRecipe')} back />
 
       {/* method toggle */}
-      <div className="grid grid-cols-2 gap-2">
-        {(['espresso', 'brew'] as BrewMethod[]).map((m) => (
+      <div className="grid grid-cols-3 gap-2">
+        {(['espresso', 'brew', 'coldbrew'] as BrewMethod[]).map((m) => (
           <button
             key={m}
             type="button"
-            onClick={() => set({ method: m })}
+            onClick={() =>
+              set({
+                method: m,
+                // default a style the first time cold brew is picked
+                ...(m === 'coldbrew' && !form.coldBrewStyle
+                  ? { coldBrewStyle: 'immersion' as ColdBrewStyle }
+                  : {}),
+              })
+            }
             className={`btn ${form.method === m ? 'bg-brand text-brand-fg' : 'btn-ghost'}`}
           >
             {t(`method.${m}`)}
@@ -238,18 +262,20 @@ export default function RecipeFormPage() {
         </div>
       </div>
 
-      <Field label={`${t('recipe.waterTemp')} (°${tempUnit})`}>
-        <input
-          className="input"
-          type="number"
-          inputMode="decimal"
-          value={tempDisplay}
-          onChange={(e) => {
-            const v = num(e.target.value)
-            set({ waterTemp: v == null ? undefined : tempUnit === 'C' ? v : fToC(v) })
-          }}
-        />
-      </Field>
+      {!usesSteep && (
+        <Field label={`${t('recipe.waterTemp')} (°${tempUnit})`}>
+          <input
+            className="input"
+            type="number"
+            inputMode="decimal"
+            value={tempDisplay}
+            onChange={(e) => {
+              const v = num(e.target.value)
+              set({ waterTemp: v == null ? undefined : tempUnit === 'C' ? v : fToC(v) })
+            }}
+          />
+        </Field>
+      )}
 
       {/* method-specific */}
       {isEspresso ? (
@@ -277,6 +303,33 @@ export default function RecipeFormPage() {
         </div>
       ) : (
         <div className="space-y-3">
+          {/* cold-brew header: style + ice apply to every cold style */}
+          {isCold && (
+            <div className="grid grid-cols-2 gap-3">
+              <Field label={t('coldbrew.style')}>
+                <select
+                  className="input"
+                  value={form.coldBrewStyle ?? 'immersion'}
+                  onChange={(e) => set({ coldBrewStyle: e.target.value as ColdBrewStyle })}
+                >
+                  <option value="immersion">{t('coldbrew.styleImmersion')}</option>
+                  <option value="slow-drip">{t('coldbrew.styleSlowDrip')}</option>
+                  <option value="flash">{t('coldbrew.styleFlash')}</option>
+                </select>
+              </Field>
+              <Field label={t('coldbrew.ice')} hint={t('common.optional')}>
+                <input
+                  className="input"
+                  type="number"
+                  inputMode="decimal"
+                  value={form.iceGrams ?? ''}
+                  onChange={(e) => set({ iceGrams: num(e.target.value) })}
+                />
+              </Field>
+            </div>
+          )}
+
+          {/* brewer is common to brew, flash, and steep styles */}
           <div className="grid grid-cols-2 gap-3">
             <Field label={t('recipe.brewer')}>
               <select className="input" value={form.gearId ?? ''} onChange={(e) => set({ gearId: e.target.value || undefined })}>
@@ -287,26 +340,112 @@ export default function RecipeFormPage() {
               </select>
               <InlineGearAdd type="brewer" onAdded={(id) => set({ gearId: id })} />
             </Field>
-            <Field label={t('recipe.totalTime')}>
-              <ClockInput value={form.totalTimeSec} onChange={(secs) => set({ totalTimeSec: secs })} />
-            </Field>
-          </div>
-          <div>
-            <span className="label">{t('recipe.steps')}</span>
-            <BrewSteps value={form.steps ?? []} onChange={(steps) => set({ steps })} />
-            {(stepTotals.water || stepTotals.time) && !totalsMatch && (
-              <button
-                type="button"
-                className="btn-ghost mt-2 w-full !py-1.5 text-sm"
-                onClick={() => set({ yieldOut: stepTotals.water, totalTimeSec: stepTotals.time })}
-              >
-                {t('recipe.applyTotals', {
-                  water: stepTotals.water ?? 0,
-                  time: stepTotals.time ? formatSeconds(stepTotals.time) : '—',
-                })}
-              </button>
+            {usesSteep ? (
+              <Field label={t('coldbrew.steepHours')}>
+                <input
+                  className="input"
+                  type="number"
+                  inputMode="decimal"
+                  value={form.steepHours ?? ''}
+                  onChange={(e) => set({ steepHours: num(e.target.value) })}
+                />
+              </Field>
+            ) : (
+              <Field label={t('recipe.totalTime')}>
+                <ClockInput value={form.totalTimeSec} onChange={(secs) => set({ totalTimeSec: secs })} />
+              </Field>
             )}
           </div>
+
+          {usesSteep ? (
+            <>
+              {/* concentrate → dilution */}
+              <div className="grid grid-cols-2 items-end gap-3">
+                <label className="flex items-center gap-2 pb-2 text-sm font-medium">
+                  <input
+                    type="checkbox"
+                    checked={!!form.concentrate}
+                    onChange={(e) => set({ concentrate: e.target.checked ? 1 : 0 })}
+                  />
+                  {t('coldbrew.concentrate')}
+                </label>
+                {form.concentrate ? (
+                  <Field label={t('coldbrew.dilution')}>
+                    <input
+                      className="input"
+                      type="number"
+                      inputMode="decimal"
+                      value={form.dilutionRatio ?? ''}
+                      onChange={(e) => set({ dilutionRatio: num(e.target.value) })}
+                    />
+                  </Field>
+                ) : (
+                  <div />
+                )}
+              </div>
+
+              {/* optional hot bloom before the cold fill */}
+              <div>
+                <span className="label">{t('coldbrew.hotBloom')}</span>
+                <div className="grid grid-cols-3 gap-3">
+                  <Field label={t('coldbrew.hotBloomWater')}>
+                    <input
+                      className="input"
+                      type="number"
+                      inputMode="decimal"
+                      value={form.hotBloom?.water || ''}
+                      onChange={(e) => setBloom({ water: num(e.target.value) ?? 0 })}
+                    />
+                  </Field>
+                  <Field label={`${t('coldbrew.hotBloomTemp')} (°${tempUnit})`}>
+                    <input
+                      className="input"
+                      type="number"
+                      inputMode="decimal"
+                      value={
+                        form.hotBloom?.tempC == null
+                          ? ''
+                          : tempUnit === 'C'
+                            ? form.hotBloom.tempC
+                            : cToF(form.hotBloom.tempC)
+                      }
+                      onChange={(e) => {
+                        const v = num(e.target.value)
+                        setBloom({ tempC: v == null ? undefined : tempUnit === 'C' ? v : fToC(v) })
+                      }}
+                    />
+                  </Field>
+                  <Field label={t('coldbrew.hotBloomSec')}>
+                    <input
+                      className="input"
+                      type="number"
+                      inputMode="decimal"
+                      value={form.hotBloom?.sec ?? ''}
+                      onChange={(e) => setBloom({ sec: num(e.target.value) })}
+                    />
+                  </Field>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div>
+              {isFlash && <p className="mb-2 text-xs text-muted">{t('coldbrew.flashHint')}</p>}
+              <span className="label">{t('recipe.steps')}</span>
+              <BrewSteps value={form.steps ?? []} onChange={(steps) => set({ steps })} />
+              {(stepTotals.water || stepTotals.time) && !totalsMatch && (
+                <button
+                  type="button"
+                  className="btn-ghost mt-2 w-full !py-1.5 text-sm"
+                  onClick={() => set({ yieldOut: stepTotals.water, totalTimeSec: stepTotals.time })}
+                >
+                  {t('recipe.applyTotals', {
+                    water: stepTotals.water ?? 0,
+                    time: stepTotals.time ? formatSeconds(stepTotals.time) : '—',
+                  })}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
 

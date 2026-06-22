@@ -15,4 +15,10 @@ export const SEED_GEAR: SeedGear[] = [
   { name: 'Moka Pot', type: 'brewer' },
   { name: 'Switch (Hario)', type: 'brewer' },
   { name: 'Cupping bowl', type: 'brewer' },
+  // Cold brew — immersion
+  { name: 'Toddy Cold Brew', type: 'brewer' },
+  { name: 'Hario Mizudashi', type: 'brewer' },
+  { name: 'OXO Cold Brew', type: 'brewer' },
+  // Cold brew — slow drip (Kyoto / Dutch tower)
+  { name: 'Yama Cold Drip Tower', type: 'brewer' },
 ]

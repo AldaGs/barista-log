@@ -15,6 +15,7 @@ export function RecipeSummaryCard({ recipe, featured }: { recipe: Recipe; featur
     () => (recipe.beanId ? db.beans.get(recipe.beanId) : undefined),
     [recipe.beanId],
   )
+  const isSteep = recipe.method === 'coldbrew' && recipe.coldBrewStyle !== 'flash'
   const time = recipe.method === 'espresso' ? recipe.shotTimeSec : recipe.totalTimeSec
 
   return (
@@ -54,11 +55,15 @@ export function RecipeSummaryCard({ recipe, featured }: { recipe: Recipe; featur
             <Droplets size={15} /> {recipe.doseIn}g → {recipe.yieldOut ?? '—'}g
           </span>
         )}
-        {time != null && (
+        {isSteep && recipe.steepHours != null ? (
+          <span className="inline-flex items-center gap-1">
+            <Timer size={15} /> {recipe.steepHours}h
+          </span>
+        ) : time != null ? (
           <span className="inline-flex items-center gap-1">
             <Timer size={15} /> {formatSeconds(time)}
           </span>
-        )}
+        ) : null}
         {recipe.waterTemp != null && <span>{formatTemp(recipe.waterTemp, tempUnit)}</span>}
       </div>
     </Link>

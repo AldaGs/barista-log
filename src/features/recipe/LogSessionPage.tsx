@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
@@ -10,6 +10,9 @@ import { FlavorWheel } from '@/components/FlavorWheel'
 import { PhotoInput } from '@/components/PhotoInput'
 import { formatSeconds } from '@/lib/units'
 import { useBrewPlayer } from '@/store/brewPlayer'
+import { useColdSteep, steepElapsedMs } from '@/store/coldSteep'
+
+const num = (v: string) => (v === '' ? undefined : Number(v))
 
 /** Actual timeline handed over from the guided brew player via router state. */
 interface BrewActual {
@@ -39,6 +42,7 @@ export default function LogSessionPage() {
   const actual = (useLocation().state ?? {}) as BrewActual
   const closeBrew = useBrewPlayer((s) => s.close)
   const activeRecipeId = useBrewPlayer((s) => s.recipeId)
+  const steep = useColdSteep()
   const recipe = useLiveQuery(() => (id ? db.recipes.get(id) : undefined), [id])
   const bean = useLiveQuery(
     () => (recipe?.beanId ? db.beans.get(recipe.beanId) : undefined),
@@ -53,6 +57,18 @@ export default function LogSessionPage() {
   const [tds, setTds] = useState('')
   const [beverageWeight, setBeverageWeight] = useState('')
   const [photo, setPhoto] = useState<Blob | undefined>()
+  // Cold-brew steep duration (hours). Prefilled once from the running steep
+  // timer (actual elapsed) or the recipe's planned steep as a fallback.
+  const [actualSteepHours, setActualSteepHours] = useState('')
+  const prefilled = useRef(false)
+  const isSteep = recipe?.method === 'coldbrew' && recipe.coldBrewStyle !== 'flash'
+  useEffect(() => {
+    if (prefilled.current || !recipe || !isSteep) return
+    const active = steep.recipeId === recipe.id
+    const hrs = active ? steepElapsedMs(steep) / 3_600_000 : recipe.steepHours
+    if (hrs != null) setActualSteepHours(hrs.toFixed(1))
+    prefilled.current = true
+  }, [recipe, isSteep, steep])
 
   if (recipe === undefined) return null
   if (!recipe) return <p className="text-muted">Not found.</p>
@@ -75,11 +91,13 @@ export default function LogSessionPage() {
       beverageWeight: beverageWeight === '' ? undefined : Number(beverageWeight),
       actualTotalSec: actual.actualTotalSec,
       actualLaps: actual.actualLaps?.length ? actual.actualLaps : undefined,
+      actualSteepHours: isSteep ? num(actualSteepHours) : undefined,
       photo,
       notes,
     })
-    // The brew is now recorded — tear down the persistent player session.
+    // The brew is now recorded — tear down the persistent player / steep session.
     if (activeRecipeId === recipe.id) closeBrew()
+    if (steep.recipeId === recipe.id) steep.stop()
     navigate('/history')
   }
 
@@ -114,6 +132,22 @@ export default function LogSessionPage() {
             </p>
           ) : null}
         </div>
+      )}
+
+      {isSteep && (
+        <Field
+          label={t('coldbrew.steepHours')}
+          hint={recipe.steepHours ? t('coldbrew.plannedSteep', { hours: recipe.steepHours }) : undefined}
+        >
+          <input
+            className="input"
+            type="number"
+            inputMode="decimal"
+            step="0.1"
+            value={actualSteepHours}
+            onChange={(e) => setActualSteepHours(e.target.value)}
+          />
+        </Field>
       )}
 
       <Field label={t('session.when')}>
@@ -158,7 +192,7 @@ export default function LogSessionPage() {
               step="0.01"
               value={tds}
               onChange={(e) => setTds(e.target.value)}
-              placeholder={recipe.method === 'espresso' ? '10' : '1.35'}
+              placeholder={recipe.method === 'espresso' ? '10' : isSteep && recipe.concentrate ? '4.5' : '1.35'}
             />
           </Field>
           <Field label={t('session.beverageWeight')} hint={t('common.optional')}>

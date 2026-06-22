@@ -119,7 +119,29 @@
   "method": {
     "espresso": "Espresso",
     "brew": "Filtrado",
+    "coldbrew": "Cold brew",
     "label": "Método"
+  },
+  "coldbrew": {
+    "style": "Estilo",
+    "styleImmersion": "Inmersión",
+    "styleSlowDrip": "Goteo lento",
+    "styleFlash": "Flash (con hielo)",
+    "steepHours": "Tiempo de reposo (h)",
+    "ice": "Hielo (g)",
+    "concentrate": "Concentrado",
+    "dilution": "Diluir 1:",
+    "hotBloom": "Preinfusión caliente",
+    "hotBloomWater": "Agua de preinfusión (g)",
+    "hotBloomTemp": "Temp. preinfusión",
+    "hotBloomSec": "Preinfusión (s)",
+    "flashHint": "Café caliente vertido sobre hielo — mantiene el esquema de vertidos abajo.",
+    "startSteep": "Iniciar reposo",
+    "plannedSteep": "planeado {{hours}}h",
+    "steeping": "Reposando en frío",
+    "ready": "listo {{time}}",
+    "readyNow": "listo ahora",
+    "stopSteep": "Detener reposo"
   },
   "home": {
     "latest": "Última receta",
@@ -293,7 +315,8 @@
     "confirmDelete": "¿Eliminar esta preparación registrada?",
     "tdsValue": "{{value}}% TDS",
     "bevValue": "{{value}} g de bebida",
-    "actualValue": "{{value}} de preparación"
+    "actualValue": "{{value}} de preparación",
+    "steepValue": "{{value}}h de reposo"
   },
   "stats": {
     "title": "Estadísticas",

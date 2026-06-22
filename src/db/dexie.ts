@@ -105,10 +105,14 @@ export async function ensureSeedData() {
     }
   }
 
-  // Seed common brewers once (names are stable, so no reconcile needed).
-  if ((await db.gear.count()) === 0) {
+  // Seed common brewers, appending any new shipped names on later runs so added
+  // brewers (e.g. cold-brew gear) reach existing installs. Names are stable, so
+  // we only ever add — never touch user-added or already-seeded rows.
+  const existingGearNames = new Set((await db.gear.toArray()).map((g) => g.name))
+  const missingGear = SEED_GEAR.filter((g) => !existingGearNames.has(g.name))
+  if (missingGear.length) {
     await db.gear.bulkAdd(
-      SEED_GEAR.map((g) => ({
+      missingGear.map((g) => ({
         ...g,
         id: uid(),
         seeded: 1,

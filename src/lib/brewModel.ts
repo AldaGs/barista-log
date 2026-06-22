@@ -29,21 +29,33 @@ const RETAINED_PER_GRAM = 2
 export const IDEAL = {
   espresso: { ext: [18, 22] as const, tds: [8, 12] as const },
   brew: { ext: [18, 22] as const, tds: [1.15, 1.45] as const },
+  // Cold brew extracts a touch lower (no heat); window is the *served* strength.
+  // NB: a concentrate plots well above this until diluted — see beverageWeight TODO.
+  coldbrew: { ext: [16, 20] as const, tds: [1.1, 1.5] as const },
 }
 
 /** Plotting bounds, by method. */
 export const AXIS = {
   espresso: { ext: [14, 26] as const, tds: [6, 14] as const },
   brew: { ext: [14, 26] as const, tds: [0.8, 1.8] as const },
+  coldbrew: { ext: [12, 24] as const, tds: [0.8, 1.8] as const },
 }
 
 /** Beverage mass in the cup (g). Uses logged value if present, else estimates. */
 export function beverageWeight(p: Partial<Recipe>, override?: number): number | null {
   if (override && override > 0) return override
   if (p.method === 'espresso') return p.yieldOut ?? null
-  // brew: water poured minus water retained by the grounds
-  if (p.yieldOut && p.doseIn) return Math.max(p.yieldOut - p.doseIn * RETAINED_PER_GRAM, 1)
-  return null
+  if (!p.yieldOut || !p.doseIn) return null
+  // brew/cold: water poured minus water retained by the grounds
+  let bev = Math.max(p.yieldOut - p.doseIn * RETAINED_PER_GRAM, 1)
+  if (p.method === 'coldbrew') {
+    // Plot the strength of what's actually *drunk*: flash brew is cut by the
+    // melting ice, and a concentrate is cut by its serving dilution. Extraction
+    // (x-axis) is unchanged — dilution only moves strength (y-axis).
+    if (p.coldBrewStyle === 'flash') bev += p.iceGrams ?? 0
+    else if (p.concentrate && p.dilutionRatio) bev *= 1 + p.dilutionRatio
+  }
+  return bev
 }
 
 /**
@@ -70,6 +82,8 @@ export function estimateExtraction(p: Partial<Recipe>, grinderMicronsPerClick?: 
     // agitation steps each bump extraction.
     const agitations = (p.steps ?? []).filter((s) => s.type === 'agitation').length
     ey += agitations * 0.5
+    // cold steep: longer contact pulls more, but gently (ref 16h).
+    if (p.method === 'coldbrew' && p.steepHours) ey += (p.steepHours - 16) * 0.2
   }
 
   // Grind size, only when we can resolve microns (finer = more surface = more EY).

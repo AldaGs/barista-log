@@ -26,6 +26,12 @@ export function RecipeCard({
   const { t } = useTranslation()
   const unit = useSettings((s) => s.tempUnit)
   const isEspresso = recipe.method === 'espresso'
+  const isCold = recipe.method === 'coldbrew'
+  // Flash (iced) is hot-brewed onto ice, so it keeps the brew pour schedule;
+  // immersion & slow-drip use a steep duration instead.
+  const isFlash = isCold && recipe.coldBrewStyle === 'flash'
+  const isSteep = isCold && !isFlash
+  const bloom = recipe.hotBloom
 
   return (
     <div className="card overflow-hidden">
@@ -35,11 +41,17 @@ export function RecipeCard({
         {beanName && <p className="text-sm opacity-90">{beanName}</p>}
       </div>
       <div className="px-4 py-2">
-        <Row label={t('recipe.ratio')} value={recipe.ratio ? `1:${recipe.ratio}` : null} />
+        <Row
+          label={t('recipe.ratio')}
+          value={recipe.ratio ? `1:${recipe.ratio}${isSteep && recipe.concentrate ? ` · ${t('coldbrew.concentrate')}` : ''}` : null}
+        />
         <Row label={t('recipe.doseIn')} value={recipe.doseIn} />
         <Row label={isEspresso ? t('recipe.yieldOut') : t('recipe.waterAmount')} value={recipe.yieldOut} />
         <Row label={t('recipe.grind')} value={recipe.grindClicks ?? recipe.grindLabel} />
-        <Row label={t('recipe.waterTemp')} value={recipe.waterTemp != null ? formatTemp(recipe.waterTemp, unit) : null} />
+        {/* immersion/slow-drip use cold water; only the optional bloom is hot */}
+        {!isSteep && (
+          <Row label={t('recipe.waterTemp')} value={recipe.waterTemp != null ? formatTemp(recipe.waterTemp, unit) : null} />
+        )}
         {isEspresso ? (
           <>
             <Row label={t('gear.machine')} value={gearName} />
@@ -47,15 +59,34 @@ export function RecipeCard({
             <Row label={t('recipe.pressure')} value={recipe.pressureBar} />
             <Row label={t('recipe.preInfusion')} value={recipe.preInfusionSec} />
           </>
+        ) : isSteep ? (
+          <>
+            <Row label={t('coldbrew.style')} value={t('coldbrew.style' + (recipe.coldBrewStyle === 'slow-drip' ? 'SlowDrip' : 'Immersion'))} />
+            <Row label={t('recipe.brewer')} value={gearName ?? recipe.brewer} />
+            <Row label={t('coldbrew.steepHours')} value={recipe.steepHours != null ? `${recipe.steepHours} h` : null} />
+            {bloom?.water ? (
+              <Row
+                label={t('coldbrew.hotBloom')}
+                value={[
+                  `${bloom.water} g`,
+                  bloom.tempC != null ? formatTemp(bloom.tempC, unit) : null,
+                  bloom.sec != null ? formatSeconds(bloom.sec) : null,
+                ].filter(Boolean).join(' · ')}
+              />
+            ) : null}
+            <Row label={t('coldbrew.ice')} value={recipe.iceGrams != null ? `${recipe.iceGrams} g` : null} />
+            <Row label={t('coldbrew.dilution')} value={recipe.concentrate && recipe.dilutionRatio ? `1:${recipe.dilutionRatio}` : null} />
+          </>
         ) : (
           <>
             <Row label={t('recipe.brewer')} value={gearName ?? recipe.brewer} />
             <Row label={t('recipe.totalTime')} value={formatSeconds(recipe.totalTimeSec)} />
             <Row label={t('recipe.bloom')} value={recipe.bloomSec} />
             <Row label={t('recipe.pours')} value={recipe.pours} />
+            {isFlash && <Row label={t('coldbrew.ice')} value={recipe.iceGrams != null ? `${recipe.iceGrams} g` : null} />}
           </>
         )}
-        {recipe.steps && recipe.steps.length > 0 && (
+        {!isSteep && recipe.steps && recipe.steps.length > 0 && (
           <div className="mt-3">
             <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
               {t('recipe.steps')}

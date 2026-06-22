@@ -3,9 +3,10 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { format } from 'date-fns'
-import { Pencil, Copy, Trash2, Share2, Play, Check, GitFork, AlertTriangle, Send, Star, GitCompare } from 'lucide-react'
+import { Pencil, Copy, Trash2, Share2, Play, Check, GitFork, AlertTriangle, Send, Star, GitCompare, Snowflake, X } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { deleteRecipe, toggleFavorite } from '@/db/repo'
+import { useColdSteep } from '@/store/coldSteep'
 import { PageHeader } from '@/components/ui'
 import { RecipeCard } from './RecipeCard'
 import { BrewChart } from '@/components/BrewChart'
@@ -22,6 +23,7 @@ export default function RecipeDetailPage() {
   const cardRef = useRef<HTMLDivElement>(null)
   const [showShare, setShowShare] = useState(false)
 
+  const steep = useColdSteep()
   const recipe = useLiveQuery(() => (id ? db.recipes.get(id) : undefined), [id])
   const bean = useLiveQuery(
     () => (recipe?.beanId ? db.beans.get(recipe.beanId) : undefined),
@@ -111,20 +113,54 @@ export default function RecipeDetailPage() {
         </div>
       )}
 
-      {recipe.method === 'brew' && recipe.steps && recipe.steps.length > 0 ? (
-        <div className="flex gap-2">
-          <Link to={`/recipe/${recipe.id}/brew`} className="btn-primary flex-1">
-            <Play size={18} /> {t('play.title')}
-          </Link>
+      {(() => {
+        const isSteep = recipe.method === 'coldbrew' && recipe.coldBrewStyle !== 'flash'
+        // brew and flash both run the guided second-clock player.
+        const guided =
+          !isSteep && recipe.steps && recipe.steps.length > 0 &&
+          (recipe.method === 'brew' || recipe.method === 'coldbrew')
+        const logBtn = (
           <Link to={`/recipe/${recipe.id}/log`} className="btn-ghost flex-1">
             <Check size={18} /> {t('session.logBrew')}
           </Link>
-        </div>
-      ) : (
-        <Link to={`/recipe/${recipe.id}/log`} className="btn-ghost w-full">
-          <Check size={18} /> {t('session.logBrew')}
-        </Link>
-      )}
+        )
+
+        if (isSteep) {
+          const active = steep.recipeId === recipe.id
+          return (
+            <div className="flex gap-2">
+              {active ? (
+                <button onClick={() => steep.stop()} className="btn-ghost flex-1">
+                  <X size={18} /> {t('coldbrew.stopSteep')}
+                </button>
+              ) : (
+                <button
+                  onClick={() => steep.begin(recipe.id, recipe.steepHours || 16)}
+                  className="btn-primary flex-1"
+                >
+                  <Snowflake size={18} /> {t('coldbrew.startSteep')}
+                </button>
+              )}
+              {logBtn}
+            </div>
+          )
+        }
+        if (guided) {
+          return (
+            <div className="flex gap-2">
+              <Link to={`/recipe/${recipe.id}/brew`} className="btn-primary flex-1">
+                <Play size={18} /> {t('play.title')}
+              </Link>
+              {logBtn}
+            </div>
+          )
+        }
+        return (
+          <Link to={`/recipe/${recipe.id}/log`} className="btn-ghost w-full">
+            <Check size={18} /> {t('session.logBrew')}
+          </Link>
+        )
+      })()}
 
       <div ref={cardRef}>
         <RecipeCard recipe={recipe} beanName={bean?.name} gearName={gear?.name} />

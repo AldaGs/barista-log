@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import { BottomNav } from './BottomNav'
 import { BrewResumeBar } from './BrewResumeBar'
+import { ColdSteepBar } from './ColdSteepBar'
 
 export function AppLayout() {
   return (
@@ -8,6 +9,7 @@ export function AppLayout() {
       <main className="flex-1 px-4 pb-24 pt-4">
         <Outlet />
       </main>
+      <ColdSteepBar />
       <BrewResumeBar />
       <BottomNav />
     </div>

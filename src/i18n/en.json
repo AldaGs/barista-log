@@ -119,7 +119,29 @@
   "method": {
     "espresso": "Espresso",
     "brew": "Brew",
+    "coldbrew": "Cold brew",
     "label": "Method"
+  },
+  "coldbrew": {
+    "style": "Style",
+    "styleImmersion": "Immersion",
+    "styleSlowDrip": "Slow drip",
+    "styleFlash": "Flash (iced)",
+    "steepHours": "Steep time (h)",
+    "ice": "Ice (g)",
+    "concentrate": "Concentrate",
+    "dilution": "Dilute 1:",
+    "hotBloom": "Hot bloom",
+    "hotBloomWater": "Bloom water (g)",
+    "hotBloomTemp": "Bloom temp",
+    "hotBloomSec": "Bloom (s)",
+    "flashHint": "Hot brew dropped onto ice — keeps the pour schedule below.",
+    "startSteep": "Start steeping",
+    "plannedSteep": "planned {{hours}}h",
+    "steeping": "Cold brewing",
+    "ready": "ready {{time}}",
+    "readyNow": "ready now",
+    "stopSteep": "Stop steep"
   },
   "home": {
     "latest": "Latest recipe",
@@ -293,7 +315,8 @@
     "confirmDelete": "Delete this logged brew?",
     "tdsValue": "{{value}}% TDS",
     "bevValue": "{{value}} g out",
-    "actualValue": "{{value}} brew time"
+    "actualValue": "{{value}} brew time",
+    "steepValue": "{{value}}h steep"
   },
   "stats": {
     "title": "Stats",

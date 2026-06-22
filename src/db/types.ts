@@ -1,4 +1,12 @@
-export type BrewMethod = 'espresso' | 'brew'
+export type BrewMethod = 'espresso' | 'brew' | 'coldbrew'
+/**
+ * Dedicated cold-brew styles. Each implies a different prep & timing model:
+ * - `immersion` — grounds fully submerged for hours (mason jar, Toddy, Mizudashi)
+ * - `slow-drip`  — cold water drips through the bed over hours (Kyoto/Dutch tower)
+ * - `flash`      — hot brew dropped straight onto ice ("Japanese iced"); reuses
+ *                  the hot `steps[]` schedule + `waterTemp`, just with `iceGrams`
+ */
+export type ColdBrewStyle = 'immersion' | 'slow-drip' | 'flash'
 export type GrinderType = 'hand' | 'electric'
 export type BurrType = 'conical' | 'flat'
 
@@ -91,6 +99,21 @@ export interface Gear extends SyncMeta {
   seeded?: number
 }
 
+/**
+ * Optional hot bloom kicked off *before* the cold fill. Many baristas wet the
+ * bed with a small hot pour to jump-start degassing/extraction, then top up
+ * with cold water and steep. Distinct from a brew `BrewStep` because it carries
+ * its own temperature and is measured against the steep, not the second-clock.
+ */
+export interface ColdBloom {
+  /** g of hot water for the bloom pour */
+  water: number
+  /** bloom temperature, °C (stored canonically like Recipe.waterTemp) */
+  tempC?: number
+  /** how long to let the hot bloom sit before the cold fill, seconds */
+  sec?: number
+}
+
 export interface FlavorScores {
   acidity?: number // 0-5
   body?: number
@@ -131,8 +154,22 @@ export interface Recipe extends SyncMeta {
   totalTimeSec?: number
   bloomSec?: number
   pours?: number
-  /** ordered pour/agitation schedule for brew recipes */
+  /** ordered pour/agitation schedule for brew recipes (also `flash` cold brew) */
   steps?: BrewStep[]
+
+  // cold-brew-specific (method = 'coldbrew')
+  coldBrewStyle?: ColdBrewStyle
+  /** total steep / drip duration, **hours** (fractional ok) — replaces the
+   *  seconds-based timer, which is meaningless at a 12–24h scale */
+  steepHours?: number
+  /** optional hot bloom before the cold fill */
+  hotBloom?: ColdBloom
+  /** 1 = yields a concentrate meant to be diluted before serving */
+  concentrate?: number
+  /** parts water/milk per part concentrate when serving (e.g. 3 → 1:3) */
+  dilutionRatio?: number
+  /** grams of ice — brewed onto (flash) or added to the glass when serving */
+  iceGrams?: number
 
   notes?: string
 }
@@ -156,6 +193,8 @@ export interface BrewSession extends SyncMeta {
   beverageWeight?: number
   /** actual total brew time as run in the guided player, seconds */
   actualTotalSec?: number
+  /** actual steep duration for cold brew, hours — measured by the steep timer */
+  actualSteepHours?: number
   /** actual checkpoint times the brewer marked during the pour, seconds from start */
   actualLaps?: number[]
   notes?: string
