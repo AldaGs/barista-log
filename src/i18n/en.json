@@ -399,7 +399,9 @@
     "recipeTitle": "Share recipe",
     "recipeHint": "Scan the QR or share the link. It contains the full recipe — no account needed.",
     "copyLink": "Copy link",
-    "copied": "Copied!"
+    "copied": "Copied!",
+    "expiresIn_one": "This link expires in {{count}} day.",
+    "expiresIn_other": "This link expires in {{count}} days."
   },
   "import": {
     "title": "Import recipe",

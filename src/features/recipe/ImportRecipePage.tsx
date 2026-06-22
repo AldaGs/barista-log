@@ -1,20 +1,44 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Download, Coffee } from 'lucide-react'
 import { PageHeader, EmptyState } from '@/components/ui'
-import { decodePayload, importPayload } from '@/lib/recipeShare'
+import { decodePayload, fetchSharedCode, importPayload, type SharePayload } from '@/lib/recipeShare'
 import { estimateMicrons } from '@/lib/grindConvert'
 
-/** Landing page for shared-recipe links: /import#<payload>. Previews then imports. */
+/**
+ * Landing page for shared-recipe links. Supports two link shapes:
+ *   /import#<payload>   — self-contained fragment (no backend)
+ *   /import?s=<id>      — short link resolved from the backend (Vercel KV)
+ * Previews the recipe, then imports.
+ */
 export default function ImportRecipePage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [busy, setBusy] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [payload, setPayload] = useState<SharePayload | null>(null)
 
-  const payload = useMemo(() => {
-    const code = window.location.hash.replace(/^#/, '')
-    return code ? decodePayload(code) : null
+  useEffect(() => {
+    let alive = true
+    async function resolve() {
+      const fragment = window.location.hash.replace(/^#/, '')
+      if (fragment) return decodePayload(fragment)
+      const id = new URLSearchParams(window.location.search).get('s')
+      if (id) {
+        const code = await fetchSharedCode(id)
+        return code ? decodePayload(code) : null
+      }
+      return null
+    }
+    resolve().then((p) => {
+      if (!alive) return
+      setPayload(p)
+      setLoading(false)
+    })
+    return () => {
+      alive = false
+    }
   }, [])
 
   async function doImport() {
@@ -22,6 +46,15 @@ export default function ImportRecipePage() {
     setBusy(true)
     const id = await importPayload(payload)
     navigate(`/recipe/${id}`, { replace: true })
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <PageHeader title={t('import.title')} back />
+        <div className="card h-40 animate-pulse" />
+      </div>
+    )
   }
 
   if (!payload) {

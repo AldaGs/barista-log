@@ -3,21 +3,29 @@ import { useTranslation } from 'react-i18next'
 import QRCode from 'qrcode'
 import { X, Copy, Check, Share2 } from 'lucide-react'
 import type { Recipe } from '@/db/types'
-import { buildSharePayload, encodePayload, shareUrl } from '@/lib/recipeShare'
+import { buildSharePayload, encodePayload, shareUrl, createShortLink } from '@/lib/recipeShare'
 
-/** Modal that turns a recipe into an importable link + QR code (no backend). */
+/**
+ * Modal that turns a recipe into an importable link + QR code. Prefers a short
+ * backend-hosted link (Vercel KV) so the URL/QR stay tidy, and falls back to a
+ * self-contained fragment link when the share service isn't available.
+ */
 export function ShareRecipeSheet({ recipe, onClose }: { recipe: Recipe; onClose: () => void }) {
   const { t } = useTranslation()
   const [url, setUrl] = useState('')
   const [qr, setQr] = useState('')
   const [copied, setCopied] = useState(false)
+  const [expiresInDays, setExpiresInDays] = useState<number | null>(null)
 
   useEffect(() => {
     let alive = true
-    buildSharePayload(recipe).then((payload) => {
-      const u = shareUrl(encodePayload(payload))
+    buildSharePayload(recipe).then(async (payload) => {
+      const code = encodePayload(payload)
+      const short = await createShortLink(code)
       if (!alive) return
+      const u = short?.url ?? shareUrl(code)
       setUrl(u)
+      setExpiresInDays(short?.expiresInDays ?? null)
       // Level 'L' + a wide render keeps the modules large and low-density so
       // budget phone cameras can lock on.
       QRCode.toDataURL(u, { width: 640, margin: 2, errorCorrectionLevel: 'L' })
@@ -60,6 +68,12 @@ export function ShareRecipeSheet({ recipe, onClose }: { recipe: Recipe; onClose:
         </div>
 
         <p className="text-sm text-muted">{t('share.recipeHint')}</p>
+
+        {expiresInDays != null && (
+          <p className="rounded-lg bg-surface-2 px-3 py-2 text-center text-xs text-muted">
+            {t('share.expiresIn', { count: expiresInDays })}
+          </p>
+        )}
 
         <div className="flex justify-center">
           {qr ? (

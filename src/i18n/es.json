@@ -399,7 +399,9 @@
     "recipeTitle": "Compartir receta",
     "recipeHint": "Escanea el QR o comparte el enlace. Contiene la receta completa — sin cuenta.",
     "copyLink": "Copiar enlace",
-    "copied": "¡Copiado!"
+    "copied": "¡Copiado!",
+    "expiresIn_one": "Este enlace caduca en {{count}} día.",
+    "expiresIn_other": "Este enlace caduca en {{count}} días."
   },
   "import": {
     "title": "Importar receta",

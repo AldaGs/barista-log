@@ -125,9 +125,52 @@ export function decodePayload(code: string): SharePayload | null {
   }
 }
 
-/** Build the full importable URL for a payload. */
+/** Build the full importable URL for a payload (self-contained fragment link). */
 export function shareUrl(code: string): string {
   return `${location.origin}/import#${code}`
+}
+
+/** Build a short importable URL from a backend-issued id. */
+export function shortShareUrl(id: string): string {
+  return `${location.origin}/import?s=${id}`
+}
+
+export interface ShortLink {
+  url: string
+  expiresInDays: number
+}
+
+/**
+ * Stash an encoded payload in the backend (Vercel KV) and return a short link.
+ * Returns null if the share service isn't available so callers can fall back to
+ * a self-contained fragment link.
+ */
+export async function createShortLink(code: string): Promise<ShortLink | null> {
+  try {
+    const res = await fetch('/api/share', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: code }),
+    })
+    if (!res.ok) return null
+    const { id, expiresInDays } = (await res.json()) as { id?: string; expiresInDays?: number }
+    if (!id) return null
+    return { url: shortShareUrl(id), expiresInDays: expiresInDays ?? 30 }
+  } catch {
+    return null
+  }
+}
+
+/** Resolve a short-link id back to its encoded payload string. */
+export async function fetchSharedCode(id: string): Promise<string | null> {
+  try {
+    const res = await fetch(`/api/share?id=${encodeURIComponent(id)}`)
+    if (!res.ok) return null
+    const { data } = (await res.json()) as { data?: string }
+    return data ?? null
+  } catch {
+    return null
+  }
 }
 
 const sameName = (a?: string, b?: string) =>
