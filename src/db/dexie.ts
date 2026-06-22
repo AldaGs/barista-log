@@ -11,6 +11,7 @@ import type {
 } from './types'
 import { SEED_GRINDERS } from './seedGrinders'
 import { SEED_GEAR } from './seedGear'
+import { SEED_RECIPES } from './seedRecipes'
 
 /** Tombstone so deletes propagate to the cloud and to other devices. */
 export interface Deletion {
@@ -65,6 +66,9 @@ class BaristaDB extends Dexie {
 
 export const db = new BaristaDB()
 
+/** localStorage marker so starter recipes seed exactly once per device. */
+const RECIPE_SEED_FLAG = 'slurry-seeded-recipes'
+
 /**
  * Insert shipped grinders on first run, and reconcile reference values on later
  * runs so corrections (e.g. a fixed microns-per-click) reach existing installs.
@@ -114,5 +118,25 @@ export async function ensureSeedData() {
         updatedAt: ts,
       })),
     )
+  }
+
+  // Seed starter recipes once per device so a brand-new app isn't empty. Gated
+  // by a flag (not just an empty count) so they never come back after the user
+  // deletes them, and kept local (dirty: 0) so they don't sync to the cloud.
+  if (!localStorage.getItem(RECIPE_SEED_FLAG) && (await db.recipes.count()) === 0) {
+    const gearByName = new Map((await db.gear.toArray()).map((g) => [g.name, g.id]))
+    await db.recipes.bulkAdd(
+      SEED_RECIPES.map(({ gearName, steps, ...r }) => ({
+        ...r,
+        id: uid(),
+        gearId: gearName ? gearByName.get(gearName) : undefined,
+        steps: steps?.map((s) => ({ ...s, id: uid() })),
+        dirty: 0,
+        syncedAt: null,
+        createdAt: ts,
+        updatedAt: ts,
+      })) as Recipe[],
+    )
+    localStorage.setItem(RECIPE_SEED_FLAG, '1')
   }
 }
