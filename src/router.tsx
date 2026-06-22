@@ -18,6 +18,8 @@ import GearPage from './features/gear/GearPage'
 import SettingsPage from './features/settings/SettingsPage'
 import ProfilePage from './features/profile/ProfilePage'
 import HelpPage from './features/help/HelpPage'
+import GymPage from './features/gym/GymPage'
+import PracticePage from './features/gym/PracticePage'
 
 export const router = createBrowserRouter([
   {
@@ -32,6 +34,8 @@ export const router = createBrowserRouter([
       { path: 'recipe/:id/edit', element: <RecipeFormPage /> },
       { path: 'recipe/:id/brew', element: <BrewPlayPage /> },
       { path: 'recipe/:id/shot', element: <EspressoShotPage /> },
+      { path: 'recipe/:id/practice', element: <PracticePage /> },
+      { path: 'gym', element: <GymPage /> },
       { path: 'recipe/:id/log', element: <LogSessionPage /> },
       { path: 'history', element: <HistoryPage /> },
       { path: 'stats', element: <StatsPage /> },

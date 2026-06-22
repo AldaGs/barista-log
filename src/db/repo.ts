@@ -35,6 +35,114 @@ export function withRatio<T extends Partial<Recipe>>(r: T): T {
   return r
 }
 
+// ---- Recipe naming -------------------------------------------------------
+const VERSION_RE = /\s+v(\d+(?:\.\d+)*)$/i
+const LEGACY_TAG_RE = /\s*\((?:fork|copy)\)\s*$/i
+
+/**
+ * Split a recipe title into its family base name and version path.
+ * Version "1" means the original. Legacy "(fork)"/"(copy)" suffixes are stripped.
+ * e.g. "Origami v3.1" → { base: "Origami", version: "3.1" }
+ */
+export function parseFamily(title: string | undefined): { base: string; version: string } {
+  let base = (title ?? '').trim()
+  let version = '1'
+  const m = base.match(VERSION_RE)
+  if (m) {
+    version = m[1]
+    base = base.slice(0, m.index).trim()
+  }
+  while (LEGACY_TAG_RE.test(base)) base = base.replace(LEGACY_TAG_RE, '').trim()
+  return { base, version }
+}
+
+/**
+ * Title for a new fork, cascading off its parent's lineage:
+ * forks of the original get v2, v3…; forks of vN get vN.1, vN.2…
+ * so the title mirrors the position in the fork tree and never stacks.
+ */
+export async function nextForkTitle(parent: Recipe): Promise<string> {
+  const { base, version } = parseFamily(parent.title)
+  const siblings = await db.recipes.where('forkedFromId').equals(parent.id).count()
+  const next = version === '1' ? `${siblings + 2}` : `${version}.${siblings + 1}`
+  return base ? `${base} v${next}` : `v${next}`
+}
+
+/** Title for an unlinked copy — non-stacking, drops any inherited version/fork tag. */
+export function copyTitle(source: Recipe): string {
+  const { base } = parseFamily(source.title)
+  return base ? `${base} (copy)` : '(copy)'
+}
+
+/** Reduce a trailing run of repeated "(fork)"/"(copy)" tags to just the last one. */
+function collapseLegacyTags(title: string): string {
+  const m = title.match(/^(.*?)((?:\s*\((?:fork|copy)\)){2,})\s*$/i)
+  if (!m) return title
+  const tags = m[2].match(/\((?:fork|copy)\)/gi)!
+  return `${m[1].trim()} ${tags[tags.length - 1]}`.trim()
+}
+
+const FORK_TITLES_MIGRATED = 'slurry-fork-titles-migrated-v1'
+
+/**
+ * One-time cleanup of legacy fork/copy titles. Walks each lineage tree and
+ * renames every linked fork to the cascade version scheme (v2, v3, v3.1…) so
+ * names stop stacking "(fork) (fork)". Standalone recipes only get repeated
+ * tags collapsed; their base name is left intact. Idempotent and gated by a
+ * per-device flag; renamed rows are marked dirty so the fix syncs.
+ */
+export async function migrateForkTitles(): Promise<number> {
+  if (localStorage.getItem(FORK_TITLES_MIGRATED)) return 0
+
+  const all = await db.recipes.toArray()
+  const byId = new Map(all.map((r) => [r.id, r]))
+  const children = new Map<string, Recipe[]>()
+  for (const r of all) {
+    const p = r.forkedFromId
+    if (p && byId.has(p) && p !== r.id) {
+      const list = children.get(p) ?? []
+      list.push(r)
+      children.set(p, list)
+    }
+  }
+  for (const list of children.values()) {
+    list.sort((a, b) => (a.createdAt ?? 0) - (b.createdAt ?? 0))
+  }
+
+  const newTitle = new Map<string, string>()
+
+  // Assign cascade versions to every fork, top-down from each tree's root.
+  const walk = (node: Recipe, base: string, version: string) => {
+    const kids = children.get(node.id) ?? []
+    kids.forEach((kid, i) => {
+      const v = version === '1' ? `${i + 2}` : `${version}.${i + 1}`
+      newTitle.set(kid.id, base ? `${base} v${v}` : `v${v}`)
+      walk(kid, base, v)
+    })
+  }
+  const roots = all.filter((r) => !r.forkedFromId || !byId.has(r.forkedFromId))
+  for (const root of roots) {
+    // Roots keep their name; just collapse any stacked tags they happen to have.
+    const collapsed = collapseLegacyTags(root.title ?? '')
+    if (collapsed !== (root.title ?? '')) newTitle.set(root.id, collapsed)
+    walk(root, parseFamily(root.title).base, '1')
+  }
+
+  let changed = 0
+  const ts = now()
+  for (const r of all) {
+    const nt = newTitle.get(r.id)
+    if (nt != null && nt !== r.title) {
+      await db.recipes.update(r.id, { title: nt, dirty: 1, updatedAt: ts })
+      changed++
+    }
+  }
+
+  localStorage.setItem(FORK_TITLES_MIGRATED, '1')
+  if (changed) triggerSync()
+  return changed
+}
+
 // ---- Recipes -------------------------------------------------------------
 export async function saveRecipe(
   data: Omit<Recipe, keyof NewMeta> & Partial<Pick<Recipe, 'id'>>,

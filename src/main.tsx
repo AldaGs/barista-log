@@ -4,6 +4,7 @@ import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { ensureSeedData } from './db/dexie'
+import { migrateForkTitles } from './db/repo'
 import { initSync } from './sync/syncManager'
 import { ensurePersistence } from './lib/storage'
 import './lib/pwa' // registers the beforeinstallprompt capture early
@@ -24,6 +25,8 @@ window
   .addEventListener('change', applyAppearance)
 
 ensureSeedData()
+// One-time cleanup of legacy stacked "(fork)" titles → cascade versions.
+migrateForkTitles()
 initSync()
 // Ask the browser to keep our IndexedDB data durable (not auto-evicted).
 ensurePersistence()

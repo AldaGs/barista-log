@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { format } from 'date-fns'
-import { Pencil, Copy, Trash2, Share2, Play, Check, GitFork, GitMerge, AlertTriangle, Send, Star, GitCompare, Snowflake, X } from 'lucide-react'
+import { Pencil, Copy, Trash2, Share2, Play, Check, GitFork, GitMerge, AlertTriangle, Send, Star, GitCompare, Snowflake, X, Dumbbell } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { deleteRecipe, toggleFavorite } from '@/db/repo'
 import { useColdSteep } from '@/store/coldSteep'
@@ -162,6 +162,9 @@ export default function RecipeDetailPage() {
             <div className="flex gap-2">
               <Link to={`/recipe/${recipe.id}/brew`} className="btn-primary flex-1">
                 <Play size={18} /> {t('play.title')}
+              </Link>
+              <Link to={`/recipe/${recipe.id}/practice`} className="btn-ghost !px-3" aria-label={t('gym.practice')}>
+                <Dumbbell size={18} />
               </Link>
               {logBtn}
             </div>

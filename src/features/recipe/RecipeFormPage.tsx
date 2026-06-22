@@ -3,7 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/dexie'
-import { getProfile, saveRecipe, saveSession } from '@/db/repo'
+import { getProfile, saveRecipe, saveSession, nextForkTitle, copyTitle } from '@/db/repo'
 import type { BrewMethod, ColdBrewStyle, Recipe } from '@/db/types'
 import { PageHeader, Field, StarRating, ScoreSlider } from '@/components/ui'
 import { TagInput } from '@/components/TagInput'
@@ -49,12 +49,13 @@ export default function RecipeFormPage() {
   const sourceId = id ?? params.get('from') ?? forkId ?? undefined
   useEffect(() => {
     if (!sourceId) return
-    db.recipes.get(sourceId).then((r) => {
+    db.recipes.get(sourceId).then(async (r) => {
       if (!r) return
       if (id) setForm(r)
-      else if (forkId)
-        setForm({ ...r, id: undefined, title: `${r.title} (fork)`, forkedFromId: r.id }) // linked fork
-      else setForm({ ...r, id: undefined, title: `${r.title} (copy)`, forkedFromId: undefined }) // unlinked copy
+      else if (forkId) {
+        const title = await nextForkTitle(r) // cascading version: v2, v3, v3.1…
+        setForm({ ...r, id: undefined, title, forkedFromId: r.id }) // linked fork
+      } else setForm({ ...r, id: undefined, title: copyTitle(r), forkedFromId: undefined }) // unlinked copy
     })
   }, [sourceId, id, forkId])
 
