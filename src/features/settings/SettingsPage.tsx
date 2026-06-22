@@ -156,6 +156,33 @@ export default function SettingsPage() {
         <button className="btn-ghost w-full" onClick={s.resetPourRates}>
           {t('settings.resetDefaults')}
         </button>
+
+        <div className="border-t border-border/60 pt-4">
+          <span className="label">{t('settings.stepEndCue')}</span>
+          <p className="mb-2 text-xs text-muted">{t('settings.stepEndCueHint')}</p>
+          <SegGroup<string>
+            value={String(s.stepEndCountdown)}
+            onChange={(v) => s.setStepEndCountdown(Number(v))}
+            options={[
+              { value: '0', label: t('settings.off') },
+              { value: '3', label: '3s' },
+              { value: '5', label: '5s' },
+            ]}
+          />
+        </div>
+
+        <div>
+          <span className="label">{t('settings.pourMarkCue')}</span>
+          <p className="mb-2 text-xs text-muted">{t('settings.pourMarkCueHint')}</p>
+          <SegGroup<string>
+            value={s.pourMarkCue ? 'on' : 'off'}
+            onChange={(v) => s.setPourMarkCue(v === 'on')}
+            options={[
+              { value: 'on', label: t('settings.on') },
+              { value: 'off', label: t('settings.off') },
+            ]}
+          />
+        </div>
       </section>
 
       {/* Data */}

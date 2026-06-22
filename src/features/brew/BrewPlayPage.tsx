@@ -51,6 +51,8 @@ export default function BrewPlayPage() {
   const navigate = useNavigate()
   const recipe = useLiveQuery(() => (id ? db.recipes.get(id) : undefined), [id])
   const pourRates = useSettings((s) => s.pourRates)
+  const stepEndCountdown = useSettings((s) => s.stepEndCountdown)
+  const pourMarkCue = useSettings((s) => s.pourMarkCue)
 
   // Durable, wall-clock brew state — survives navigating away & back.
   const player = useBrewPlayer()
@@ -202,6 +204,36 @@ export default function BrewPlayPage() {
   const pourElapsed = currentStep ? elapsed - stepStart(currentIndex) : 0
   const pourRemaining =
     currentPourDur != null ? Math.max(0, Math.ceil(currentPourDur - pourElapsed)) : null
+
+  // Soft beep down the final seconds before the current step ends.
+  const lastEndBeep = useRef<number | null>(null)
+  useEffect(() => {
+    if (!running || countdown == null) {
+      lastEndBeep.current = null
+      return
+    }
+    if (stepEndCountdown > 0 && countdown >= 1 && countdown <= stepEndCountdown) {
+      if (lastEndBeep.current !== countdown) {
+        lastEndBeep.current = countdown
+        cue()
+      }
+    }
+  }, [countdown, running, stepEndCountdown])
+
+  // Soft beep the moment the active pour should be finished (hits its mark).
+  const prevPourRemaining = useRef<number | null>(null)
+  useEffect(() => {
+    if (
+      running &&
+      pourMarkCue &&
+      prevPourRemaining.current != null &&
+      prevPourRemaining.current > 0 &&
+      pourRemaining === 0
+    ) {
+      cue()
+    }
+    prevPourRemaining.current = pourRemaining
+  }, [pourRemaining, running, pourMarkCue])
 
   if (recipe === undefined) return null
   if (!recipe) return <p className="text-muted">Not found.</p>

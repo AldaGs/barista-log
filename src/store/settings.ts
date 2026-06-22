@@ -41,6 +41,10 @@ interface SettingsState {
   tempUnit: TempUnit
   /** grams of water per second for each pour flow rate */
   pourRates: Record<FlowRate, number>
+  /** seconds of beeps before each step ends (0 = off) */
+  stepEndCountdown: number
+  /** beep when the active pour should be finished */
+  pourMarkCue: boolean
   supabase: SupabaseConfig | null
   setTheme: (t: ThemeMode) => void
   setLang: (l: Lang) => void
@@ -48,6 +52,8 @@ interface SettingsState {
   setTempUnit: (u: TempUnit) => void
   setPourRate: (rate: FlowRate, gramsPerSec: number) => void
   resetPourRates: () => void
+  setStepEndCountdown: (secs: number) => void
+  setPourMarkCue: (on: boolean) => void
   setSupabase: (c: SupabaseConfig | null) => void
 }
 
@@ -59,6 +65,8 @@ export const useSettings = create<SettingsState>()(
       accent: 'midnight',
       tempUnit: 'C',
       pourRates: { ...DEFAULT_POUR_RATES },
+      stepEndCountdown: 3,
+      pourMarkCue: true,
       supabase: null,
       setTheme: (theme) => set({ theme }),
       setLang: (lang) => set({ lang }),
@@ -67,6 +75,8 @@ export const useSettings = create<SettingsState>()(
       setPourRate: (rate, gramsPerSec) =>
         set((s) => ({ pourRates: { ...s.pourRates, [rate]: gramsPerSec } })),
       resetPourRates: () => set({ pourRates: { ...DEFAULT_POUR_RATES } }),
+      setStepEndCountdown: (stepEndCountdown) => set({ stepEndCountdown }),
+      setPourMarkCue: (pourMarkCue) => set({ pourMarkCue }),
       setSupabase: (supabase) => set({ supabase }),
     }),
     { name: 'barista-settings' },
