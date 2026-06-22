@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { PageHeader } from '@/components/ui'
 import { useSettings } from '@/store/settings'
 import type { FlowRate, PourPattern } from '@/db/types'
-import { buildPulseDrill } from '@/lib/pourDrill'
+import { buildPulseDrill, pourSeconds } from '@/lib/pourDrill'
+import { formatSeconds } from '@/lib/units'
 import { DrillRunner } from './DrillRunner'
 
 const PATTERNS: PourPattern[] = ['circular', 'concentric', 'elliptical', 'edge', 'direct']
@@ -34,6 +35,11 @@ export default function GymPage() {
 
   // Reset the run when the recipe of the drill changes by re-mounting the runner.
   const runnerKey = `${pattern}-${pace}-${water}-${pulses}-${rest}-${metronome}`
+
+  const laps = Math.max(1, Number(pulses) || 1)
+  const pourSec = pourSeconds(Number(water) || 0, pourRates[pace] || pourRates.medium)
+  const totalWater = (Number(water) || 0) * laps
+  const totalTime = segments.reduce((s, x) => s + x.seconds, 0)
 
   return (
     <div className="space-y-5">
@@ -100,6 +106,19 @@ export default function GymPage() {
           <span className="text-sm">{t('gym.metronome')}</span>
           <input type="checkbox" className="h-5 w-5 accent-[var(--brand)]" checked={metronome} onChange={(e) => setMetronome(e.target.checked)} />
         </label>
+      </div>
+
+      <div className="text-center text-sm text-muted">
+        <p>
+          {t('gym.summaryPour', { pour: pourSec, rest: Number(rest) || 0 })}
+          <span className="mx-1.5 text-border">|</span>
+          {t('gym.summaryLaps', { count: laps })}
+        </p>
+        <p className="font-medium text-text">
+          {t('gym.summaryWater', { water: Math.round(totalWater) })}
+          <span className="mx-1.5 text-border">|</span>
+          {t('gym.summaryTime', { time: formatSeconds(Math.round(totalTime)) })}
+        </p>
       </div>
     </div>
   )
