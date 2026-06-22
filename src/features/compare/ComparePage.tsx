@@ -15,6 +15,7 @@ const ROWS: { key: string; get: (s: BrewSession) => string | number | undefined 
   { key: 'recipe.grind', get: (s) => s.params?.grindClicks },
   { key: 'recipe.waterTemp', get: (s) => s.params?.waterTemp },
   { key: 'recipe.shotTime', get: (s) => formatSeconds(s.params?.shotTimeSec ?? s.params?.totalTimeSec) },
+  { key: 'session.actualTitle', get: (s) => (s.actualTotalSec != null ? formatSeconds(s.actualTotalSec) : undefined) },
   { key: 'session.rating', get: (s) => s.rating },
   { key: 'session.acidity', get: (s) => s.flavors?.acidity },
   { key: 'session.body', get: (s) => s.flavors?.body },

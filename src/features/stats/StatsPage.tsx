@@ -8,6 +8,7 @@ import { db } from '@/db/dexie'
 import { PageHeader, EmptyState } from '@/components/ui'
 import { measuredBrew } from '@/lib/brewModel'
 import { freshness, stock } from '@/lib/freshness'
+import { formatSeconds } from '@/lib/units'
 
 const WEEKS = 12
 
@@ -123,6 +124,22 @@ export default function StatsPage() {
     const measured = all.map(measuredBrew).filter((p): p is NonNullable<typeof p> => p !== null)
     const avgExt = measured.length ? measured.reduce((a, p) => a + p.extraction, 0) / measured.length : null
 
+    // actual brew timing (captured by the guided player)
+    const timed = all.filter((x) => x.actualTotalSec != null)
+    const avgActualSec = timed.length
+      ? Math.round(timed.reduce((a, x) => a + (x.actualTotalSec ?? 0), 0) / timed.length)
+      : null
+    // deviation from each brew's planned total (or espresso shot) time
+    const deltas = timed
+      .map((x) => {
+        const plan = x.params?.totalTimeSec ?? x.params?.shotTimeSec
+        return plan ? (x.actualTotalSec as number) - plan : null
+      })
+      .filter((d): d is number => d !== null)
+    const avgDeltaSec = deltas.length
+      ? Math.round(deltas.reduce((a, d) => a + d, 0) / deltas.length)
+      : null
+
     // bean alerts
     const lowBeans = (beans ?? []).filter((b) => stock(b).isLow || stock(b).isEmpty)
     const restingBeans = (beans ?? []).filter((b) => freshness(b).status === 'resting')
@@ -141,6 +158,10 @@ export default function StatsPage() {
       topTags,
       avgExt,
       measuredCount: measured.length,
+      avgActualSec,
+      timedCount: timed.length,
+      avgDeltaSec,
+      deltaCount: deltas.length,
       lowBeans,
       restingBeans,
     }
@@ -202,6 +223,27 @@ export default function StatsPage() {
                   count: s.measuredCount,
                 })}
               </p>
+            </Section>
+          )}
+
+          {s.avgActualSec != null && (
+            <Section title={t('stats.timing')}>
+              <p className="text-sm text-muted">
+                {t('stats.avgActual', {
+                  time: formatSeconds(s.avgActualSec),
+                  count: s.timedCount,
+                })}
+              </p>
+              {s.avgDeltaSec != null && (
+                <p className="text-sm text-muted">
+                  {s.avgDeltaSec === 0
+                    ? t('stats.onPlan', { count: s.deltaCount })
+                    : t(s.avgDeltaSec > 0 ? 'stats.runsLong' : 'stats.runsShort', {
+                        delta: formatSeconds(Math.abs(s.avgDeltaSec)),
+                        count: s.deltaCount,
+                      })}
+                </p>
+              )}
             </Section>
           )}
 
