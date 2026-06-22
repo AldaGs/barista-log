@@ -216,7 +216,7 @@
     "noPours": "This recipe has no pour steps to practice.",
     "pattern": "Pattern",
     "pace": "Pace",
-    "water": "Water (g)",
+    "water": "Per pour (g)",
     "pulses": "Pulses",
     "rest": "Rest (s)",
     "metronome": "Per-second tick",

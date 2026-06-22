@@ -10,6 +10,8 @@ export interface DrillSegment {
   water?: number
   pattern?: PourPattern
   label?: string
+  /** for repetition drills — [current, total] pulse number shown on the pour */
+  pulse?: [number, number]
 }
 
 /** A pour duration (s) for `water` grams at flow rate `rate` (g/s). */
@@ -18,8 +20,9 @@ export function pourSeconds(water: number, rate: number): number {
 }
 
 /**
- * Build a free-practice drill: `pulses` equal pours of `water/pulses` grams
- * each, separated by `rest` seconds, all using `pattern` at `rate` g/s.
+ * Build a repetition drill: `pulses` identical pours of `water` grams each
+ * (so total = water × pulses), each followed by `rest` seconds, all using
+ * `pattern` at `rate` g/s.
  */
 export function buildPulseDrill(opts: {
   water: number
@@ -29,12 +32,11 @@ export function buildPulseDrill(opts: {
   pattern: PourPattern
 }): DrillSegment[] {
   const pulses = Math.max(1, Math.round(opts.pulses))
-  const perPulse = opts.water / pulses
-  const dur = pourSeconds(perPulse, opts.rate)
+  const dur = pourSeconds(opts.water, opts.rate)
   const segs: DrillSegment[] = []
   for (let i = 0; i < pulses; i++) {
-    segs.push({ kind: 'pour', seconds: dur, water: perPulse, pattern: opts.pattern })
-    if (i < pulses - 1 && opts.rest > 0) segs.push({ kind: 'wait', seconds: opts.rest })
+    segs.push({ kind: 'pour', seconds: dur, water: opts.water, pattern: opts.pattern, pulse: [i + 1, pulses] })
+    if (opts.rest > 0) segs.push({ kind: 'wait', seconds: opts.rest })
   }
   return segs
 }

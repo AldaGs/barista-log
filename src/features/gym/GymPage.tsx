@@ -15,9 +15,9 @@ export default function GymPage() {
 
   const [pattern, setPattern] = useState<PourPattern>('circular')
   const [pace, setPace] = useState<FlowRate>('medium')
-  const [water, setWater] = useState('250')
-  const [pulses, setPulses] = useState('1')
-  const [rest, setRest] = useState('20')
+  const [water, setWater] = useState('50')
+  const [pulses, setPulses] = useState('5')
+  const [rest, setRest] = useState('15')
   const [metronome, setMetronome] = useState(true)
 
   const segments = useMemo(
@@ -92,7 +92,7 @@ export default function GymPage() {
           </label>
           <label className="block">
             <span className="label !mb-1 text-xs">{t('gym.rest')}</span>
-            <input className="input !py-1.5" type="number" inputMode="numeric" value={rest} onChange={(e) => setRest(e.target.value)} disabled={Number(pulses) <= 1} />
+            <input className="input !py-1.5" type="number" inputMode="numeric" value={rest} onChange={(e) => setRest(e.target.value)} />
           </label>
         </div>
 
