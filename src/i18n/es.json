@@ -119,6 +119,7 @@
     "open": "Abrir",
     "add": "Agregar",
     "none": "Ninguno",
+    "close": "Cerrar",
     "optional": "opcional",
     "back": "Atrás",
     "search": "Buscar",
@@ -160,7 +161,29 @@
     "tempHigh": "{{temp}} es caliente (típico {{range}}) — cuidado con la aspereza.",
     "steepShort": "Un reposo de {{h}}h es corto (típico {{lo}}–{{hi}}h) — la taza puede salir aguada.",
     "steepLong": "Un reposo de {{h}}h es largo (típico {{lo}}–{{hi}}h) — puede volverse amargo o amaderado.",
-    "dilutionTip": "Para acercarte a {{target}}% en el vaso, diluye este concentrado aprox. 1:{{dil}}."
+    "dilutionTip": "Para acercarte a {{target}}% en el vaso, diluye este concentrado aprox. 1:{{dil}}.",
+    "beanFading": "Este café tiene {{age}} días de tostado y empieza a decaer — muele un poco más fino o sube la temperatura para mantener la extracción.",
+    "beanStale": "Este café tiene {{age}} días de tostado — ya pasó su mejor momento. Espera una taza plana; muele más fino para compensar o usa una bolsa más fresca."
+  },
+  "dialIn": {
+    "title": "Ajuste",
+    "disclaimer": "Sugerencias de tu último shot — el sabor tiene la última palabra.",
+    "empty": "Prepara un shot y regístralo (tiempo, salida y sabor) para obtener tu próximo ajuste de molienda.",
+    "fast": "El último shot salió disparado en {{time}}s, más rápido que tu objetivo de {{lo}}–{{hi}}s — el pastilla deja pasar el agua con demasiada facilidad.",
+    "slow": "El último shot se arrastró en {{time}}s, más lento que tu objetivo de {{lo}}–{{hi}}s — el flujo está ahogado.",
+    "sour": "El tiempo se ve bien con {{time}}s pero salió ácido — está subextraído. Sube la temperatura y aprieta un poco la molienda.",
+    "bitter": "El tiempo se ve bien con {{time}}s pero salió amargo — está sobreextraído. Baja la temperatura y abre un poco la molienda.",
+    "dialed": "Ajustado — {{time}}s y equilibrado. Fija esta molienda en la receta.",
+    "grind": {
+      "finer": "Muele más fino",
+      "coarser": "Muele más grueso",
+      "finerClicks": "≈{{clicks}} clics más fino",
+      "coarserClicks": "≈{{clicks}} clics más grueso"
+    },
+    "temp": {
+      "up": "Sube la temperatura",
+      "down": "Baja la temperatura"
+    }
   },
   "coldbrew": {
     "style": "Estilo",
@@ -316,6 +339,22 @@
     "markedCount_one": "{{count}} marca",
     "markedCount_other": "{{count}} marcas",
     "noSteps": "Esta receta no tiene esquema de vertidos. Agrega pasos para usar la guía."
+  },
+  "shot": {
+    "title": "Extraer shot",
+    "ready": "Listo",
+    "start": "Iniciar shot",
+    "stop": "Detener",
+    "redo": "Repetir",
+    "done": "Shot terminado",
+    "preinfusion": "Preinfusión",
+    "preinfusionPlan": "Preinfusión {{secs}}s",
+    "extraction": "Extracción",
+    "inWindow": "En la ventana",
+    "past": "Pasó el objetivo",
+    "targetTime": "Objetivo {{lo}}–{{hi}}s",
+    "yield": "Salida (g)",
+    "logShot": "Registrar shot"
   },
   "session": {
     "rating": "Calificación",

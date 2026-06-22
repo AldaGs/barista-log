@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Lightbulb, AlertTriangle, CheckCircle2 } from 'lucide-react'
 import type { Recipe } from '@/db/types'
+import type { Freshness } from '@/lib/freshness'
 import { useSettings } from '@/store/settings'
 import { buildInsights, type InsightTone } from '@/lib/insights'
 
@@ -17,13 +18,15 @@ const TONE: Record<InsightTone, { icon: typeof Lightbulb; cls: string }> = {
 export function RecipeInsights({
   recipe,
   micronsPerClick,
+  freshness,
 }: {
   recipe: Partial<Recipe>
   micronsPerClick?: number
+  freshness?: Freshness
 }) {
   const { t } = useTranslation()
   const tempUnit = useSettings((s) => s.tempUnit)
-  const insights = buildInsights(recipe, { micronsPerClick, tempUnit })
+  const insights = buildInsights(recipe, { micronsPerClick, tempUnit, freshness })
   if (insights.length === 0) return null
 
   return (

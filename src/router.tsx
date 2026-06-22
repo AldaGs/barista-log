@@ -5,6 +5,7 @@ import RecipeFormPage from './features/recipe/RecipeFormPage'
 import RecipeDetailPage from './features/recipe/RecipeDetailPage'
 import RecipesPage from './features/recipe/RecipesPage'
 import BrewPlayPage from './features/brew/BrewPlayPage'
+import EspressoShotPage from './features/brew/EspressoShotPage'
 import LogSessionPage from './features/recipe/LogSessionPage'
 import ImportRecipePage from './features/recipe/ImportRecipePage'
 import HistoryPage from './features/history/HistoryPage'
@@ -30,6 +31,7 @@ export const router = createBrowserRouter([
       { path: 'recipe/:id', element: <RecipeDetailPage /> },
       { path: 'recipe/:id/edit', element: <RecipeFormPage /> },
       { path: 'recipe/:id/brew', element: <BrewPlayPage /> },
+      { path: 'recipe/:id/shot', element: <EspressoShotPage /> },
       { path: 'recipe/:id/log', element: <LogSessionPage /> },
       { path: 'history', element: <HistoryPage /> },
       { path: 'stats', element: <StatsPage /> },

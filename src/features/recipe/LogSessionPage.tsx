@@ -15,10 +15,12 @@ import { useColdSteep, steepElapsedMs } from '@/store/coldSteep'
 
 const num = (v: string) => (v === '' ? undefined : Number(v))
 
-/** Actual timeline handed over from the guided brew player via router state. */
+/** Actual timeline handed over from the guided brew/shot player via router state. */
 interface BrewActual {
   actualTotalSec?: number
   actualLaps?: number[]
+  /** measured yield handed over from the espresso shot timer */
+  beverageWeight?: number
 }
 
 /** Epoch ms → `YYYY-MM-DDTHH:mm` in the device's local timezone, for datetime-local inputs. */
@@ -60,7 +62,9 @@ export default function LogSessionPage() {
   const [tags, setTags] = useState<string[]>([])
   const [notes, setNotes] = useState('')
   const [tds, setTds] = useState('')
-  const [beverageWeight, setBeverageWeight] = useState('')
+  const [beverageWeight, setBeverageWeight] = useState(
+    actual.beverageWeight != null ? String(actual.beverageWeight) : '',
+  )
   const [photo, setPhoto] = useState<Blob | undefined>()
   // Cold-brew steep duration (hours). Prefilled once from the running steep
   // timer (actual elapsed) or the recipe's planned steep as a fallback.
@@ -133,14 +137,17 @@ export default function LogSessionPage() {
           <h2 className="font-semibold">{t('session.actualTitle')}</h2>
           <p className="text-2xl font-bold tabular-nums text-brand">
             {formatSeconds(actual.actualTotalSec)}
-            {recipe.totalTimeSec ? (
-              <span className="ml-2 text-sm font-medium text-muted">
-                {t('session.vsPlan', {
-                  plan: formatSeconds(recipe.totalTimeSec),
-                  delta: deltaLabel(actual.actualTotalSec - recipe.totalTimeSec),
-                })}
-              </span>
-            ) : null}
+            {(() => {
+              const planSec = recipe.method === 'espresso' ? recipe.shotTimeSec : recipe.totalTimeSec
+              return planSec ? (
+                <span className="ml-2 text-sm font-medium text-muted">
+                  {t('session.vsPlan', {
+                    plan: formatSeconds(planSec),
+                    delta: deltaLabel(actual.actualTotalSec! - planSec),
+                  })}
+                </span>
+              ) : null
+            })()}
           </p>
           {actual.actualLaps?.length ? (
             <p className="text-xs tabular-nums text-muted">

@@ -1,6 +1,7 @@
 import type { Recipe } from '@/db/types'
 import { formatTemp, type TempUnit } from '@/lib/units'
 import { IDEAL, beverageWeight, estimateBrew } from '@/lib/brewModel'
+import type { Freshness } from '@/lib/freshness'
 
 /**
  * Read-only "opinion engine": turns the numbers a user already entered into
@@ -49,11 +50,13 @@ function steepBand(r: Partial<Recipe>): [number, number] | null {
 export interface InsightOpts {
   micronsPerClick?: number
   tempUnit: TempUnit
+  /** freshness of the recipe's bean, when one is attached — drives the age tip */
+  freshness?: Freshness
 }
 
 export function buildInsights(r: Partial<Recipe>, opts: InsightOpts): Insight[] {
   const out: Insight[] = []
-  const { micronsPerClick, tempUnit } = opts
+  const { micronsPerClick, tempUnit, freshness } = opts
 
   // --- Extraction & strength, straight from the model ---------------------
   const est = estimateBrew(r, micronsPerClick)
@@ -107,6 +110,20 @@ export function buildInsights(r: Partial<Recipe>, opts: InsightOpts): Insight[] 
       const target = 1.3 // % TDS for a balanced ready-to-drink cup
       const suggested = Math.max(0, Math.round((est0.tds / target - 1) * 10) / 10)
       if (suggested > 0) out.push({ id: 'dilution', tone: 'tip', key: 'dilutionTip', vars: { dil: suggested, target } })
+    }
+  }
+
+  // --- Bean age -----------------------------------------------------------
+  // As a coffee degasses past its peak it loses solubles and grinds "dustier",
+  // so the same recipe under-extracts over time. Nudge the user to compensate —
+  // grind finer / brew hotter — on aging beans. Only meaningful where grind size
+  // drives extraction (espresso & hot brew), not for cold steeps.
+  if (freshness?.ageDays != null && (r.method === 'espresso' || r.method === 'brew')) {
+    const age = freshness.ageDays
+    if (freshness.status === 'fading') {
+      out.push({ id: 'bean', tone: 'tip', key: 'beanFading', vars: { age } })
+    } else if (freshness.status === 'stale') {
+      out.push({ id: 'bean', tone: 'warn', key: 'beanStale', vars: { age } })
     }
   }
 

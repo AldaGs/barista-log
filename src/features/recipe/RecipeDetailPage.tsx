@@ -11,6 +11,7 @@ import { PageHeader } from '@/components/ui'
 import { RecipeCard } from './RecipeCard'
 import { BrewChart } from '@/components/BrewChart'
 import { RecipeInsights } from '@/components/RecipeInsights'
+import { DialInCard } from '@/components/DialInCard'
 import { estimateBrew, measuredBrew, type BrewPoint } from '@/lib/brewModel'
 import { formatSeconds } from '@/lib/units'
 import { freshness } from '@/lib/freshness'
@@ -166,6 +167,16 @@ export default function RecipeDetailPage() {
             </div>
           )
         }
+        if (recipe.method === 'espresso') {
+          return (
+            <div className="flex gap-2">
+              <Link to={`/recipe/${recipe.id}/shot`} className="btn-primary flex-1">
+                <Play size={18} /> {t('shot.title')}
+              </Link>
+              {logBtn}
+            </div>
+          )
+        }
         return (
           <Link to={`/recipe/${recipe.id}/log`} className="btn-ghost w-full">
             <Check size={18} /> {t('session.logBrew')}
@@ -177,7 +188,11 @@ export default function RecipeDetailPage() {
         <RecipeCard recipe={recipe} beanName={bean?.name} gearName={gear?.name} micronsPerClick={grinder?.micronsPerClick} />
       </div>
 
-      <RecipeInsights recipe={recipe} micronsPerClick={grinder?.micronsPerClick} />
+      <RecipeInsights recipe={recipe} micronsPerClick={grinder?.micronsPerClick} freshness={beanFresh ?? undefined} />
+
+      {recipe.method === 'espresso' && (
+        <DialInCard recipe={recipe} lastSession={log[0]} micronsPerClick={grinder?.micronsPerClick} />
+      )}
 
       {(estimate || measured.length > 0) && (
         <div className="card space-y-3 p-4">
