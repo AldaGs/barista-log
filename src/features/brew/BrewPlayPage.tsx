@@ -246,29 +246,28 @@ export default function BrewPlayPage() {
 
   return (
     <div className="space-y-5">
-      <PageHeader
-        title={recipe.title || t('play.title')}
-        back
-        action={
-          <button
-            onClick={() => {
-              if (elapsed === 0 || confirm(t('play.discardConfirm'))) discard()
-            }}
-            className="btn-ghost !px-2"
-            aria-label={t('play.discard')}
-          >
-            <X size={18} />
-          </button>
-        }
-      />
+      {/* Pinned region: header, timer, controls and the log action all stay on
+          screen; only the step list below scrolls. Full-bleed bg masks it. */}
+      <div className="sticky top-0 z-10 -mx-4 space-y-3 bg-bg px-4 pb-3 pt-1 shadow-sm">
+        <PageHeader
+          title={recipe.title || t('play.title')}
+          back
+          action={
+            <button
+              onClick={() => {
+                if (elapsed === 0 || confirm(t('play.discardConfirm'))) discard()
+              }}
+              className="btn-ghost !px-2"
+              aria-label={t('play.discard')}
+            >
+              <X size={18} />
+            </button>
+          }
+        />
 
-      {steps.length === 0 ? (
-        <EmptyState>{t('play.noSteps')}</EmptyState>
-      ) : (
-        <>
-          {/* Timer + controls pinned together, so they stay reachable while
-              the step list scrolls underneath. Full-bleed bg masks the list. */}
-          <div className="sticky top-0 z-10 -mx-4 space-y-3 bg-bg px-4 pb-3 pt-1 shadow-sm">
+        {steps.length > 0 && (
+          <>
+          {/* Big timer + current instruction */}
           <div className="card relative flex flex-col items-center gap-2 p-6 text-center">
             {counting != null && (
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-[inherit] bg-surface/95">
@@ -329,8 +328,27 @@ export default function BrewPlayPage() {
               <RotateCcw size={18} /> {t('play.reset')}
             </button>
           </div>
-          </div>
 
+          {/* Finish → log this brew, carrying the captured actual timeline */}
+          <Link
+            to={`/recipe/${recipe.id}/log`}
+            state={
+              elapsed > 0
+                ? { actualTotalSec: elapsed, actualLaps: laps }
+                : undefined
+            }
+            className={isComplete ? 'btn-primary w-full' : 'btn-ghost w-full'}
+          >
+            <Check size={18} /> {t('session.logBrew')}
+          </Link>
+          </>
+        )}
+      </div>
+
+      {steps.length === 0 ? (
+        <EmptyState>{t('play.noSteps')}</EmptyState>
+      ) : (
+        <>
           {laps.length > 0 && (
             <p className="text-center text-xs text-muted">
               {t('play.markedCount', { count: laps.length })}: {laps.map((l) => formatSeconds(l)).join(' · ')}
@@ -354,19 +372,6 @@ export default function BrewPlayPage() {
               ))}
             </div>
           )}
-
-          {/* Finish → log this brew, carrying the captured actual timeline */}
-          <Link
-            to={`/recipe/${recipe.id}/log`}
-            state={
-              elapsed > 0
-                ? { actualTotalSec: elapsed, actualLaps: laps }
-                : undefined
-            }
-            className={isComplete ? 'btn-primary w-full' : 'btn-ghost w-full'}
-          >
-            <Check size={18} /> {t('session.logBrew')}
-          </Link>
 
           {/* Step list */}
           <ol className="space-y-2">
