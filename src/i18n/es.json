@@ -148,7 +148,14 @@
     "stepNote": "Nota",
     "applyTotals": "Aplicar totales → {{water}} g · {{time}}",
     "brew": "Preparar",
-    "forkedFrom": "Bifurcada de {{title}}"
+    "forkedFrom": "Bifurcada de {{title}}",
+    "log": {
+      "title": "Registro de preparaciones",
+      "empty": "Aún no hay preparaciones registradas. Registra una para empezar a seguir cómo cambia esta receta con el tiempo.",
+      "count_one": "{{count}} preparación",
+      "count_other": "{{count}} preparaciones",
+      "viewAll": "Ver en el historial"
+    }
   },
   "step": {
     "bloom": "Bloom/Pre infusión",
@@ -209,6 +216,7 @@
     "flavorWheel": "Toca un sector",
     "addTag": "Agregar etiqueta",
     "logBrew": "Registrar preparación",
+    "when": "Fecha y hora",
     "measured": "Medido",
     "measuredHint": "¿Tienes refractómetro? Registra el TDS para graficar tu extracción real.",
     "tds": "TDS %",

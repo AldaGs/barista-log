@@ -9,6 +9,13 @@ import { TagInput } from '@/components/TagInput'
 import { FlavorWheel } from '@/components/FlavorWheel'
 import { PhotoInput } from '@/components/PhotoInput'
 
+/** Epoch ms → `YYYY-MM-DDTHH:mm` in the device's local timezone, for datetime-local inputs. */
+function toLocalInput(ms: number) {
+  const d = new Date(ms)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
 /** Hand-off target from the guided brew player: rate & log a session. */
 export default function LogSessionPage() {
   const { t } = useTranslation()
@@ -20,6 +27,7 @@ export default function LogSessionPage() {
     [recipe?.beanId],
   )
 
+  const [when, setWhen] = useState(() => toLocalInput(Date.now()))
   const [rating, setRating] = useState(0)
   const [flavors, setFlavors] = useState({ acidity: 0, body: 0, sweetness: 0, bitterness: 0 })
   const [tags, setTags] = useState<string[]>([])
@@ -39,7 +47,7 @@ export default function LogSessionPage() {
       beanId: recipe.beanId,
       waterId: recipe.waterId,
       grinderId: recipe.grinderId,
-      date: Date.now(),
+      date: when ? new Date(when).getTime() : Date.now(),
       method: recipe.method,
       params: { ...recipe, id: undefined },
       rating,
@@ -63,6 +71,16 @@ export default function LogSessionPage() {
           {[bean?.name, recipe.ratio ? `1:${recipe.ratio}` : null].filter(Boolean).join(' · ')}
         </p>
       </div>
+
+      <Field label={t('session.when')}>
+        <input
+          className="input"
+          type="datetime-local"
+          value={when}
+          max={toLocalInput(Date.now())}
+          onChange={(e) => setWhen(e.target.value)}
+        />
+      </Field>
 
       <section className="card space-y-4 p-4">
         <div>

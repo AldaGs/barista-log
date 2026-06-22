@@ -2,7 +2,8 @@ import { useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Pencil, Copy, Trash2, Share2, Play, Check, GitFork, AlertTriangle, Send } from 'lucide-react'
+import { format } from 'date-fns'
+import { Pencil, Copy, Trash2, Share2, Play, Check, GitFork, AlertTriangle, Send, Star, GitCompare } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { deleteRecipe } from '@/db/repo'
 import { PageHeader } from '@/components/ui'
@@ -56,6 +57,8 @@ export default function RecipeDetailPage() {
     })
     .filter((x): x is { point: BrewPoint; weight: number } => x !== null)
   const tdsFmt = (v: number) => (recipe.method === 'espresso' ? v.toFixed(1) : v.toFixed(2))
+
+  const log = (sessions ?? []).slice().sort((a, b) => b.date - a.date)
 
   const beanFresh = bean ? freshness(bean) : null
   const restingDaysLeft = beanFresh ? Math.max(beanFresh.restDays - (beanFresh.ageDays ?? 0), 0) : 0
@@ -146,6 +149,54 @@ export default function RecipeDetailPage() {
           <p className="text-[11px] text-muted/70">{t('chart.disclaimer')}</p>
         </div>
       )}
+
+      <div className="card space-y-3 p-4">
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold">{t('recipe.log.title')}</h2>
+          {log.length > 0 && (
+            <span className="text-xs text-muted">{t('recipe.log.count', { count: log.length })}</span>
+          )}
+        </div>
+        {log.length === 0 ? (
+          <p className="text-sm text-muted">{t('recipe.log.empty')}</p>
+        ) : (
+          <>
+            <ol className="space-y-2">
+              {log.map((s) => (
+                <li key={s.id} className="rounded-xl border border-border/60 p-3">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span className="text-sm font-medium tabular-nums">{format(s.date, 'PPp')}</span>
+                    {s.rating ? (
+                      <span className="inline-flex items-center gap-1 text-sm text-brand">
+                        <Star size={14} fill="currentColor" /> {s.rating}
+                      </span>
+                    ) : null}
+                  </div>
+                  {(s.tds != null || s.beverageWeight != null) && (
+                    <p className="mt-1 text-xs tabular-nums text-muted">
+                      {[
+                        s.tds != null ? t('history.tdsValue', { value: tdsFmt(s.tds) }) : null,
+                        s.beverageWeight != null ? t('history.bevValue', { value: s.beverageWeight }) : null,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </p>
+                  )}
+                  {s.flavorTags && s.flavorTags.length > 0 && (
+                    <p className="mt-1 text-xs text-muted">{s.flavorTags.join(', ')}</p>
+                  )}
+                  {s.notes?.trim() && (
+                    <p className="mt-1 whitespace-pre-wrap text-xs italic text-muted">{s.notes}</p>
+                  )}
+                </li>
+              ))}
+            </ol>
+            <Link to="/history" className="inline-flex items-center gap-1.5 text-sm text-brand">
+              <GitCompare size={16} /> {t('recipe.log.viewAll')}
+            </Link>
+          </>
+        )}
+      </div>
 
       <div className="flex gap-2">
         <button

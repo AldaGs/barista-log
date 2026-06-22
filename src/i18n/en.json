@@ -148,7 +148,14 @@
     "stepNote": "Note",
     "applyTotals": "Apply totals → {{water}} g · {{time}}",
     "brew": "Brew",
-    "forkedFrom": "Forked from {{title}}"
+    "forkedFrom": "Forked from {{title}}",
+    "log": {
+      "title": "Brew log",
+      "empty": "No brews logged yet. Log one to start tracking how this recipe changes over time.",
+      "count_one": "{{count}} brew",
+      "count_other": "{{count}} brews",
+      "viewAll": "View in history"
+    }
   },
   "step": {
     "bloom": "Bloom",
@@ -209,6 +216,7 @@
     "flavorWheel": "Tap a slice",
     "addTag": "Add tag",
     "logBrew": "Log this brew",
+    "when": "Date & time",
     "measured": "Measured",
     "measuredHint": "Got a refractometer? Log a TDS reading to plot your real extraction.",
     "tds": "TDS %",
