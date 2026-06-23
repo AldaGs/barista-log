@@ -29,6 +29,12 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         navigateFallback: '/index.html',
+        // Take control as soon as a new build is deployed so users get fixes on
+        // the next load instead of being stuck on a stale cached version (which
+        // previously required manually clearing site data).
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
       },
     }),
   ],
