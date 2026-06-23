@@ -41,6 +41,10 @@ interface SettingsState {
   tempUnit: TempUnit
   /** grams of water per second for each pour flow rate */
   pourRates: Record<FlowRate, number>
+  /** master switch for audio + haptic step cues */
+  cuesEnabled: boolean
+  /** cue loudness as the peak WebAudio gain (0..1) */
+  cueVolume: number
   /** seconds of beeps before each step ends (0 = off) */
   stepEndCountdown: number
   /** beep when the active pour should be finished */
@@ -52,10 +56,15 @@ interface SettingsState {
   setTempUnit: (u: TempUnit) => void
   setPourRate: (rate: FlowRate, gramsPerSec: number) => void
   resetPourRates: () => void
+  setCuesEnabled: (on: boolean) => void
+  setCueVolume: (v: number) => void
   setStepEndCountdown: (secs: number) => void
   setPourMarkCue: (on: boolean) => void
   setSupabase: (c: SupabaseConfig | null) => void
 }
+
+/** Default cue loudness (peak WebAudio gain). */
+export const DEFAULT_CUE_VOLUME = 0.25
 
 export const useSettings = create<SettingsState>()(
   persist(
@@ -65,6 +74,8 @@ export const useSettings = create<SettingsState>()(
       accent: 'midnight',
       tempUnit: 'C',
       pourRates: { ...DEFAULT_POUR_RATES },
+      cuesEnabled: true,
+      cueVolume: DEFAULT_CUE_VOLUME,
       stepEndCountdown: 3,
       pourMarkCue: true,
       supabase: null,
@@ -75,6 +86,8 @@ export const useSettings = create<SettingsState>()(
       setPourRate: (rate, gramsPerSec) =>
         set((s) => ({ pourRates: { ...s.pourRates, [rate]: gramsPerSec } })),
       resetPourRates: () => set({ pourRates: { ...DEFAULT_POUR_RATES } }),
+      setCuesEnabled: (cuesEnabled) => set({ cuesEnabled }),
+      setCueVolume: (cueVolume) => set({ cueVolume: Math.min(1, Math.max(0, cueVolume)) }),
       setStepEndCountdown: (stepEndCountdown) => set({ stepEndCountdown }),
       setPourMarkCue: (pourMarkCue) => set({ pourMarkCue }),
       setSupabase: (supabase) => set({ supabase }),
