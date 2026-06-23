@@ -226,6 +226,38 @@ export default function SettingsPage() {
         </button>
 
         <div className="border-t border-border/60 pt-4">
+          <span className="label">{t('settings.cues')}</span>
+          <p className="mb-2 text-xs text-muted">{t('settings.cuesHint')}</p>
+          <SegGroup<string>
+            value={s.cuesEnabled ? 'on' : 'off'}
+            onChange={(v) => s.setCuesEnabled(v === 'on')}
+            options={[
+              { value: 'on', label: t('settings.on') },
+              { value: 'off', label: t('settings.off') },
+            ]}
+          />
+        </div>
+
+        <div className={s.cuesEnabled ? '' : 'pointer-events-none opacity-50'}>
+          <div className="flex items-center justify-between">
+            <span className="label">{t('settings.cueVolume')}</span>
+            <span className="text-xs text-muted">{Math.round(s.cueVolume * 100)}%</span>
+          </div>
+          <p className="mb-2 text-xs text-muted">{t('settings.cueVolumeHint')}</p>
+          <input
+            type="range"
+            className="w-full accent-brand"
+            min={0}
+            max={100}
+            step={5}
+            value={Math.round(s.cueVolume * 100)}
+            disabled={!s.cuesEnabled}
+            aria-label={t('settings.cueVolume')}
+            onChange={(e) => s.setCueVolume(Number(e.target.value) / 100)}
+          />
+        </div>
+
+        <div className="border-t border-border/60 pt-4">
           <span className="label">{t('settings.stepEndCue')}</span>
           <p className="mb-2 text-xs text-muted">{t('settings.stepEndCueHint')}</p>
           <SegGroup<string>

@@ -1,9 +1,14 @@
 import { useEffect, useRef } from 'react'
+import { useSettings } from '@/store/settings'
 
 let audioCtx: AudioContext | null = null
 
 /** Short beep via WebAudio + a haptic buzz, as a step cue. Best-effort. */
 export function cue(strong = false) {
+  const { cuesEnabled, cueVolume } = useSettings.getState()
+  if (!cuesEnabled) return
+  // exponentialRampToValueAtTime can't target 0, so keep a tiny floor.
+  const peak = Math.max(0.0001, cueVolume)
   try {
     audioCtx ??= new (window.AudioContext || (window as any).webkitAudioContext)()
     const ctx = audioCtx
@@ -13,7 +18,7 @@ export function cue(strong = false) {
     osc.type = 'sine'
     osc.frequency.value = strong ? 880 : 660
     gain.gain.setValueAtTime(0.001, ctx.currentTime)
-    gain.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.02)
+    gain.gain.exponentialRampToValueAtTime(peak, ctx.currentTime + 0.02)
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25)
     osc.connect(gain).connect(ctx.destination)
     osc.start()
