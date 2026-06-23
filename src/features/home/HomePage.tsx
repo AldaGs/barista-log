@@ -89,6 +89,18 @@ export default function HomePage() {
           </div>
         </section>
       )}
+
+      {/* Privacy/terms links on the home page — required for Google OAuth
+          verification (the registered home page must link to the policy). */}
+      <footer className="border-t border-border pt-4 text-center text-xs text-muted">
+        <a className="underline hover:text-text" href="/privacy.html">
+          {t('settings.privacyPolicy')}
+        </a>
+        <span className="px-2">·</span>
+        <a className="underline hover:text-text" href="/terms.html">
+          {t('settings.termsOfService')}
+        </a>
+      </footer>
     </div>
   )
 }
