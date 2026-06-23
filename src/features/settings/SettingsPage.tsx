@@ -10,7 +10,9 @@ import { ACCENTS, useSettings, type AccentId, type Lang, type ThemeMode } from '
 import type { TempUnit } from '@/lib/units'
 import { exportBackup, importBackup, lastBackupAt } from '@/lib/backup'
 import { ensurePersistence, formatBytes, getStorageStatus, type StorageStatus } from '@/lib/storage'
-import { CloudSync } from './CloudSync'
+// Supabase cloud sync disabled 2026-06-23 — see note by its render below.
+// import { CloudSync } from './CloudSync'
+import { GoogleDriveBackup } from './GoogleDriveBackup'
 
 /** Days after which we nudge the user to make a fresh backup. */
 const BACKUP_STALE_DAYS = 30
@@ -317,11 +319,17 @@ export default function SettingsPage() {
         </div>
       </section>
 
+      {/* Google Drive backup (only renders if configured) */}
+      <GoogleDriveBackup />
+
       {/* Storage durability */}
       <StorageSection onBackup={backupTick} />
 
-      {/* Cloud */}
-      <CloudSync />
+      {/* Supabase cloud sync — DISABLED 2026-06-23 (replaced by Google Drive
+          backup above; we no longer store user data on our own servers). The
+          component still exists; re-enable here and flip SUPABASE_ENABLED in
+          supabaseClient.ts to bring it back. */}
+      {/* <CloudSync /> */}
     </div>
   )
 }

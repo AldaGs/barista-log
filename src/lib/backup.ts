@@ -10,40 +10,37 @@ export function lastBackupAt(): number | null {
   return v > 0 ? v : null
 }
 
-interface Backup {
+export interface Backup {
   app: 'barista-log'
   version: 1
   exportedAt: string
   data: Record<string, unknown[]>
 }
 
-export async function exportBackup() {
+/**
+ * Snapshot every synced table into a plain JSON-safe object. Shared by the
+ * file export and the Google Drive backup so both produce identical payloads.
+ * Blob photos are dropped (JSON can't hold them, same as cloud sync).
+ */
+export async function buildBackup(): Promise<Backup> {
   const data: Record<string, unknown[]> = {}
   for (const name of TABLES) {
-    // Sessions may contain Blob photos which JSON can't hold — drop them.
     const rows = await db.table(name).toArray()
     data[name] = rows.map((r) => {
       const { photo: _drop, ...rest } = r as Record<string, unknown>
       return rest
     })
   }
-  const backup: Backup = {
+  return {
     app: 'barista-log',
     version: 1,
     exportedAt: new Date().toISOString(),
     data,
   }
-  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' })
-  const a = document.createElement('a')
-  a.href = URL.createObjectURL(blob)
-  a.download = `slurry-stats-backup-${new Date().toISOString().slice(0, 10)}.json`
-  a.click()
-  URL.revokeObjectURL(a.href)
-  localStorage.setItem(LAST_BACKUP_KEY, String(Date.now()))
 }
 
-export async function importBackup(file: File) {
-  const parsed = JSON.parse(await file.text()) as Backup
+/** Merge a parsed backup back into the local DB (last value wins per id). */
+export async function applyBackup(parsed: Backup) {
   if (parsed.app !== 'barista-log') throw new Error('Not a Slurry Stats backup file')
   await db.transaction('rw', TABLES.map((tbl) => db.table(tbl)), async () => {
     for (const name of TABLES) {
@@ -51,4 +48,25 @@ export async function importBackup(file: File) {
       if (Array.isArray(rows)) await db.table(name).bulkPut(rows)
     }
   })
+}
+
+/** Record that a backup just happened (local marker, any destination). */
+export function markBackedUp() {
+  localStorage.setItem(LAST_BACKUP_KEY, String(Date.now()))
+}
+
+export async function exportBackup() {
+  const backup = await buildBackup()
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = `slurry-stats-backup-${new Date().toISOString().slice(0, 10)}.json`
+  a.click()
+  URL.revokeObjectURL(a.href)
+  markBackedUp()
+}
+
+export async function importBackup(file: File) {
+  const parsed = JSON.parse(await file.text()) as Backup
+  await applyBackup(parsed)
 }
