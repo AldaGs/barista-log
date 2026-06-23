@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useTranslation } from 'react-i18next'
@@ -11,6 +11,20 @@ import { HomeNudges } from '@/components/HomeNudges'
 export default function HomePage() {
   const { t } = useTranslation()
   const [infoOpen, setInfoOpen] = useState(false)
+  const infoRef = useRef<HTMLDivElement>(null)
+
+  // Close the info menu when tapping/clicking anywhere outside it.
+  useEffect(() => {
+    if (!infoOpen) return
+    const onPointer = (e: PointerEvent) => {
+      if (infoRef.current && !infoRef.current.contains(e.target as Node)) {
+        setInfoOpen(false)
+      }
+    }
+    document.addEventListener('pointerdown', onPointer)
+    return () => document.removeEventListener('pointerdown', onPointer)
+  }, [infoOpen])
+
   const recipes = useLiveQuery(
     () => db.recipes.orderBy('updatedAt').reverse().toArray(),
     [],
@@ -40,7 +54,7 @@ export default function HomePage() {
           {/* Info menu — privacy/terms links. The panel is always mounted (just
               CSS-hidden when closed) so the links stay in the rendered DOM for
               Google OAuth verification crawlers. */}
-          <div className="relative">
+          <div className="relative" ref={infoRef}>
             <button
               type="button"
               className="btn-ghost !px-2"
