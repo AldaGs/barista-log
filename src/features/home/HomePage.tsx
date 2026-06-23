@@ -131,6 +131,19 @@ export default function HomePage() {
           </div>
         </section>
       )}
+
+      {/* Visible privacy/terms footer — kept alongside the header info menu so
+          the links are plainly reachable on the home page for users and for
+          Google OAuth verification. */}
+      <footer className="border-t border-border pt-4 text-center text-xs text-muted">
+        <a className="underline hover:text-text" href="/privacy.html">
+          {t('settings.privacyPolicy')}
+        </a>
+        <span className="px-2">·</span>
+        <a className="underline hover:text-text" href="/terms.html">
+          {t('settings.termsOfService')}
+        </a>
+      </footer>
     </div>
   )
 }
