@@ -8,7 +8,8 @@ import { getProfile } from '@/db/repo'
 import { ProfileAvatar } from '@/features/profile/ProfileAvatar'
 import { ACCENTS, useSettings, type AccentId, type Lang, type ThemeMode } from '@/store/settings'
 import type { TempUnit } from '@/lib/units'
-import { exportBackup, importBackup, lastBackupAt } from '@/lib/backup'
+import { exportBackup, parseBackupFile, lastBackupAt, type Backup } from '@/lib/backup'
+import { ImportBackupSheet } from './ImportBackupSheet'
 import { ensurePersistence, formatBytes, getStorageStatus, type StorageStatus } from '@/lib/storage'
 // Supabase cloud sync disabled 2026-06-23 — see note by its render below.
 // import { CloudSync } from './CloudSync'
@@ -110,6 +111,8 @@ export default function SettingsPage() {
   const fileRef = useRef<HTMLInputElement>(null)
   const profile = useLiveQuery(getProfile, [])
   const [backupTick, setBackupTick] = useState(0)
+  const [pendingImport, setPendingImport] = useState<Backup | null>(null)
+  const [importError, setImportError] = useState<string | null>(null)
 
   return (
     <div className="space-y-6">
@@ -310,14 +313,30 @@ export default function SettingsPage() {
             className="hidden"
             onChange={async (e) => {
               const f = e.target.files?.[0]
-              if (f) {
-                await importBackup(f)
-                e.target.value = ''
+              e.target.value = ''
+              if (!f) return
+              setImportError(null)
+              try {
+                setPendingImport(await parseBackupFile(f))
+              } catch (err) {
+                setImportError(err instanceof Error ? err.message : String(err))
               }
             }}
           />
         </div>
+        {importError && <p className="text-sm text-red-600 dark:text-red-400">{importError}</p>}
       </section>
+
+      {pendingImport && (
+        <ImportBackupSheet
+          backup={pendingImport}
+          onClose={() => setPendingImport(null)}
+          onDone={() => {
+            setPendingImport(null)
+            setBackupTick((n) => n + 1)
+          }}
+        />
+      )}
 
       {/* Google Drive backup (only renders if configured) */}
       <GoogleDriveBackup />
