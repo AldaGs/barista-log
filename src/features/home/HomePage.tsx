@@ -1,7 +1,8 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useTranslation } from 'react-i18next'
-import { Plus, BarChart3, HelpCircle, Search } from 'lucide-react'
+import { Plus, BarChart3, HelpCircle, Search, Info } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { RecipeSummaryCard } from '@/features/recipe/RecipeSummaryCard'
 import { EmptyState } from '@/components/ui'
@@ -9,6 +10,7 @@ import { HomeNudges } from '@/components/HomeNudges'
 
 export default function HomePage() {
   const { t } = useTranslation()
+  const [infoOpen, setInfoOpen] = useState(false)
   const recipes = useLiveQuery(
     () => db.recipes.orderBy('updatedAt').reverse().toArray(),
     [],
@@ -35,6 +37,32 @@ export default function HomePage() {
           <Link to="/recipe/new" className="btn-primary">
             <Plus size={18} /> {t('home.newRecipe')}
           </Link>
+          {/* Info menu — privacy/terms links. The panel is always mounted (just
+              CSS-hidden when closed) so the links stay in the rendered DOM for
+              Google OAuth verification crawlers. */}
+          <div className="relative">
+            <button
+              type="button"
+              className="btn-ghost !px-2"
+              aria-label={t('home.about')}
+              aria-expanded={infoOpen}
+              onClick={() => setInfoOpen((o) => !o)}
+            >
+              <Info size={18} />
+            </button>
+            <div
+              className={`absolute right-0 top-full z-10 mt-1 w-44 rounded-xl border border-border bg-surface p-2 text-sm shadow-lg ${
+                infoOpen ? 'block' : 'hidden'
+              }`}
+            >
+              <a className="block rounded-lg px-2 py-1.5 hover:bg-surface-2" href="/privacy.html">
+                {t('settings.privacyPolicy')}
+              </a>
+              <a className="block rounded-lg px-2 py-1.5 hover:bg-surface-2" href="/terms.html">
+                {t('settings.termsOfService')}
+              </a>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -89,18 +117,6 @@ export default function HomePage() {
           </div>
         </section>
       )}
-
-      {/* Privacy/terms links on the home page — required for Google OAuth
-          verification (the registered home page must link to the policy). */}
-      <footer className="border-t border-border pt-4 text-center text-xs text-muted">
-        <a className="underline hover:text-text" href="/privacy.html">
-          {t('settings.privacyPolicy')}
-        </a>
-        <span className="px-2">·</span>
-        <a className="underline hover:text-text" href="/terms.html">
-          {t('settings.termsOfService')}
-        </a>
-      </footer>
     </div>
   )
 }
