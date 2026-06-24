@@ -51,6 +51,19 @@ export function DrillRunner({
   const cur = segments[run.index]
   const pouring = !!cur && cur.kind === 'pour'
 
+  // Keep the active step card in view as the drill advances, like the guided
+  // brew player — but scroll *inside* the schedule list so the pour animation
+  // and timer stay put. Only while running, so an idle page isn't yanked around.
+  const listRef = useRef<HTMLOListElement | null>(null)
+  const activeStepRef = useRef<HTMLLIElement | null>(null)
+  useEffect(() => {
+    const li = activeStepRef.current
+    const ol = listRef.current
+    if (run.running && li && ol) {
+      ol.scrollTo({ top: li.offsetTop - ol.clientHeight / 2 + li.clientHeight / 2, behavior: 'smooth' })
+    }
+  }, [cur?.stepIndex, run.running])
+
   // Optional pre-start countdown (0 = off, 3 or 5 seconds), remembered per device.
   const [countdownPref, setCountdownPref] = useState<number>(() => {
     const v = Number(localStorage.getItem('gymCountdown'))
@@ -137,16 +150,13 @@ export function DrillRunner({
   }, [recipeSteps, cur?.stepIndex])
 
   const pourLabel = cur?.pulse ? `${t('gym.pourNow')} ${cur.pulse[0]}/${cur.pulse[1]}` : t('gym.pourNow')
-  // For a recipe pour, name the real step (Bloom/Pour …); the rest after a pour
-  // and the drawdown read as "hold" so it feels like the actual brew.
+  // For a recipe drill, name the real step (Bloom/Pour/Drawdown …) the whole
+  // time it runs — the pour-timing line below tells the barista when to stop
+  // pouring and hold, just like the guided brew player.
   const phaseLabel = run.done
     ? t('gym.done')
     : isRecipe && cur
-      ? pouring
-        ? t('step.' + (cur.label ?? 'pour'))
-        : cur.label === 'pour' || cur.label === 'bloom'
-          ? t('gym.hold')
-          : t('step.' + (cur.label ?? 'wait'))
+      ? t('step.' + (cur.label ?? (pouring ? 'pour' : 'wait')))
       : cur?.label
         ? t('step.' + cur.label)
         : pouring
@@ -164,6 +174,17 @@ export function DrillRunner({
           .filter(Boolean)
           .join(' · ')
       : ''
+
+  // Pour-timing cue, like the brew player: while pouring a recipe step, count
+  // down how long to keep pouring (the segment is exactly the pour duration at
+  // the recipe's flow rate); during the hold after it, say the pour is done.
+  const isPourStep = isRecipe && (cur?.label === 'pour' || cur?.label === 'bloom')
+  const pourStatus =
+    isPourStep && !run.done
+      ? pouring && Math.ceil(run.segRemaining) > 0
+        ? { text: t('play.finishPourIn', { secs: Math.ceil(run.segRemaining) }), active: true }
+        : { text: t('play.pourDone'), active: false }
+      : null
 
   // Step number/total read off the recipe schedule, not the raw segment list.
   const stepNum = cur?.stepIndex != null ? cur.stepIndex + 1 : run.index + 1
@@ -195,6 +216,11 @@ export function DrillRunner({
         {totalWater > 0 && (
           <p className="text-2xl font-bold tabular-nums text-brand">
             {Math.round(pouredWater)} <span className="text-base text-muted">/ {Math.round(totalWater)} g</span>
+          </p>
+        )}
+        {pourStatus && (
+          <p className={`text-sm font-semibold ${pourStatus.active ? 'text-accent' : 'text-muted'}`}>
+            {pourStatus.text}
           </p>
         )}
         {!run.done && cur && (
@@ -240,13 +266,14 @@ export function DrillRunner({
       {/* Recipe schedule — mirrors the guided brew player so practicing the
           drill feels like running the real pour-over of this recipe. */}
       {isRecipe && (
-        <ol className="space-y-2">
+        <ol ref={listRef} className="max-h-[45vh] space-y-2 overflow-y-auto">
           {recipeSteps.map(({ index, step, target }) => {
             const active = cur?.stepIndex === index && !run.done
             const passed = (cur?.stepIndex != null && index < cur.stepIndex) || run.done
             return (
               <li
                 key={step.id ?? index}
+                ref={active ? activeStepRef : undefined}
                 className={`card flex items-center gap-3 p-3 transition ${
                   active ? 'border-brand ring-1 ring-brand/40' : passed ? 'opacity-60' : ''
                 }`}
