@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { format } from 'date-fns'
-import { Pencil, Copy, Trash2, Share2, Play, Check, GitFork, GitMerge, AlertTriangle, Send, Star, GitCompare, Snowflake, X, Dumbbell } from 'lucide-react'
+import { Pencil, Copy, Trash2, Share2, Play, Check, GitFork, GitMerge, AlertTriangle, Send, Star, GitCompare, Snowflake, X, Dumbbell, Scale } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { deleteRecipe, toggleFavorite } from '@/db/repo'
 import { useColdSteep } from '@/store/coldSteep'
@@ -18,6 +18,7 @@ import { freshness } from '@/lib/freshness'
 import { shareRecipePng } from '@/lib/share'
 import { ShareRecipeSheet } from './ShareRecipeSheet'
 import { AdoptFromForkSheet } from './AdoptFromForkSheet'
+import { ScaleRecipeSheet } from './ScaleRecipeSheet'
 
 export default function RecipeDetailPage() {
   const { t } = useTranslation()
@@ -26,6 +27,7 @@ export default function RecipeDetailPage() {
   const cardRef = useRef<HTMLDivElement>(null)
   const [showShare, setShowShare] = useState(false)
   const [showAdopt, setShowAdopt] = useState(false)
+  const [showScale, setShowScale] = useState(false)
 
   const steep = useColdSteep()
   const recipe = useLiveQuery(() => (id ? db.recipes.get(id) : undefined), [id])
@@ -97,6 +99,11 @@ export default function RecipeDetailPage() {
             <Link to={`/recipe/new?from=${recipe.id}`} className="btn-ghost !px-2" aria-label="duplicate">
               <Copy size={18} />
             </Link>
+            {(recipe.doseIn || recipe.yieldOut) && (
+              <button onClick={() => setShowScale(true)} className="btn-ghost !px-2" aria-label={t('scale.title')}>
+                <Scale size={18} />
+              </button>
+            )}
           </div>
         }
       />
@@ -295,6 +302,7 @@ export default function RecipeDetailPage() {
         </button>
       </div>
 
+      {showScale && <ScaleRecipeSheet recipe={recipe} onClose={() => setShowScale(false)} />}
       {showShare && <ShareRecipeSheet recipe={recipe} onClose={() => setShowShare(false)} />}
       {showAdopt && parent && (
         <AdoptFromForkSheet fork={recipe} parent={parent} onClose={() => setShowAdopt(false)} />
