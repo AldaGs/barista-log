@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next'
 const tabs = [
   { to: '/beans', key: 'beans', i18n: 'beans.title' },
   { to: '/water', key: 'water', i18n: 'water.title' },
-  { to: '/grinders', key: 'grinders', i18n: 'grinder.title' },
-  { to: '/gear', key: 'gear', i18n: 'gear.title' },
+  { to: '/equipment', key: 'equipment', i18n: 'equipment.title' },
+  { to: '/maintenance', key: 'maintenance', i18n: 'maintenance.title' },
 ] as const
 
-export function SubNav({ active }: { active: 'beans' | 'water' | 'grinders' | 'gear' }) {
+export function SubNav({ active }: { active: 'beans' | 'water' | 'equipment' | 'maintenance' }) {
   const { t } = useTranslation()
   return (
     <div className="flex gap-2">

@@ -13,8 +13,9 @@ import StatsPage from './features/stats/StatsPage'
 import ComparePage from './features/compare/ComparePage'
 import BeansPage from './features/beans/BeansPage'
 import WaterPage from './features/water/WaterPage'
-import GrindersPage from './features/grinder/GrindersPage'
-import GearPage from './features/gear/GearPage'
+import EquipmentPage from './features/equipment/EquipmentPage'
+import MaintenancePage from './features/maintenance/MaintenancePage'
+import LabelsPage from './features/labels/LabelsPage'
 import SettingsPage from './features/settings/SettingsPage'
 import ProfilePage from './features/profile/ProfilePage'
 import HelpPage from './features/help/HelpPage'
@@ -42,8 +43,11 @@ export const router = createBrowserRouter([
       { path: 'compare', element: <ComparePage /> },
       { path: 'beans', element: <BeansPage /> },
       { path: 'water', element: <WaterPage /> },
-      { path: 'grinders', element: <GrindersPage /> },
-      { path: 'gear', element: <GearPage /> },
+      { path: 'equipment', element: <EquipmentPage /> },
+      { path: 'grinders', element: <Navigate to="/equipment" replace /> },
+      { path: 'gear', element: <Navigate to="/equipment" replace /> },
+      { path: 'maintenance', element: <MaintenancePage /> },
+      { path: 'labels', element: <LabelsPage /> },
       { path: 'settings', element: <SettingsPage /> },
       { path: 'profile', element: <ProfilePage /> },
       { path: 'help', element: <HelpPage /> },
