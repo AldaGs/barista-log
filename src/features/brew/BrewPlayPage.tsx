@@ -2,7 +2,7 @@ import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Play, Pause, RotateCcw, Check, Flag, X } from 'lucide-react'
+import { Play, Pause, RotateCcw, Check, Flag, X, Snowflake } from 'lucide-react'
 import { db } from '@/db/dexie'
 import type { BrewStep, FlowRate } from '@/db/types'
 import { PageHeader, EmptyState } from '@/components/ui'
@@ -267,6 +267,19 @@ export default function BrewPlayPage() {
 
         {steps.length > 0 && (
           <>
+          {/* Flash brew: remind the user to load the carafe with ice before the
+              first pour — the schedule below only counts the hot water poured. */}
+          {recipe.method === 'coldbrew' &&
+            recipe.coldBrewStyle === 'flash' &&
+            recipe.iceGrams != null &&
+            recipe.iceGrams > 0 &&
+            elapsed === 0 && (
+              <div className="card flex items-center gap-2 border-brand/40 bg-brand/5 p-3 text-sm">
+                <Snowflake size={16} className="shrink-0 text-brand" />
+                <span>{t('play.icePrep', { ice: recipe.iceGrams })}</span>
+              </div>
+            )}
+
           {/* Big timer + current instruction */}
           <div className="card relative flex flex-col items-center gap-2 p-6 text-center">
             {counting != null && (

@@ -22,6 +22,66 @@ import { freshness } from '@/lib/freshness'
 
 const num = (v: string) => (v === '' ? undefined : Number(v))
 
+/**
+ * Flash-brew split helper. Flash (Japanese iced) is one total water charge split
+ * between hot water poured over the bed and ice waiting in the carafe. Baristas
+ * think in "total water, X% as ice", so this turns that into the two stored
+ * fields (yieldOut = hot, iceGrams = ice) and echoes the effective total ratio.
+ */
+function FlashSplit({
+  doseIn,
+  hot,
+  ice,
+  onApply,
+}: {
+  doseIn?: number
+  hot?: number
+  ice?: number
+  onApply: (hot: number, ice: number) => void
+}) {
+  const { t } = useTranslation()
+  const total = (hot ?? 0) + (ice ?? 0)
+  const [totalStr, setTotalStr] = useState(total ? String(total) : '')
+  const [icePct, setIcePct] = useState(total ? Math.round(((ice ?? 0) / total) * 100) : 40)
+
+  const tot = Number(totalStr) || 0
+  const iceG = Math.round((tot * icePct) / 100)
+  const hotG = tot - iceG
+  const ratio = doseIn ? (tot / doseIn).toFixed(1) : null
+
+  return (
+    <div className="card space-y-3 bg-surface-2/50 p-4">
+      <p className="text-sm font-medium">{t('flash.splitTitle')}</p>
+      <p className="text-xs text-muted">{t('flash.splitHint')}</p>
+      <div className="grid grid-cols-2 gap-3">
+        <Field label={t('flash.total')}>
+          <input className="input" type="number" inputMode="decimal" value={totalStr} onChange={(e) => setTotalStr(e.target.value)} />
+        </Field>
+        <Field label={t('flash.icePct')} hint={`${icePct}%`}>
+          <input
+            type="range"
+            min={20}
+            max={60}
+            step={5}
+            value={icePct}
+            onChange={(e) => setIcePct(Number(e.target.value))}
+            className="mt-3 w-full accent-[rgb(var(--brand))]"
+          />
+        </Field>
+      </div>
+      <div className="flex items-center justify-between text-sm">
+        <span className="tabular-nums">
+          {t('flash.result', { hot: hotG, ice: iceG })}
+        </span>
+        {ratio && <span className="text-muted">1:{ratio} {t('flash.total').toLowerCase()}</span>}
+      </div>
+      <button type="button" className="btn-ghost w-full !py-1.5 text-sm" disabled={!tot} onClick={() => onApply(hotG, iceG)}>
+        {t('flash.apply')}
+      </button>
+    </div>
+  )
+}
+
 export default function RecipeFormPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -351,6 +411,15 @@ export default function RecipeFormPage() {
                 />
               </Field>
             </div>
+          )}
+
+          {isFlash && (
+            <FlashSplit
+              doseIn={form.doseIn}
+              hot={form.yieldOut}
+              ice={form.iceGrams}
+              onApply={(hot, ice) => set({ yieldOut: hot, iceGrams: ice })}
+            />
           )}
 
           {/* brewer is common to brew, flash, and steep styles */}

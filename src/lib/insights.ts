@@ -80,7 +80,15 @@ export function buildInsights(r: Partial<Recipe>, opts: InsightOpts): Insight[] 
   }
 
   // --- Ratio band ---------------------------------------------------------
-  const ratio = r.ratio ?? (r.doseIn && r.yieldOut ? r.yieldOut / r.doseIn : undefined)
+  // Flash brew is brewed hot onto ice, so the *served* ratio counts the melted
+  // ice toward the water. The stored ratio (yield/dose) is hot-water-only, which
+  // under-reports against the flash band — recompute it on the total here.
+  const isFlash = r.method === 'coldbrew' && r.coldBrewStyle === 'flash'
+  const ratio = isFlash
+    ? r.doseIn && r.yieldOut
+      ? (r.yieldOut + (r.iceGrams ?? 0)) / r.doseIn
+      : undefined
+    : r.ratio ?? (r.doseIn && r.yieldOut ? r.yieldOut / r.doseIn : undefined)
   const rb = ratioBand(r)
   if (ratio && rb) {
     const rr = Math.round(ratio * 10) / 10
