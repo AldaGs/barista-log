@@ -9,7 +9,7 @@ import { getSupabase } from './supabaseClient'
  * last-write-wins by `updatedAt`. Records live in one generic `sync_records`
  * table (see supabase/schema.sql); deletes propagate via local tombstones.
  */
-export const SYNCED_COLLECTIONS = ['beans', 'waters', 'grinders', 'gear', 'recipes', 'sessions', 'profile'] as const
+export const SYNCED_COLLECTIONS = ['beans', 'waters', 'grinders', 'gear', 'recipes', 'sessions', 'profile', 'maintenance', 'practice'] as const
 type Collection = (typeof SYNCED_COLLECTIONS)[number]
 
 export interface SyncResult {

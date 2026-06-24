@@ -4,6 +4,9 @@ import type {
   BrewSession,
   Gear,
   Grinder,
+  Label,
+  MaintenanceTask,
+  PracticeLog,
   Profile,
   Recipe,
   SyncMeta,
@@ -274,6 +277,65 @@ export async function saveGear(
   return id
 }
 export const deleteGear = (id: string) => deleteWithTombstone('gear', id)
+
+// ---- Maintenance ---------------------------------------------------------
+export async function saveMaintenance(
+  data: Omit<MaintenanceTask, keyof NewMeta> & Partial<Pick<MaintenanceTask, 'id'>>,
+): Promise<string> {
+  let id: string
+  if (data.id) {
+    await db.maintenance.update(data.id, { ...data, dirty: 1, updatedAt: now() })
+    id = data.id
+  } else {
+    const rec = { ...data, ...freshMeta() } as MaintenanceTask
+    await db.maintenance.add(rec)
+    id = rec.id
+  }
+  triggerSync()
+  return id
+}
+
+/** Stamp a task as done now, appending the completion to its history. */
+export async function markMaintenanceDone(id: string, at = now()): Promise<void> {
+  const task = await db.maintenance.get(id)
+  if (!task) return
+  const history = [...(task.history ?? []), at].slice(-50)
+  await db.maintenance.update(id, { lastDoneAt: at, history, dirty: 1, updatedAt: now() })
+  triggerSync()
+}
+
+export const deleteMaintenance = (id: string) => deleteWithTombstone('maintenance', id)
+
+// ---- Practice ------------------------------------------------------------
+export async function savePractice(
+  data: Omit<PracticeLog, keyof NewMeta>,
+): Promise<string> {
+  const rec = { ...data, ...freshMeta() } as PracticeLog
+  await db.practice.add(rec)
+  triggerSync()
+  return rec.id
+}
+
+export const deletePractice = (id: string) => deleteWithTombstone('practice', id)
+
+// ---- Labels (bag-label gallery) -----------------------------------------
+export async function saveLabel(
+  data: Omit<Label, keyof NewMeta> & Partial<Pick<Label, 'id'>>,
+): Promise<string> {
+  let id: string
+  if (data.id) {
+    await db.labels.update(data.id, { ...data, dirty: 1, updatedAt: now() })
+    id = data.id
+  } else {
+    const rec = { ...data, ...freshMeta() } as Label
+    await db.labels.add(rec)
+    id = rec.id
+  }
+  triggerSync()
+  return id
+}
+
+export const deleteLabel = (id: string) => deleteWithTombstone('labels', id)
 
 // ---- Profile (singleton) -------------------------------------------------
 // Fixed id for the one-per-user profile row. Must be a valid UUID because the

@@ -234,7 +234,8 @@
     "start": "Iniciar",
     "resume": "Reanudar",
     "pause": "Pausar",
-    "reset": "Reiniciar"
+    "reset": "Reiniciar",
+    "trainedTotal": "Entrenado {{time}} en total"
   },
   "home": {
     "latest": "Última receta",
@@ -369,7 +370,8 @@
     "discardConfirm": "¿Descartar esta preparación en curso?",
     "markedCount_one": "{{count}} marca",
     "markedCount_other": "{{count}} marcas",
-    "noSteps": "Esta receta no tiene esquema de vertidos. Agrega pasos para usar la guía."
+    "noSteps": "Esta receta no tiene esquema de vertidos. Agrega pasos para usar la guía.",
+    "icePrep": "Añade {{ice}} g de hielo a la jarra antes de empezar."
   },
   "shot": {
     "title": "Extraer shot",
@@ -463,7 +465,32 @@
     "topFlavors": "Sabores más anotados",
     "beanAlerts": "Alertas de granos",
     "brewsN_one": "{{count}} preparación",
-    "brewsN_other": "{{count}} preparaciones"
+    "brewsN_other": "{{count}} preparaciones",
+    "cost": "Costo",
+    "costPerCup": "por taza",
+    "cost30": "últimos 30 días",
+    "costTotal": "total registrado",
+    "costNote": "Basado en {{count}} preparación(es) con precio de bolsa.",
+    "brewsPerMonth": "Preparaciones por mes",
+    "period": {
+      "weeks": "Semanas",
+      "months": "Año"
+    },
+    "daysN_one": "{{count}} día",
+    "daysN_other": "{{count}} días",
+    "currentStreak": "Racha actual",
+    "longestStreak": "Racha más larga",
+    "busiestMonth": "Más activo · {{month}}",
+    "whenYouBrew": "Cuándo preparas",
+    "peakCallout": "Preparas más los {{day}} alrededor de las {{hour}}.",
+    "byDay": "Por día",
+    "byHour": "Por hora",
+    "fastestBean": "El que más rápido bebes",
+    "gPerDay": "{{g}} g/día",
+    "fastestBeanHint": "La bolsa que terminas más rápido — seguro un favorito.",
+    "practice": "Práctica de vertido",
+    "practiceTime": "tiempo entrenado",
+    "practiceSessions": "sesiones"
   },
   "share": {
     "recipeTitle": "Compartir receta",
@@ -516,7 +543,8 @@
       "stale": "Pasado",
       "restingDays_one": "Reposando · falta {{count}} día",
       "restingDays_other": "Reposando · faltan {{count}} días"
-    }
+    },
+    "price": "Precio de la bolsa"
   },
   "water": {
     "title": "Perfiles de agua",
@@ -524,7 +552,33 @@
     "tds": "TDS (ppm)",
     "gh": "GH",
     "kh": "KH",
-    "empty": "Aún no hay perfiles de agua."
+    "empty": "Aún no hay perfiles de agua.",
+    "builder": {
+      "title": "Constructor de agua",
+      "intro": "Prepara tu propia agua de preparación con agua destilada u osmotizada. Elige un objetivo y obtén los gramos a añadir.",
+      "targetGh": "GH objetivo",
+      "targetKh": "KH objetivo",
+      "batch": "Lote (L)",
+      "mode": {
+        "direct": "Pesar directo",
+        "concentrate": "Concentrado"
+      },
+      "directHint": "Añade a {{litres}} L de agua destilada / osmotizada:",
+      "concentrateHint": "Disuelve {{g}} g de cada sal en su propia botella de 1 L; luego, por litro de agua, añade:",
+      "epsom": "Sal de Epsom (MgSO₄)",
+      "bicarb": "Bicarbonato (NaHCO₃)",
+      "epsomConc": "Concentrado de Epsom",
+      "bicarbConc": "Concentrado de bicarbonato",
+      "mlPerL": "mL/L",
+      "saveAsProfile": "Guardar como perfil",
+      "savedNote": "Casero: {{epsom}} g Epsom + {{bicarb}} g bicarbonato en {{litres}} L.",
+      "preset": {
+        "sca": "Objetivo SCA",
+        "rao": "Rao/Perger",
+        "hoffmann": "Hoffmann",
+        "espresso": "Espresso"
+      }
+    }
   },
   "grinder": {
     "title": "Molinos",
@@ -619,7 +673,9 @@
       "recipes": "Recetas",
       "sessions": "Preparaciones",
       "flavorTags": "Etiquetas de sabor",
-      "profile": "Perfil"
+      "profile": "Perfil",
+      "maintenance": "Mantenimiento",
+      "practice": "Práctica"
     },
     "import": {
       "title": "Importar respaldo",
@@ -690,6 +746,77 @@
     "syncOffline": "Sin conexión — se sincronizará al reconectar",
     "syncError": "Error de sincronización",
     "signUpCheckEmail": "Cuenta creada. Revisa tu correo si se requiere confirmación y luego inicia sesión.",
-    "localFirstNote": "Tus datos se guardan primero en este dispositivo; la nube es un respaldo que puedes restaurar en otro dispositivo."
+    "localFirstNote": "Tus datos se guardan primero en este dispositivo; la nube es un respaldo que puedes restaurar en otro dispositivo.",
+    "costSection": "Costo",
+    "costTracking": "Registrar costo del café",
+    "costTrackingHint": "Añade el precio de la bolsa a los granos y verás el costo por taza y el gasto en estadísticas. Desactivado por defecto.",
+    "currency": "Símbolo de moneda"
+  },
+  "scale": {
+    "title": "Escalar receta",
+    "hint": "Cambia el tamaño del lote — la proporción, los tiempos y la temperatura se mantienen.",
+    "byDose": "Por dosis",
+    "byWater": "Por agua",
+    "targetDose": "Dosis objetivo (g)",
+    "targetWater": "Agua objetivo (g)",
+    "factor": "Escala",
+    "pours": "Vertidos",
+    "ice": "Hielo",
+    "needBase": "Esta receta no tiene dosis ni rendimiento para escalar.",
+    "saveAsNew": "Guardar como nueva receta"
+  },
+  "maintenance": {
+    "title": "Mantenimiento",
+    "empty": "Aún no hay tareas de mantenimiento. Añade una para registrar descalcificación, retrolavado y limpieza.",
+    "kindLabel": "Tarea",
+    "label": "Nombre",
+    "appliesTo": "Aplica a",
+    "interval": "Cada",
+    "days": "días",
+    "notes": "Notas",
+    "markDone": "Marcar como hecho",
+    "never": "Nunca hecho",
+    "oneOff": "Única vez",
+    "lastDone": "Última vez {{date}}",
+    "dueIn_one": "Vence en {{count}} día",
+    "dueIn_other": "Vence en {{count}} días",
+    "overdueBy_one": "Atrasado {{count}} día",
+    "overdueBy_other": "Atrasado {{count}} días",
+    "nudgeTitle": "Mantenimiento pendiente",
+    "nudgeOne": "«{{label}}» está atrasado.",
+    "nudgeMany": "{{count}} tareas de mantenimiento están atrasadas.",
+    "kind": {
+      "descale": "Descalcificar",
+      "backflush": "Retrolavado",
+      "clean-grinder": "Limpiar molino",
+      "replace-filter": "Cambiar filtro de agua",
+      "replace-burr": "Cambiar muelas",
+      "clean-brewer": "Limpiar cafetera",
+      "other": "Otro"
+    }
+  },
+  "flash": {
+    "splitTitle": "División caliente / hielo",
+    "splitHint": "El flash brew es una carga de agua dividida entre agua caliente vertida sobre el lecho e hielo en la jarra.",
+    "total": "Agua total (g)",
+    "icePct": "Hielo",
+    "result": "{{hot}} g caliente · {{ice}} g hielo",
+    "apply": "Aplicar división"
+  },
+  "labels": {
+    "title": "Etiquetas",
+    "empty": "Aún no hay etiquetas. Fotografía tus bolsas favoritas para empezar una colección.",
+    "crop": "Recortar etiqueta",
+    "zoom": "Zoom",
+    "save": "Guardar etiqueta",
+    "details": "Etiqueta",
+    "name": "Nombre",
+    "namePlaceholder": "Tostador · nombre del café"
+  },
+  "equipment": {
+    "title": "Equipo",
+    "machines": "Máquinas",
+    "brewers": "Cafeteras",
+    "grinders": "Molinos"
   }
 }

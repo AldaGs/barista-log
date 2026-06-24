@@ -1,6 +1,51 @@
 import { db, now } from '@/db/dexie'
+import type { Label } from '@/db/types'
 
-const TABLES = ['beans', 'waters', 'grinders', 'gear', 'recipes', 'sessions', 'flavorTags', 'profile'] as const
+const TABLES = ['beans', 'waters', 'grinders', 'gear', 'recipes', 'sessions', 'flavorTags', 'profile', 'maintenance', 'practice'] as const
+
+// --- Label images -----------------------------------------------------------
+// Labels hold a Blob image that the generic table path can't serialize. We carry
+// them separately as base64 data URLs so the curated collection survives in the
+// JSON / Drive backup (unlike session photos, which are intentionally dropped).
+
+function blobToDataURL(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader()
+    r.onload = () => resolve(r.result as string)
+    r.onerror = reject
+    r.readAsDataURL(blob)
+  })
+}
+
+async function dataURLToBlob(dataUrl: string): Promise<Blob> {
+  return (await fetch(dataUrl)).blob()
+}
+
+/** Serialize every label with its image inlined as a data URL. */
+async function buildLabels(): Promise<Record<string, unknown>[]> {
+  const labels = await db.labels.toArray()
+  return Promise.all(
+    labels.map(async ({ image, ...rest }) => ({
+      ...rest,
+      image: image ? await blobToDataURL(image) : undefined,
+    })),
+  )
+}
+
+/** Decode + upsert labels from a backup (image data URL → Blob). Skipped if absent. */
+async function restoreLabels(parsed: Backup) {
+  const rows = parsed.data.labels
+  if (!Array.isArray(rows) || !rows.length) return
+  const decoded: Label[] = []
+  for (const row of rows as Record<string, unknown>[]) {
+    const { image, ...rest } = row
+    decoded.push({
+      ...(rest as Omit<Label, 'image'>),
+      image: typeof image === 'string' ? await dataURLToBlob(image) : (image as Blob),
+    })
+  }
+  await db.labels.bulkPut(decoded)
+}
 
 /**
  * Catalog tables whose rows are identified to humans by a unique name. The app
@@ -48,6 +93,7 @@ export async function buildBackup(): Promise<Backup> {
       return rest
     })
   }
+  data.labels = await buildLabels()
   return {
     app: 'barista-log',
     version: 1,
@@ -65,6 +111,7 @@ export async function applyBackup(parsed: Backup) {
       if (Array.isArray(rows)) await db.table(name).bulkPut(rows)
     }
   })
+  await restoreLabels(parsed)
 }
 
 // ---------------------------------------------------------------------------
@@ -228,6 +275,15 @@ export async function applyImport(parsed: Backup, mode: ImportMode) {
       }
     },
   )
+
+  // Labels live outside the generic table set (Blob images) — merge them in
+  // separately. Replace mode also drops local labels the backup omits.
+  await restoreLabels(parsed)
+  if (mode === 'replace') {
+    const backupIds = new Set((parsed.data.labels ?? []).map((r) => String((r as { id: string }).id)))
+    const strayLabels = (await db.labels.toArray()).map((l) => l.id).filter((id) => !backupIds.has(id))
+    if (strayLabels.length) await db.labels.bulkDelete(strayLabels)
+  }
 }
 
 /** Record that a backup just happened (local marker, any destination). */

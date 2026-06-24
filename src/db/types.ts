@@ -29,6 +29,8 @@ export interface Bean extends SyncMeta {
   roastDate?: string // ISO date
   /** size of the bag, g (the starting amount) */
   bagSize?: number
+  /** price paid for the bag, in the user's chosen currency — drives cost stats */
+  price?: number
   /** grams left in the bag; auto-decremented as brews are logged */
   gramsRemaining?: number
   notes?: string
@@ -204,6 +206,71 @@ export interface BrewSession extends SyncMeta {
 export interface FlavorTag {
   id: string
   label: string
+}
+
+/**
+ * A coffee-bag label photo the user wants to keep. The cropped image is a
+ * local-only Blob (like session/profile photos), so it is stripped from cloud
+ * sync — but, unlike those, it IS carried in the JSON / Google-Drive backup as a
+ * base64 data URL so a curated label collection survives a lost device.
+ */
+export interface Label extends SyncMeta {
+  id: string
+  /** cropped JPEG, stored locally as a Blob */
+  image: Blob
+  name?: string
+  /** optional link to the bean this bag is */
+  beanId?: string
+  notes?: string
+}
+
+/**
+ * A completed pour-practice drill. Logged when a Gym or recipe-practice run
+ * finishes, so the app can total up how long the user has trained.
+ */
+export interface PracticeLog extends SyncMeta {
+  id: string
+  date: number
+  /** drill length actually run, seconds */
+  durationSec: number
+  /** where it came from: the free Gym, or replaying a recipe's pours */
+  kind: 'gym' | 'recipe'
+  /** pour pattern drilled (gym), when fixed */
+  pattern?: PourPattern
+  /** recipe replayed, for kind === 'recipe' */
+  recipeId?: string
+}
+
+/** Common upkeep jobs — drives the icon + interval preset in the UI. */
+export type MaintenanceKind =
+  | 'descale'
+  | 'backflush'
+  | 'clean-grinder'
+  | 'replace-filter'
+  | 'replace-burr'
+  | 'clean-brewer'
+  | 'other'
+
+/**
+ * A recurring maintenance job for a piece of gear (machine, brewer or grinder).
+ * `lastDoneAt` + `intervalDays` drive the "due" computation; each completion is
+ * also pushed onto `history` so the user keeps a record of what was done when.
+ */
+export interface MaintenanceTask extends SyncMeta {
+  id: string
+  kind: MaintenanceKind
+  /** free-text label, defaults to the kind's name */
+  label: string
+  /** optional link to a gear or grinder this job belongs to */
+  gearId?: string
+  grinderId?: string
+  /** recurrence in days — omitted for one-off jobs */
+  intervalDays?: number
+  /** epoch ms of the most recent completion */
+  lastDoneAt?: number
+  /** epoch ms of past completions (most recent last) */
+  history?: number[]
+  notes?: string
 }
 
 /**

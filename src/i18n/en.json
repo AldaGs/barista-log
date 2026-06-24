@@ -234,7 +234,8 @@
     "start": "Start",
     "resume": "Resume",
     "pause": "Pause",
-    "reset": "Reset"
+    "reset": "Reset",
+    "trainedTotal": "Trained {{time}} total"
   },
   "home": {
     "latest": "Latest recipe",
@@ -369,7 +370,8 @@
     "discardConfirm": "Discard this in-progress brew?",
     "markedCount_one": "{{count}} mark",
     "markedCount_other": "{{count}} marks",
-    "noSteps": "This recipe has no pour schedule. Add steps to use guided brewing."
+    "noSteps": "This recipe has no pour schedule. Add steps to use guided brewing.",
+    "icePrep": "Add {{ice}} g ice to the carafe before you start."
   },
   "shot": {
     "title": "Pull shot",
@@ -463,7 +465,32 @@
     "topFlavors": "Most noted flavors",
     "beanAlerts": "Bean alerts",
     "brewsN_one": "{{count}} brew",
-    "brewsN_other": "{{count}} brews"
+    "brewsN_other": "{{count}} brews",
+    "cost": "Cost",
+    "costPerCup": "per cup",
+    "cost30": "last 30 days",
+    "costTotal": "logged total",
+    "costNote": "Based on {{count}} brew(s) with a bag price set.",
+    "brewsPerMonth": "Brews per month",
+    "period": {
+      "weeks": "Weeks",
+      "months": "Year"
+    },
+    "daysN_one": "{{count}} day",
+    "daysN_other": "{{count}} days",
+    "currentStreak": "Current streak",
+    "longestStreak": "Longest streak",
+    "busiestMonth": "Busiest · {{month}}",
+    "whenYouBrew": "When you brew",
+    "peakCallout": "You brew most on {{day}}s around {{hour}}.",
+    "byDay": "By day",
+    "byHour": "By hour",
+    "fastestBean": "Drunk the fastest",
+    "gPerDay": "{{g}} g/day",
+    "fastestBeanHint": "The bag you go through quickest — probably a favorite.",
+    "practice": "Pour practice",
+    "practiceTime": "time trained",
+    "practiceSessions": "sessions"
   },
   "share": {
     "recipeTitle": "Share recipe",
@@ -516,7 +543,8 @@
       "stale": "Past peak",
       "restingDays_one": "Resting · {{count}} day left",
       "restingDays_other": "Resting · {{count}} days left"
-    }
+    },
+    "price": "Bag price"
   },
   "water": {
     "title": "Water profiles",
@@ -524,7 +552,33 @@
     "tds": "TDS (ppm)",
     "gh": "GH",
     "kh": "KH",
-    "empty": "No water profiles yet."
+    "empty": "No water profiles yet.",
+    "builder": {
+      "title": "Water builder",
+      "intro": "Mix your own brew water from distilled or RO water. Pick a target, get the grams to add.",
+      "targetGh": "Target GH",
+      "targetKh": "Target KH",
+      "batch": "Batch (L)",
+      "mode": {
+        "direct": "Weigh directly",
+        "concentrate": "Concentrate"
+      },
+      "directHint": "Add to {{litres}} L of distilled / RO water:",
+      "concentrateHint": "Dissolve {{g}} g of each salt in its own 1 L bottle, then per litre of brew water add:",
+      "epsom": "Epsom salt (MgSO₄)",
+      "bicarb": "Baking soda (NaHCO₃)",
+      "epsomConc": "Epsom concentrate",
+      "bicarbConc": "Baking soda concentrate",
+      "mlPerL": "mL/L",
+      "saveAsProfile": "Save as profile",
+      "savedNote": "DIY: {{epsom}} g Epsom + {{bicarb}} g baking soda in {{litres}} L.",
+      "preset": {
+        "sca": "SCA target",
+        "rao": "Rao/Perger",
+        "hoffmann": "Hoffmann",
+        "espresso": "Espresso"
+      }
+    }
   },
   "grinder": {
     "title": "Grinders",
@@ -619,7 +673,9 @@
       "recipes": "Recipes",
       "sessions": "Brews",
       "flavorTags": "Flavor tags",
-      "profile": "Profile"
+      "profile": "Profile",
+      "maintenance": "Maintenance",
+      "practice": "Practice"
     },
     "import": {
       "title": "Import backup",
@@ -690,6 +746,77 @@
     "syncOffline": "Offline — will sync when back online",
     "syncError": "Sync error",
     "signUpCheckEmail": "Account created. Check your email if confirmation is required, then sign in.",
-    "localFirstNote": "Your data is saved on this device first; the cloud is a backup you can restore on another device."
+    "localFirstNote": "Your data is saved on this device first; the cloud is a backup you can restore on another device.",
+    "costSection": "Cost",
+    "costTracking": "Track coffee cost",
+    "costTrackingHint": "Add a bag price to beans and see cost per cup and spend in stats. Off by default.",
+    "currency": "Currency symbol"
+  },
+  "scale": {
+    "title": "Scale recipe",
+    "hint": "Resize the batch — the ratio, times and temperatures stay the same.",
+    "byDose": "By dose",
+    "byWater": "By water",
+    "targetDose": "Target dose (g)",
+    "targetWater": "Target water (g)",
+    "factor": "Scale",
+    "pours": "Pours",
+    "ice": "Ice",
+    "needBase": "This recipe has no dose or yield to scale from.",
+    "saveAsNew": "Save as new recipe"
+  },
+  "maintenance": {
+    "title": "Maintenance",
+    "empty": "No maintenance tasks yet. Add one to track descaling, backflushing and cleaning.",
+    "kindLabel": "Job",
+    "label": "Name",
+    "appliesTo": "Applies to",
+    "interval": "Every",
+    "days": "days",
+    "notes": "Notes",
+    "markDone": "Mark done",
+    "never": "Never done",
+    "oneOff": "One-off",
+    "lastDone": "Last done {{date}}",
+    "dueIn_one": "Due in {{count}} day",
+    "dueIn_other": "Due in {{count}} days",
+    "overdueBy_one": "Overdue by {{count}} day",
+    "overdueBy_other": "Overdue by {{count}} days",
+    "nudgeTitle": "Maintenance due",
+    "nudgeOne": "“{{label}}” is overdue.",
+    "nudgeMany": "{{count}} maintenance tasks are overdue.",
+    "kind": {
+      "descale": "Descale",
+      "backflush": "Backflush",
+      "clean-grinder": "Clean grinder",
+      "replace-filter": "Replace water filter",
+      "replace-burr": "Replace burrs",
+      "clean-brewer": "Clean brewer",
+      "other": "Other"
+    }
+  },
+  "flash": {
+    "splitTitle": "Hot / ice split",
+    "splitHint": "Flash brew is one water charge split between hot water poured over the bed and ice in the carafe.",
+    "total": "Total water (g)",
+    "icePct": "Ice",
+    "result": "{{hot}} g hot · {{ice}} g ice",
+    "apply": "Apply split"
+  },
+  "labels": {
+    "title": "Labels",
+    "empty": "No labels yet. Snap your favorite coffee bags to start a collection.",
+    "crop": "Crop label",
+    "zoom": "Zoom",
+    "save": "Save label",
+    "details": "Label",
+    "name": "Name",
+    "namePlaceholder": "Roaster · coffee name"
+  },
+  "equipment": {
+    "title": "Equipment",
+    "machines": "Machines",
+    "brewers": "Brewers",
+    "grinders": "Grinders"
   }
 }
