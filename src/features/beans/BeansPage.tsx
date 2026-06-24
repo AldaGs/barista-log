@@ -1,13 +1,15 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Plus, Trash2, Coffee, AlertTriangle } from 'lucide-react'
+import { Plus, Trash2, Coffee, AlertTriangle, Tag } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { saveBean, deleteBean } from '@/db/repo'
 import type { Bean } from '@/db/types'
 import { PageHeader, Field, EmptyState } from '@/components/ui'
 import { SubNav } from '@/components/SubNav'
 import { freshness, stock, type FreshnessStatus } from '@/lib/freshness'
+import { useSettings } from '@/store/settings'
 
 const ROAST_LEVELS: NonNullable<Bean['roastLevel']>[] = [
   'light',
@@ -30,7 +32,10 @@ const num = (v: string) => (v === '' ? undefined : Number(v))
 export default function BeansPage() {
   const { t } = useTranslation()
   const beans = useLiveQuery(() => db.beans.orderBy('name').toArray(), [])
+  const labelCount = useLiveQuery(() => db.labels.count(), [])
   const [draft, setDraft] = useState<Partial<Bean> | null>(null)
+  const costTracking = useSettings((s) => s.costTracking)
+  const currency = useSettings((s) => s.currency)
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
@@ -47,6 +52,7 @@ export default function BeansPage() {
       roastLevel: draft.roastLevel,
       roastDate: draft.roastDate,
       bagSize: draft.bagSize,
+      price: draft.price,
       gramsRemaining,
       notes: draft.notes,
     })
@@ -64,6 +70,11 @@ export default function BeansPage() {
         }
       />
       <SubNav active="beans" />
+
+      <Link to="/labels" className="chip w-fit">
+        <Tag size={14} /> {t('labels.title')}
+        {labelCount ? <span className="text-muted">· {labelCount}</span> : null}
+      </Link>
 
       {draft && (
         <form onSubmit={submit} className="card space-y-3 p-4">
@@ -84,6 +95,9 @@ export default function BeansPage() {
             </Field>
             <Field label={t('beans.roastDate')}><input className="input" type="date" value={draft.roastDate ?? ''} onChange={(e) => setDraft({ ...draft, roastDate: e.target.value })} /></Field>
             <Field label={t('beans.bagSize')} hint="g"><input className="input" type="number" inputMode="decimal" value={draft.bagSize ?? ''} onChange={(e) => setDraft({ ...draft, bagSize: num(e.target.value) })} /></Field>
+            {costTracking && (
+              <Field label={t('beans.price')} hint={currency}><input className="input" type="number" inputMode="decimal" value={draft.price ?? ''} onChange={(e) => setDraft({ ...draft, price: num(e.target.value) })} /></Field>
+            )}
             {draft.id && (
               <Field label={t('beans.remaining')} hint="g"><input className="input" type="number" inputMode="decimal" value={draft.gramsRemaining ?? ''} onChange={(e) => setDraft({ ...draft, gramsRemaining: num(e.target.value) })} /></Field>
             )}

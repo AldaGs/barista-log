@@ -357,6 +357,34 @@ export default function SettingsPage() {
         </div>
       </section>
 
+      {/* Cost tracking (opt-in) */}
+      <section className="card space-y-3 p-4">
+        <h2 className="font-semibold">{t('settings.costSection')}</h2>
+        <div>
+          <span className="label">{t('settings.costTracking')}</span>
+          <p className="mb-2 text-xs text-muted">{t('settings.costTrackingHint')}</p>
+          <SegGroup<string>
+            value={s.costTracking ? 'on' : 'off'}
+            onChange={(v) => s.setCostTracking(v === 'on')}
+            options={[
+              { value: 'on', label: t('settings.on') },
+              { value: 'off', label: t('settings.off') },
+            ]}
+          />
+        </div>
+        {s.costTracking && (
+          <label className="block">
+            <span className="label">{t('settings.currency')}</span>
+            <input
+              className="input"
+              value={s.currency}
+              maxLength={4}
+              onChange={(e) => s.setCurrency(e.target.value)}
+            />
+          </label>
+        )}
+      </section>
+
       {/* Data */}
       <section className="card space-y-3 p-4">
         <h2 className="font-semibold">{t('settings.data')}</h2>

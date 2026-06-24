@@ -51,6 +51,10 @@ interface SettingsState {
   stepEndCountdown: number
   /** beep when the active pour should be finished */
   pourMarkCue: boolean
+  /** opt-in: track what beans cost and surface spend in stats (off by default) */
+  costTracking: boolean
+  /** currency symbol shown next to costs (free text, e.g. "$", "€", "MX$") */
+  currency: string
   supabase: SupabaseConfig | null
   setTheme: (t: ThemeMode) => void
   setLang: (l: Lang) => void
@@ -63,6 +67,8 @@ interface SettingsState {
   setCueVolume: (v: number) => void
   setStepEndCountdown: (secs: number) => void
   setPourMarkCue: (on: boolean) => void
+  setCostTracking: (on: boolean) => void
+  setCurrency: (c: string) => void
   setSupabase: (c: SupabaseConfig | null) => void
 }
 
@@ -82,6 +88,8 @@ export const useSettings = create<SettingsState>()(
       cueVolume: DEFAULT_CUE_VOLUME,
       stepEndCountdown: 3,
       pourMarkCue: true,
+      costTracking: false,
+      currency: '$',
       supabase: null,
       setTheme: (theme) => set({ theme }),
       setLang: (lang) => set({ lang }),
@@ -95,6 +103,8 @@ export const useSettings = create<SettingsState>()(
       setCueVolume: (cueVolume) => set({ cueVolume: Math.min(1, Math.max(0, cueVolume)) }),
       setStepEndCountdown: (stepEndCountdown) => set({ stepEndCountdown }),
       setPourMarkCue: (pourMarkCue) => set({ pourMarkCue }),
+      setCostTracking: (costTracking) => set({ costTracking }),
+      setCurrency: (currency) => set({ currency }),
       setSupabase: (supabase) => set({ supabase }),
     }),
     { name: 'barista-settings' },
