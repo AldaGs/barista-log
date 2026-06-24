@@ -52,16 +52,24 @@ export function DrillRunner({
   const pouring = !!cur && cur.kind === 'pour'
 
   // Keep the active step card in view as the drill advances, like the guided
-  // brew player — but scroll *inside* the schedule list so the pour animation
-  // and timer stay put. Only while running, so an idle page isn't yanked around.
-  const listRef = useRef<HTMLOListElement | null>(null)
+  // brew player: the canvas/timer/controls are pinned in a sticky header and the
+  // page scrolls the step cards beneath it. We measure the header so the active
+  // card lands just below it. Only auto-scroll while running, so an idle page
+  // isn't yanked around.
+  const headerRef = useRef<HTMLDivElement | null>(null)
   const activeStepRef = useRef<HTMLLIElement | null>(null)
+  const [headerH, setHeaderH] = useState(0)
   useEffect(() => {
-    const li = activeStepRef.current
-    const ol = listRef.current
-    if (run.running && li && ol) {
-      ol.scrollTo({ top: li.offsetTop - ol.clientHeight / 2 + li.clientHeight / 2, behavior: 'smooth' })
-    }
+    const el = headerRef.current
+    if (!el) return
+    const update = () => setHeaderH(el.offsetHeight)
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  useEffect(() => {
+    if (run.running) activeStepRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }, [cur?.stepIndex, run.running])
 
   // Optional pre-start countdown (0 = off, 3 or 5 seconds), remembered per device.
@@ -194,14 +202,20 @@ export function DrillRunner({
 
   return (
     <div className="space-y-4">
-      <PourCanvas
-        pattern={cur?.pattern}
-        pouring={pouring && run.running}
-        elapsed={run.elapsed}
-        waterFrac={totalWater > 0 ? pouredWater / totalWater : run.total > 0 ? run.elapsed / run.total : 0}
-      />
+      {/* For a recipe drill, pin the canvas, timer and controls so the step
+          cards scroll beneath them (like the guided brew player). */}
+      <div
+        ref={headerRef}
+        className={isRecipe ? 'sticky top-0 z-20 -mx-4 space-y-4 bg-bg px-4 pb-2 pt-1' : 'space-y-4'}
+      >
+        <PourCanvas
+          pattern={cur?.pattern}
+          pouring={pouring && run.running}
+          elapsed={run.elapsed}
+          waterFrac={totalWater > 0 ? pouredWater / totalWater : run.total > 0 ? run.elapsed / run.total : 0}
+        />
 
-      <div className="card relative flex flex-col items-center gap-1 p-5 text-center">
+        <div className="card relative flex flex-col items-center gap-1 p-5 text-center">
         {counting != null && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-[inherit] bg-surface/95">
             <span className="font-mono text-6xl font-bold tabular-nums text-brand">{counting}</span>
@@ -237,14 +251,15 @@ export function DrillRunner({
         )}
       </div>
 
-      <div className="flex gap-2">
-        <button className="btn-primary flex-1" onClick={handlePlay}>
-          {run.running || counting != null ? <Pause size={18} /> : <Play size={18} />}
-          {run.running || counting != null ? t('gym.pause') : run.elapsed > 0 ? t('gym.resume') : t('gym.start')}
-        </button>
-        <button className="btn-ghost" onClick={handleReset}>
-          <RotateCcw size={18} /> {t('gym.reset')}
-        </button>
+        <div className="flex gap-2">
+          <button className="btn-primary flex-1" onClick={handlePlay}>
+            {run.running || counting != null ? <Pause size={18} /> : <Play size={18} />}
+            {run.running || counting != null ? t('gym.pause') : run.elapsed > 0 ? t('gym.resume') : t('gym.start')}
+          </button>
+          <button className="btn-ghost" onClick={handleReset}>
+            <RotateCcw size={18} /> {t('gym.reset')}
+          </button>
+        </div>
       </div>
 
       {/* Pre-start countdown preference */}
@@ -266,7 +281,7 @@ export function DrillRunner({
       {/* Recipe schedule — mirrors the guided brew player so practicing the
           drill feels like running the real pour-over of this recipe. */}
       {isRecipe && (
-        <ol ref={listRef} className="max-h-[45vh] space-y-2 overflow-y-auto">
+        <ol className="space-y-2">
           {recipeSteps.map(({ index, step, target }) => {
             const active = cur?.stepIndex === index && !run.done
             const passed = (cur?.stepIndex != null && index < cur.stepIndex) || run.done
@@ -274,6 +289,7 @@ export function DrillRunner({
               <li
                 key={step.id ?? index}
                 ref={active ? activeStepRef : undefined}
+                style={{ scrollMarginTop: headerH + 8 }}
                 className={`card flex items-center gap-3 p-3 transition ${
                   active ? 'border-brand ring-1 ring-brand/40' : passed ? 'opacity-60' : ''
                 }`}
