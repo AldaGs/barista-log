@@ -26,7 +26,8 @@ export function RecipeInsights({
 }) {
   const { t } = useTranslation()
   const tempUnit = useSettings((s) => s.tempUnit)
-  const insights = buildInsights(recipe, { micronsPerClick, tempUnit, freshness })
+  const altitude = useSettings((s) => s.altitude)
+  const insights = buildInsights(recipe, { micronsPerClick, tempUnit, altitude, freshness })
   if (insights.length === 0) return null
 
   return (

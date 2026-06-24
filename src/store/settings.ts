@@ -39,6 +39,8 @@ interface SettingsState {
   lang: Lang
   accent: AccentId
   tempUnit: TempUnit
+  /** elevation above sea level in meters — caps the brew-temp insight band */
+  altitude: number
   /** grams of water per second for each pour flow rate */
   pourRates: Record<FlowRate, number>
   /** master switch for audio + haptic step cues */
@@ -54,6 +56,7 @@ interface SettingsState {
   setLang: (l: Lang) => void
   setAccent: (a: AccentId) => void
   setTempUnit: (u: TempUnit) => void
+  setAltitude: (m: number) => void
   setPourRate: (rate: FlowRate, gramsPerSec: number) => void
   resetPourRates: () => void
   setCuesEnabled: (on: boolean) => void
@@ -73,6 +76,7 @@ export const useSettings = create<SettingsState>()(
       lang: (navigator.language?.startsWith('es') ? 'es' : 'en') as Lang,
       accent: 'midnight',
       tempUnit: 'C',
+      altitude: 0,
       pourRates: { ...DEFAULT_POUR_RATES },
       cuesEnabled: true,
       cueVolume: DEFAULT_CUE_VOLUME,
@@ -83,6 +87,7 @@ export const useSettings = create<SettingsState>()(
       setLang: (lang) => set({ lang }),
       setAccent: (accent) => set({ accent }),
       setTempUnit: (tempUnit) => set({ tempUnit }),
+      setAltitude: (altitude) => set({ altitude: Math.max(0, Math.round(altitude)) }),
       setPourRate: (rate, gramsPerSec) =>
         set((s) => ({ pourRates: { ...s.pourRates, [rate]: gramsPerSec } })),
       resetPourRates: () => set({ pourRates: { ...DEFAULT_POUR_RATES } }),

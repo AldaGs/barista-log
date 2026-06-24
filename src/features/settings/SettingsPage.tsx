@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Download, Upload, HelpCircle, ChevronRight, ShieldCheck, ShieldAlert } from 'lucide-react'
+import { Download, Upload, HelpCircle, ChevronRight, ShieldCheck, ShieldAlert, MapPin } from 'lucide-react'
 import { PageHeader } from '@/components/ui'
 import { getProfile } from '@/db/repo'
 import { ProfileAvatar } from '@/features/profile/ProfileAvatar'
@@ -11,6 +11,7 @@ import type { TempUnit } from '@/lib/units'
 import { exportBackup, parseBackupFile, lastBackupAt, type Backup } from '@/lib/backup'
 import { ImportBackupSheet } from './ImportBackupSheet'
 import { ensurePersistence, formatBytes, getStorageStatus, type StorageStatus } from '@/lib/storage'
+import { detectAltitude, mToFt, ftToM } from '@/lib/altitude'
 // Supabase cloud sync disabled 2026-06-23 — see note by its render below.
 // import { CloudSync } from './CloudSync'
 import { GoogleDriveBackup } from './GoogleDriveBackup'
@@ -101,6 +102,70 @@ function SegGroup<T extends string>({
           {o.label}
         </button>
       ))}
+    </div>
+  )
+}
+
+function AltitudeField() {
+  const { t } = useTranslation()
+  const altitude = useSettings((s) => s.altitude)
+  const setAltitude = useSettings((s) => s.setAltitude)
+  const imperial = useSettings((s) => s.tempUnit) === 'F'
+  const [detecting, setDetecting] = useState(false)
+  const [error, setError] = useState(false)
+
+  const shown = imperial ? mToFt(altitude) : altitude
+  const setShown = (v: number) => setAltitude(imperial ? ftToM(v) : v)
+
+  const detect = async () => {
+    setDetecting(true)
+    setError(false)
+    try {
+      setAltitude(await detectAltitude())
+    } catch {
+      setError(true)
+    } finally {
+      setDetecting(false)
+    }
+  }
+
+  return (
+    <div className="border-t border-border/60 pt-4">
+      <span className="label">{t('settings.altitude')}</span>
+      <p className="mb-2 text-xs text-muted">{t('settings.altitudeHint')}</p>
+      <div className="flex items-center gap-2">
+        <div className="flex flex-1 items-center gap-1">
+          <input
+            className="input"
+            type="number"
+            inputMode="numeric"
+            min={0}
+            step={imperial ? 100 : 50}
+            value={shown}
+            onChange={(e) => setShown(Number(e.target.value))}
+          />
+          <span className="text-xs text-muted">
+            {imperial ? t('settings.altitudeFeet') : t('settings.altitudeMeters')}
+          </span>
+        </div>
+        <button className="btn-ghost shrink-0" onClick={detect} disabled={detecting}>
+          <MapPin size={16} />
+          {detecting ? t('settings.altitudeDetecting') : t('settings.altitudeDetect')}
+        </button>
+      </div>
+      {error && (
+        <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">{t('settings.altitudeError')}</p>
+      )}
+      <p className="mt-1 text-xs text-muted">
+        <a
+          href="https://whatismyelevation.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          {t('settings.altitudeLookup')}
+        </a>
+      </p>
     </div>
   )
 }
@@ -229,6 +294,8 @@ export default function SettingsPage() {
         <button className="btn-ghost w-full" onClick={s.resetPourRates}>
           {t('settings.resetDefaults')}
         </button>
+
+        <AltitudeField />
 
         <div className="border-t border-border/60 pt-4">
           <span className="label">{t('settings.cues')}</span>

@@ -1,6 +1,7 @@
 import type { Recipe } from '@/db/types'
 import { formatTemp, type TempUnit } from '@/lib/units'
 import { IDEAL, beverageWeight, estimateBrew } from '@/lib/brewModel'
+import { boilingPointC } from '@/lib/altitude'
 import type { Freshness } from '@/lib/freshness'
 
 /**
@@ -50,13 +51,15 @@ function steepBand(r: Partial<Recipe>): [number, number] | null {
 export interface InsightOpts {
   micronsPerClick?: number
   tempUnit: TempUnit
+  /** elevation in meters — caps the hot-water band at the local boiling point */
+  altitude?: number
   /** freshness of the recipe's bean, when one is attached — drives the age tip */
   freshness?: Freshness
 }
 
 export function buildInsights(r: Partial<Recipe>, opts: InsightOpts): Insight[] {
   const out: Insight[] = []
-  const { micronsPerClick, tempUnit, freshness } = opts
+  const { micronsPerClick, tempUnit, freshness, altitude = 0 } = opts
 
   // --- Extraction & strength, straight from the model ---------------------
   const est = estimateBrew(r, micronsPerClick)
@@ -86,11 +89,28 @@ export function buildInsights(r: Partial<Recipe>, opts: InsightOpts): Insight[] 
   }
 
   // --- Temperature band ---------------------------------------------------
+  // tempBand only returns non-null for hot-water methods, so when it exists the
+  // local boiling point caps how hot the brew water can get. Above ~1150 m that
+  // cap dips below the usual top of the range, so we lower the high end and
+  // explain why the upper band is out of reach.
   const tb = tempBand(r)
-  if (r.waterTemp != null && tb) {
-    const range = `${formatTemp(tb[0], tempUnit)}–${formatTemp(tb[1], tempUnit)}`
-    if (r.waterTemp < tb[0]) out.push({ id: 'temp', tone: 'warn', key: 'tempLow', vars: { temp: formatTemp(r.waterTemp, tempUnit), range } })
-    else if (r.waterTemp > tb[1]) out.push({ id: 'temp', tone: 'warn', key: 'tempHigh', vars: { temp: formatTemp(r.waterTemp, tempUnit), range } })
+  if (tb) {
+    const bp = boilingPointC(altitude)
+    const capped = bp < tb[1]
+    const hi = capped ? Math.round(bp) : tb[1]
+    if (capped) {
+      out.push({
+        id: 'boil',
+        tone: 'tip',
+        key: 'tempBoilCap',
+        vars: { alt: altitude, bp: formatTemp(Math.round(bp), tempUnit) },
+      })
+    }
+    if (r.waterTemp != null) {
+      const range = `${formatTemp(tb[0], tempUnit)}–${formatTemp(hi, tempUnit)}`
+      if (r.waterTemp < tb[0]) out.push({ id: 'temp', tone: 'warn', key: 'tempLow', vars: { temp: formatTemp(r.waterTemp, tempUnit), range } })
+      else if (r.waterTemp > hi) out.push({ id: 'temp', tone: 'warn', key: 'tempHigh', vars: { temp: formatTemp(r.waterTemp, tempUnit), range } })
+    }
   }
 
   // --- Steep band ---------------------------------------------------------
