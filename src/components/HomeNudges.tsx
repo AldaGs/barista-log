@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Download, Share, X } from 'lucide-react'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { Download, Share, X, Wrench } from 'lucide-react'
+import { db } from '@/db/dexie'
 import { lastBackupAt } from '@/lib/backup'
+import { dueTasks } from '@/lib/maintenance'
 import { canInstall, isIos, isStandalone, onInstallChange, promptInstall } from '@/lib/pwa'
 
 /** Days without a backup before we surface a reminder on Home. */
 const BACKUP_STALE_DAYS = 30
 const INSTALL_DISMISS_KEY = 'barista-install-dismissed'
 const BACKUP_DISMISS_KEY = 'barista-backup-nudge-dismissed'
+const MAINT_DISMISS_KEY = 'barista-maint-nudge-dismissed'
 
 /** Don't re-nag about a dismissed nudge for this long. */
 const DISMISS_COOLDOWN = 14 * 86_400_000
@@ -45,6 +49,10 @@ export function HomeNudges({ hasData }: { hasData: boolean }) {
   const [, bump] = useState(0)
   const [installHidden, setInstallHidden] = useState(() => dismissed(INSTALL_DISMISS_KEY))
   const [backupHidden, setBackupHidden] = useState(() => dismissed(BACKUP_DISMISS_KEY))
+  const [maintHidden, setMaintHidden] = useState(() => dismissed(MAINT_DISMISS_KEY))
+
+  const maintenance = useLiveQuery(() => db.maintenance.toArray(), [])
+  const overdue = dueTasks(maintenance ?? [])
 
   useEffect(() => onInstallChange(() => bump((n) => n + 1)), [])
 
@@ -57,7 +65,10 @@ export function HomeNudges({ hasData }: { hasData: boolean }) {
   const backupStale = last == null || Date.now() - last > BACKUP_STALE_DAYS * 86_400_000
   const showBackup = !backupHidden && hasData && backupStale
 
-  if (!showInstall && !showBackup) return null
+  // --- Maintenance nudge: one or more tasks are overdue ---------------------
+  const showMaint = !maintHidden && overdue.length > 0
+
+  if (!showInstall && !showBackup && !showMaint) return null
 
   const dismiss = (key: string, set: (v: boolean) => void) => {
     localStorage.setItem(key, String(Date.now()))
@@ -84,6 +95,20 @@ export function HomeNudges({ hasData }: { hasData: boolean }) {
               <Share size={16} /> {t('install.iosHint')}
             </p>
           )}
+        </NudgeCard>
+      )}
+
+      {showMaint && (
+        <NudgeCard onDismiss={() => dismiss(MAINT_DISMISS_KEY, setMaintHidden)}>
+          <p className="font-medium">{t('maintenance.nudgeTitle')}</p>
+          <p className="mt-0.5 text-sm text-muted">
+            {overdue.length === 1
+              ? t('maintenance.nudgeOne', { label: overdue[0].label })
+              : t('maintenance.nudgeMany', { count: overdue.length })}
+          </p>
+          <Link to="/maintenance" className="btn-ghost mt-2">
+            <Wrench size={16} /> {t('maintenance.title')}
+          </Link>
         </NudgeCard>
       )}
 
