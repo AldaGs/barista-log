@@ -6,9 +6,10 @@ import { db } from '@/db/dexie'
 import { PageHeader, EmptyState } from '@/components/ui'
 import { useSettings } from '@/store/settings'
 import { buildRecipeDrill } from '@/lib/pourDrill'
+import { savePractice } from '@/db/repo'
 import { DrillRunner } from './DrillRunner'
 
-/** Replay a saved recipe's pour timeline as a practice drill (no logging). */
+/** Replay a saved recipe's pour timeline as a practice drill; logs training time. */
 export default function PracticePage() {
   const { t } = useTranslation()
   const { id } = useParams()
@@ -32,7 +33,11 @@ export default function PracticePage() {
         <EmptyState>{t('gym.noPours')}</EmptyState>
       ) : (
         <>
-          <DrillRunner segments={segments} metronome={metronome} />
+          <DrillRunner
+            segments={segments}
+            metronome={metronome}
+            onComplete={(seconds) => savePractice({ date: Date.now(), durationSec: seconds, kind: 'recipe', recipeId: recipe.id })}
+          />
           <label className="card flex items-center justify-between p-4">
             <span className="text-sm">{t('gym.metronome')}</span>
             <input type="checkbox" className="h-5 w-5 accent-[var(--brand)]" checked={metronome} onChange={(e) => setMetronome(e.target.checked)} />

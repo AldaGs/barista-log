@@ -7,10 +7,32 @@ import { usePourDrill, type DrillSegment } from '@/lib/pourDrill'
 import { PourCanvas } from './PourCanvas'
 
 /** Runs a list of drill segments: animated brewer, timer, pace cues and controls. */
-export function DrillRunner({ segments, metronome }: { segments: DrillSegment[]; metronome: boolean }) {
+export function DrillRunner({
+  segments,
+  metronome,
+  onComplete,
+}: {
+  segments: DrillSegment[]
+  metronome: boolean
+  /** called once with the drill length (s) each time a run reaches the end */
+  onComplete?: (seconds: number) => void
+}) {
   const { t } = useTranslation()
   const run = usePourDrill(segments, metronome)
   useWakeLock(run.running)
+
+  // Fire onComplete exactly once per finished run. Latch resets when the run is
+  // restarted (elapsed returns to 0), so a replay logs again but a re-render
+  // while sitting at "done" does not.
+  const completedRef = useRef(false)
+  useEffect(() => {
+    if (run.done && !completedRef.current) {
+      completedRef.current = true
+      if (run.total > 0) onComplete?.(Math.round(run.total))
+    } else if (run.elapsed === 0) {
+      completedRef.current = false
+    }
+  }, [run.done, run.elapsed, run.total, onComplete])
 
   const cur = segments[run.index]
   const pouring = !!cur && cur.kind === 'pour'

@@ -1,16 +1,19 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { startOfWeek, subWeeks, format } from 'date-fns'
-import { Star, AlertTriangle } from 'lucide-react'
+import { startOfWeek, subWeeks, subMonths, format } from 'date-fns'
+import { Star, AlertTriangle, Flame } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { PageHeader, EmptyState } from '@/components/ui'
 import { measuredBrew } from '@/lib/brewModel'
 import { freshness, stock } from '@/lib/freshness'
 import { formatSeconds } from '@/lib/units'
+import { useSettings } from '@/store/settings'
 
 const WEEKS = 12
+const MONTHS = 12
+const DAY_MS = 86_400_000
 
 function Stat({ value, label }: { value: string; label: string }) {
   return (
@@ -51,9 +54,13 @@ function Bars({ data, color = 'rgb(var(--brand))' }: { data: { label: string; va
 
 export default function StatsPage() {
   const { t } = useTranslation()
+  const costTracking = useSettings((s) => s.costTracking)
+  const currency = useSettings((s) => s.currency)
   const sessions = useLiveQuery(() => db.sessions.toArray(), [])
   const recipes = useLiveQuery(() => db.recipes.toArray(), [])
   const beans = useLiveQuery(() => db.beans.toArray(), [])
+  const practice = useLiveQuery(() => db.practice.toArray(), [])
+  const [period, setPeriod] = useState<'weeks' | 'months'>('weeks')
 
   const s = useMemo(() => {
     const all = sessions ?? []
@@ -72,6 +79,90 @@ export default function StatsPage() {
       const idx = Math.floor((startOfWeek(x.date).getTime() - weekStart) / weekMs)
       if (idx >= 0 && idx < WEEKS) weekly[idx].value++
     }
+
+    // monthly brew counts (last MONTHS months, oldest → newest)
+    const monthly = Array.from({ length: MONTHS }, (_, i) => ({
+      label: format(subMonths(now, MONTHS - 1 - i), 'MMM'),
+      value: 0,
+    }))
+    const monthIndex = (d: number) => {
+      const dt = new Date(d)
+      const cur = new Date(now)
+      return (cur.getFullYear() - dt.getFullYear()) * 12 + (cur.getMonth() - dt.getMonth())
+    }
+    for (const x of all) {
+      const back = monthIndex(x.date)
+      if (back >= 0 && back < MONTHS) monthly[MONTHS - 1 - back].value++
+    }
+    const busiestMonth = all.length
+      ? (() => {
+          const byMonth = new Map<string, number>()
+          for (const x of all) {
+            const key = format(x.date, 'yyyy-MM')
+            byMonth.set(key, (byMonth.get(key) ?? 0) + 1)
+          }
+          const [key, count] = [...byMonth.entries()].sort((a, b) => b[1] - a[1])[0]
+          return { label: format(new Date(key + '-01'), 'MMMM yyyy'), count }
+        })()
+      : null
+
+    // when-you-brew patterns: day-of-week (0=Sun) and hour-of-day distributions
+    const dow = Array.from({ length: 7 }, (_, i) => ({ label: 'SMTWTFS'[i], value: 0 }))
+    const hours = new Array(24).fill(0)
+    for (const x of all) {
+      const d = new Date(x.date)
+      dow[d.getDay()].value++
+      hours[d.getHours()]++
+    }
+    // 4-hour buckets for a compact hour chart (mobile-friendly)
+    const hourBuckets = Array.from({ length: 6 }, (_, i) => ({
+      label: ['12a', '4a', '8a', '12p', '4p', '8p'][i],
+      value: hours.slice(i * 4, i * 4 + 4).reduce((a, b) => a + b, 0),
+    }))
+    const peakDow = all.length ? dow.reduce((m, d, i) => (d.value > dow[m].value ? i : m), 0) : null
+    const peakHour = all.length ? hours.reduce((m, v, i) => (v > hours[m] ? i : m), 0) : null
+
+    // brewing streak: consecutive calendar days with ≥1 brew (current + longest)
+    const dayKeys = [...new Set(all.map((x) => Math.floor(x.date / DAY_MS)))].sort((a, b) => a - b)
+    let longestStreak = 0
+    let curRun = 0
+    for (let i = 0; i < dayKeys.length; i++) {
+      curRun = i > 0 && dayKeys[i] - dayKeys[i - 1] === 1 ? curRun + 1 : 1
+      longestStreak = Math.max(longestStreak, curRun)
+    }
+    const today = Math.floor(now / DAY_MS)
+    let currentStreak = 0
+    if (dayKeys.length) {
+      const last = dayKeys[dayKeys.length - 1]
+      if (last === today || last === today - 1) {
+        currentStreak = 1
+        for (let i = dayKeys.length - 1; i > 0; i--) {
+          if (dayKeys[i] - dayKeys[i - 1] === 1) currentStreak++
+          else break
+        }
+      }
+    }
+
+    // favorite by depletion: bean drunk fastest (g/day), needs a started bag
+    const depletion = (beans ?? [])
+      .map((b) => {
+        if (!b.bagSize || b.gramsRemaining == null) return null
+        const consumed = b.bagSize - b.gramsRemaining
+        if (consumed <= 0) return null
+        const beanSessions = all.filter((x) => x.beanId === b.id)
+        const firstAt = beanSessions.length
+          ? Math.min(...beanSessions.map((x) => x.date))
+          : b.createdAt
+        const days = Math.max((now - firstAt) / DAY_MS, 1)
+        return { name: b.name, perDay: consumed / days }
+      })
+      .filter((x): x is { name: string; perDay: number } => x !== null)
+      .sort((a, b) => b.perDay - a.perDay)
+    const fastestBean = depletion[0] ?? null
+
+    // practice (pour drill) totals
+    const practiceAll = practice ?? []
+    const practiceSec = practiceAll.reduce((a, p) => a + (p.durationSec ?? 0), 0)
 
     // rating distribution + average
     const ratings = all.filter((x) => x.rating && x.rating > 0)
@@ -141,6 +232,21 @@ export default function StatsPage() {
       ? Math.round(deltas.reduce((a, d) => a + d, 0) / deltas.length)
       : null
 
+    // cost (opt-in): per-brew coffee cost = dose × bag price / bag size.
+    let coffeeSpend = 0
+    let costedBrews = 0
+    let spend30 = 0
+    for (const x of all) {
+      const b = x.beanId ? beanById.get(x.beanId) : undefined
+      const dose = x.params?.doseIn
+      if (!b?.price || !b.bagSize || !dose) continue
+      const cost = (b.price / b.bagSize) * dose
+      coffeeSpend += cost
+      costedBrews++
+      if (now - x.date <= 30 * 86_400_000) spend30 += cost
+    }
+    const avgPerCup = costedBrews ? coffeeSpend / costedBrews : null
+
     // bean alerts
     const lowBeans = (beans ?? []).filter((b) => stock(b).isLow || stock(b).isEmpty)
     const restingBeans = (beans ?? []).filter((b) => freshness(b).status === 'resting')
@@ -164,10 +270,25 @@ export default function StatsPage() {
       timedCount: timed.length,
       avgDeltaSec,
       deltaCount: deltas.length,
+      coffeeSpend,
+      avgPerCup,
+      spend30,
+      costedBrews,
+      monthly,
+      busiestMonth,
+      dow,
+      hourBuckets,
+      peakDow,
+      peakHour,
+      currentStreak,
+      longestStreak,
+      fastestBean,
+      practiceSec,
+      practiceCount: practiceAll.length,
       lowBeans,
       restingBeans,
     }
-  }, [sessions, recipes, beans, t])
+  }, [sessions, recipes, beans, practice, t])
 
   if (sessions === undefined) return null
 
@@ -185,9 +306,71 @@ export default function StatsPage() {
             <Stat value={s.avgRating ? s.avgRating.toFixed(1) : '—'} label={t('stats.avgRating')} />
           </div>
 
-          <Section title={t('stats.brewsPerWeek')}>
-            <Bars data={s.weekly} />
+          <Section title={period === 'weeks' ? t('stats.brewsPerWeek') : t('stats.brewsPerMonth')}>
+            <div className="mb-3 flex gap-2">
+              {(['weeks', 'months'] as const).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPeriod(p)}
+                  className={`rounded-full px-3 py-1 text-xs ${period === p ? 'bg-brand text-white' : 'bg-surface-2 text-muted'}`}
+                >
+                  {t('stats.period.' + p)}
+                </button>
+              ))}
+            </div>
+            <Bars data={period === 'weeks' ? s.weekly : s.monthly} />
           </Section>
+
+          {(s.currentStreak > 0 || s.longestStreak > 1) && (
+            <div className="flex gap-2">
+              <Stat value={t('stats.daysN', { count: s.currentStreak })} label={t('stats.currentStreak')} />
+              <Stat value={t('stats.daysN', { count: s.longestStreak })} label={t('stats.longestStreak')} />
+              {s.busiestMonth && <Stat value={String(s.busiestMonth.count)} label={t('stats.busiestMonth', { month: s.busiestMonth.label })} />}
+            </div>
+          )}
+
+          {s.peakDow != null && s.peakHour != null && (
+            <Section title={t('stats.whenYouBrew')}>
+              <p className="flex items-center gap-2 text-sm">
+                <Flame size={16} className="shrink-0 text-brand" />
+                <span>
+                  {t('stats.peakCallout', {
+                    day: format(new Date(2024, 0, 7 + s.peakDow), 'EEEE'),
+                    hour: format(new Date(2024, 0, 1, s.peakHour), 'h a'),
+                  })}
+                </span>
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-4">
+                <div>
+                  <p className="mb-1 text-xs text-muted">{t('stats.byDay')}</p>
+                  <Bars data={s.dow} />
+                </div>
+                <div>
+                  <p className="mb-1 text-xs text-muted">{t('stats.byHour')}</p>
+                  <Bars data={s.hourBuckets} color="rgb(var(--accent))" />
+                </div>
+              </div>
+            </Section>
+          )}
+
+          {s.fastestBean && (
+            <Section title={t('stats.fastestBean')}>
+              <p className="flex items-center justify-between text-sm">
+                <span className="truncate font-medium">{s.fastestBean.name}</span>
+                <span className="shrink-0 tabular-nums text-muted">{t('stats.gPerDay', { g: s.fastestBean.perDay.toFixed(1) })}</span>
+              </p>
+              <p className="mt-1 text-xs text-muted">{t('stats.fastestBeanHint')}</p>
+            </Section>
+          )}
+
+          {s.practiceCount > 0 && (
+            <Section title={t('stats.practice')}>
+              <div className="flex gap-2">
+                <Stat value={formatSeconds(s.practiceSec)} label={t('stats.practiceTime')} />
+                <Stat value={String(s.practiceCount)} label={t('stats.practiceSessions')} />
+              </div>
+            </Section>
+          )}
 
           {(s.espresso > 0 || s.brew > 0 || s.coldbrew > 0) && (
             <Section title={t('stats.methodSplit')}>
@@ -247,6 +430,17 @@ export default function StatsPage() {
                       })}
                 </p>
               )}
+            </Section>
+          )}
+
+          {costTracking && s.costedBrews > 0 && (
+            <Section title={t('stats.cost')}>
+              <div className="flex gap-2">
+                <Stat value={`${currency}${s.avgPerCup!.toFixed(2)}`} label={t('stats.costPerCup')} />
+                <Stat value={`${currency}${s.spend30.toFixed(2)}`} label={t('stats.cost30')} />
+                <Stat value={`${currency}${s.coffeeSpend.toFixed(2)}`} label={t('stats.costTotal')} />
+              </div>
+              <p className="text-xs text-muted">{t('stats.costNote', { count: s.costedBrews })}</p>
             </Section>
           )}
 

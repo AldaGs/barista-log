@@ -1,10 +1,13 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { db } from '@/db/dexie'
 import { PageHeader } from '@/components/ui'
 import { useSettings } from '@/store/settings'
 import type { FlowRate, PourPattern } from '@/db/types'
 import { buildPulseDrill, pourSeconds } from '@/lib/pourDrill'
 import { formatSeconds } from '@/lib/units'
+import { savePractice } from '@/db/repo'
 import { DrillRunner } from './DrillRunner'
 
 const PATTERNS: PourPattern[] = ['circular', 'concentric', 'elliptical', 'edge', 'direct']
@@ -13,6 +16,8 @@ const PACES: FlowRate[] = ['slow', 'medium', 'fast']
 export default function GymPage() {
   const { t } = useTranslation()
   const pourRates = useSettings((s) => s.pourRates)
+  const practice = useLiveQuery(() => db.practice.toArray(), [])
+  const trainedSec = (practice ?? []).reduce((s, p) => s + (p.durationSec ?? 0), 0)
 
   const [pattern, setPattern] = useState<PourPattern>('circular')
   const [pace, setPace] = useState<FlowRate>('medium')
@@ -45,8 +50,18 @@ export default function GymPage() {
     <div className="space-y-5">
       <PageHeader title={t('gym.title')} back />
       <p className="text-sm text-muted">{t('gym.intro')}</p>
+      {trainedSec > 0 && (
+        <p className="text-sm font-medium text-brand">
+          {t('gym.trainedTotal', { time: formatSeconds(trainedSec) })}
+        </p>
+      )}
 
-      <DrillRunner key={runnerKey} segments={segments} metronome={metronome} />
+      <DrillRunner
+        key={runnerKey}
+        segments={segments}
+        metronome={metronome}
+        onComplete={(seconds) => savePractice({ date: Date.now(), durationSec: seconds, kind: 'gym', pattern })}
+      />
 
       <div className="card space-y-4 p-4">
         {/* Pattern */}
