@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { FlowRate, PourPattern, Recipe } from '@/db/types'
+import type { BrewStep, FlowRate, PourPattern, Recipe } from '@/db/types'
 import { cue } from '@/lib/feedback'
 
 /** One step of a pour drill: either an active pour or a rest/wait. */
@@ -12,6 +12,17 @@ export interface DrillSegment {
   label?: string
   /** for repetition drills — [current, total] pulse number shown on the pour */
   pulse?: [number, number]
+  /** When this drill replays a recipe, the originating recipe step and its
+   *  position in the schedule — lets the runner show the real instruction
+   *  (pattern · height · flow), step number and cumulative target weight so
+   *  practice mirrors the actual pour-over rather than anonymous pours. */
+  step?: BrewStep
+  /** 0-based index of the source step in the recipe's schedule */
+  stepIndex?: number
+  /** total number of steps in the recipe's schedule */
+  stepCount?: number
+  /** cumulative target water (g) the brewer should be at by the end of this step */
+  target?: number
 }
 
 /** A pour duration (s) for `water` grams at flow rate `rate` (g/s). */
@@ -49,23 +60,31 @@ export function buildPulseDrill(opts: {
  */
 export function buildRecipeDrill(recipe: Recipe, rates: Record<FlowRate, number>): DrillSegment[] {
   const steps = [...(recipe.steps ?? [])].sort((a, b) => (a.atTimeSec ?? 0) - (b.atTimeSec ?? 0))
+  const stepCount = steps.length
   const segs: DrillSegment[] = []
   let prev = 0
-  for (const s of steps) {
+  let cumWater = 0
+  steps.forEach((s, stepIndex) => {
     const at = s.atTimeSec ?? prev
     const window = Math.max(0, at - prev)
     const isPour = (s.type === 'pour' || s.type === 'bloom') && !!s.water && s.water > 0
+    // Carry the source step's identity onto each segment so the runner can show
+    // the recipe's real instruction, step number and cumulative target.
+    if (isPour) cumWater += s.water!
+    const meta = { step: s, stepIndex, stepCount, target: cumWater }
     if (isPour) {
       const rate = rates[s.flowRate ?? 'medium'] || rates.medium
       const dur = Math.min(window || pourSeconds(s.water!, rate), pourSeconds(s.water!, rate))
-      segs.push({ kind: 'pour', seconds: dur, water: s.water, pattern: s.pourPattern, label: s.type })
+      segs.push({ kind: 'pour', seconds: dur, water: s.water, pattern: s.pourPattern, label: s.type, ...meta })
+      // Hold the rest of the step's window after the pour finishes — same as the
+      // guided brew player, so the pacing matches the real brew.
       const restAfter = window - dur
-      if (restAfter > 0.4) segs.push({ kind: 'wait', seconds: Math.round(restAfter * 10) / 10 })
+      if (restAfter > 0.4) segs.push({ kind: 'wait', seconds: Math.round(restAfter * 10) / 10, label: s.type, ...meta })
     } else if (window > 0) {
-      segs.push({ kind: 'wait', seconds: window, label: s.type })
+      segs.push({ kind: 'wait', seconds: window, label: s.type, ...meta })
     }
     prev = at
-  }
+  })
   return segs
 }
 

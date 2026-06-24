@@ -1,9 +1,9 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { format } from 'date-fns'
-import { Pencil, Copy, Trash2, Share2, Play, Check, GitFork, GitMerge, AlertTriangle, Send, Star, GitCompare, Snowflake, X, Dumbbell, Scale } from 'lucide-react'
+import { Pencil, Copy, Trash2, Share2, Play, Check, GitFork, GitMerge, AlertTriangle, Send, Star, GitCompare, Snowflake, X, Dumbbell, Scale, MoreVertical } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { deleteRecipe, toggleFavorite } from '@/db/repo'
 import { useColdSteep } from '@/store/coldSteep'
@@ -28,6 +28,20 @@ export default function RecipeDetailPage() {
   const [showShare, setShowShare] = useState(false)
   const [showAdopt, setShowAdopt] = useState(false)
   const [showScale, setShowScale] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  // Close the overflow menu when tapping/clicking anywhere outside it.
+  useEffect(() => {
+    if (!menuOpen) return
+    const onPointer = (e: PointerEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    document.addEventListener('pointerdown', onPointer)
+    return () => document.removeEventListener('pointerdown', onPointer)
+  }, [menuOpen])
 
   const steep = useColdSteep()
   const recipe = useLiveQuery(() => (id ? db.recipes.get(id) : undefined), [id])
@@ -79,6 +93,8 @@ export default function RecipeDetailPage() {
         back
         action={
           <div className="flex gap-1">
+            {/* Favorite stays out of the menu so the marked state is always
+                visible at a glance. */}
             <button
               onClick={() => toggleFavorite(recipe.id)}
               className={`btn-ghost !px-2 ${recipe.favorite ? 'text-brand' : ''}`}
@@ -87,23 +103,74 @@ export default function RecipeDetailPage() {
             >
               <Star size={18} fill={recipe.favorite ? 'currentColor' : 'none'} />
             </button>
-            <button onClick={() => setShowShare(true)} className="btn-ghost !px-2" aria-label={t('share.recipeTitle')}>
-              <Send size={18} />
-            </button>
-            <Link to={`/recipe/${recipe.id}/edit`} className="btn-ghost !px-2" aria-label="edit">
-              <Pencil size={18} />
-            </Link>
-            <Link to={`/recipe/new?fork=${recipe.id}`} className="btn-ghost !px-2" aria-label="fork">
-              <GitFork size={18} />
-            </Link>
-            <Link to={`/recipe/new?from=${recipe.id}`} className="btn-ghost !px-2" aria-label="duplicate">
-              <Copy size={18} />
-            </Link>
-            {(recipe.doseIn || recipe.yieldOut) && (
-              <button onClick={() => setShowScale(true)} className="btn-ghost !px-2" aria-label={t('scale.title')}>
-                <Scale size={18} />
+
+            {/* Overflow menu — the remaining recipe actions, with labels, so the
+                header no longer overflows on narrow screens. */}
+            <div className="relative" ref={menuRef}>
+              <button
+                type="button"
+                className="btn-ghost !px-2"
+                aria-label={t('common.moreActions')}
+                aria-expanded={menuOpen}
+                aria-haspopup="menu"
+                onClick={() => setMenuOpen((o) => !o)}
+              >
+                <MoreVertical size={18} />
               </button>
-            )}
+              {menuOpen && (
+                <div
+                  role="menu"
+                  className="absolute right-0 top-full z-20 mt-1 w-48 overflow-hidden rounded-xl border border-border bg-surface py-1 text-sm shadow-lg"
+                >
+                  <button
+                    role="menuitem"
+                    onClick={() => {
+                      setMenuOpen(false)
+                      setShowShare(true)
+                    }}
+                    className="flex w-full items-center gap-2.5 px-3 py-2 text-left hover:bg-surface-2"
+                  >
+                    <Send size={16} /> {t('share.recipeTitle')}
+                  </button>
+                  <Link
+                    role="menuitem"
+                    to={`/recipe/${recipe.id}/edit`}
+                    onClick={() => setMenuOpen(false)}
+                    className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-surface-2"
+                  >
+                    <Pencil size={16} /> {t('common.edit')}
+                  </Link>
+                  <Link
+                    role="menuitem"
+                    to={`/recipe/new?fork=${recipe.id}`}
+                    onClick={() => setMenuOpen(false)}
+                    className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-surface-2"
+                  >
+                    <GitFork size={16} /> {t('common.fork')}
+                  </Link>
+                  <Link
+                    role="menuitem"
+                    to={`/recipe/new?from=${recipe.id}`}
+                    onClick={() => setMenuOpen(false)}
+                    className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-surface-2"
+                  >
+                    <Copy size={16} /> {t('common.duplicate')}
+                  </Link>
+                  {(recipe.doseIn || recipe.yieldOut) && (
+                    <button
+                      role="menuitem"
+                      onClick={() => {
+                        setMenuOpen(false)
+                        setShowScale(true)
+                      }}
+                      className="flex w-full items-center gap-2.5 px-3 py-2 text-left hover:bg-surface-2"
+                    >
+                      <Scale size={16} /> {t('scale.title')}
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         }
       />

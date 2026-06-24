@@ -1,10 +1,24 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Play, Pause, RotateCcw } from 'lucide-react'
+import { Play, Pause, RotateCcw, Check } from 'lucide-react'
+import type { BrewStep } from '@/db/types'
 import { formatSeconds } from '@/lib/units'
 import { cue, useWakeLock } from '@/lib/feedback'
 import { usePourDrill, type DrillSegment } from '@/lib/pourDrill'
 import { PourCanvas } from './PourCanvas'
+
+/** One-line recipe instruction for a step: type · g · pattern · height · flow. */
+function stepInstruction(s: BrewStep, t: (k: string) => string): string {
+  return [
+    t('step.' + s.type),
+    s.water != null ? `${s.water} g` : null,
+    s.pourPattern && t('step.' + s.pourPattern),
+    s.pourHeight && t('step.' + s.pourHeight),
+    s.flowRate && t('step.flow_' + s.flowRate),
+  ]
+    .filter(Boolean)
+    .join(' · ')
+}
 
 /** Runs a list of drill segments: animated brewer, timer, pace cues and controls. */
 export function DrillRunner({
@@ -101,14 +115,59 @@ export function DrillRunner({
     return acc
   }, [segments, run.elapsed])
 
+  // The recipe schedule behind this drill (empty for free Gym pulse drills),
+  // de-duplicated from the segments so the runner can mirror the real pour-over.
+  const recipeSteps = useMemo(() => {
+    const out: { index: number; step: BrewStep; target: number }[] = []
+    const seen = new Set<number>()
+    for (const seg of segments) {
+      if (seg.step && seg.stepIndex != null && !seen.has(seg.stepIndex)) {
+        seen.add(seg.stepIndex)
+        out.push({ index: seg.stepIndex, step: seg.step, target: seg.target ?? 0 })
+      }
+    }
+    return out.sort((a, b) => a.index - b.index)
+  }, [segments])
+  const isRecipe = recipeSteps.length > 0
+
+  // Next recipe step to preview while the current one runs.
+  const nextStep = useMemo(() => {
+    if (cur?.stepIndex == null) return null
+    return recipeSteps.find((s) => s.index > cur.stepIndex!) ?? null
+  }, [recipeSteps, cur?.stepIndex])
+
   const pourLabel = cur?.pulse ? `${t('gym.pourNow')} ${cur.pulse[0]}/${cur.pulse[1]}` : t('gym.pourNow')
+  // For a recipe pour, name the real step (Bloom/Pour …); the rest after a pour
+  // and the drawdown read as "hold" so it feels like the actual brew.
   const phaseLabel = run.done
     ? t('gym.done')
-    : cur?.label
-      ? t('step.' + cur.label)
-      : pouring
-        ? pourLabel
-        : t('gym.rest_phase')
+    : isRecipe && cur
+      ? pouring
+        ? t('step.' + (cur.label ?? 'pour'))
+        : cur.label === 'pour' || cur.label === 'bloom'
+          ? t('gym.hold')
+          : t('step.' + (cur.label ?? 'wait'))
+      : cur?.label
+        ? t('step.' + cur.label)
+        : pouring
+          ? pourLabel
+          : t('gym.rest_phase')
+
+  // Pour detail line (pattern · height · flow) shown while pouring a recipe step.
+  const pourDetail =
+    isRecipe && pouring && cur?.step
+      ? [
+          cur.step.pourPattern && t('step.' + cur.step.pourPattern),
+          cur.step.pourHeight && t('step.' + cur.step.pourHeight),
+          cur.step.flowRate && t('step.flow_' + cur.step.flowRate),
+        ]
+          .filter(Boolean)
+          .join(' · ')
+      : ''
+
+  // Step number/total read off the recipe schedule, not the raw segment list.
+  const stepNum = cur?.stepIndex != null ? cur.stepIndex + 1 : run.index + 1
+  const stepTotal = isRecipe ? recipeSteps.length : segments.length
 
   const idle = run.elapsed === 0 && !run.running && counting == null
 
@@ -131,6 +190,7 @@ export function DrillRunner({
         <p className={`text-lg font-semibold ${pouring ? 'text-brand' : run.done ? 'text-accent' : 'text-muted'}`}>
           {phaseLabel}
         </p>
+        {pourDetail && <p className="-mt-0.5 text-sm text-muted">{pourDetail}</p>}
         <span className="font-mono text-5xl tabular-nums">{formatSeconds(Math.floor(run.elapsed))}</span>
         {totalWater > 0 && (
           <p className="text-2xl font-bold tabular-nums text-brand">
@@ -140,7 +200,13 @@ export function DrillRunner({
         {!run.done && cur && (
           <p className="text-sm text-muted">
             {t('gym.secsLeft', { secs: Math.ceil(run.segRemaining) })}
-            {!cur.pulse && segments.length > 1 && ` · ${t('gym.segment', { i: run.index + 1, n: segments.length })}`}
+            {!cur.pulse && stepTotal > 1 && ` · ${t('gym.segment', { i: stepNum, n: stepTotal })}`}
+          </p>
+        )}
+        {!run.done && isRecipe && nextStep && (
+          <p className="mt-1 text-sm text-muted">
+            {t('play.next')}: {stepInstruction(nextStep.step, t)}
+            {nextStep.target > 0 && <span className="ml-1 tabular-nums">→ {nextStep.target} g</span>}
           </p>
         )}
       </div>
@@ -169,6 +235,40 @@ export function DrillRunner({
             </button>
           ))}
         </div>
+      )}
+
+      {/* Recipe schedule — mirrors the guided brew player so practicing the
+          drill feels like running the real pour-over of this recipe. */}
+      {isRecipe && (
+        <ol className="space-y-2">
+          {recipeSteps.map(({ index, step, target }) => {
+            const active = cur?.stepIndex === index && !run.done
+            const passed = (cur?.stepIndex != null && index < cur.stepIndex) || run.done
+            return (
+              <li
+                key={step.id ?? index}
+                className={`card flex items-center gap-3 p-3 transition ${
+                  active ? 'border-brand ring-1 ring-brand/40' : passed ? 'opacity-60' : ''
+                }`}
+              >
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-2 text-xs font-semibold">
+                  {passed ? <Check size={14} className="text-accent" /> : index + 1}
+                </span>
+                <span className={`flex-1 text-sm ${active ? 'font-semibold' : ''}`}>
+                  {stepInstruction(step, t)}
+                </span>
+                <span className="flex shrink-0 flex-col items-end leading-tight">
+                  {target > 0 && (
+                    <span className="text-sm font-semibold tabular-nums text-brand">{target} g</span>
+                  )}
+                  {step.atTimeSec != null && (
+                    <span className="text-xs tabular-nums text-muted">{formatSeconds(step.atTimeSec)}</span>
+                  )}
+                </span>
+              </li>
+            )
+          })}
+        </ol>
       )}
     </div>
   )
