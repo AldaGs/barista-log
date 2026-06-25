@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Star } from 'lucide-react'
+import { TAB_ROOT, tabForPath } from '@/store/navTabs'
 
 export function PageHeader({
   title,
@@ -12,9 +13,20 @@ export function PageHeader({
   action?: ReactNode
 }) {
   const navigate = useNavigate()
-  // Step back through history when we can; fall back to Home on a fresh load
-  // (e.g. a deep link or shared recipe opened directly).
-  const goBack = () => (window.history.length > 1 ? navigate(-1) : navigate('/'))
+  const location = useLocation()
+  // Native-style hierarchical back: a sub-window steps to its parent (browser
+  // history when available, else the tab root); a tab root drops to Home.
+  const goBack = () => {
+    const tab = tabForPath(location.pathname)
+    const atTabRoot = location.pathname === TAB_ROOT[tab]
+    if (atTabRoot) {
+      navigate('/')
+    } else if (window.history.length > 1) {
+      navigate(-1)
+    } else {
+      navigate(TAB_ROOT[tab])
+    }
+  }
   return (
     <header className="mb-4 flex items-center gap-3">
       {back && (
