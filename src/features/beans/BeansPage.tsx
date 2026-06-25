@@ -147,13 +147,11 @@ export default function BeansPage() {
                 </button>
                 <Link
                   to={`/bean/${b.id}`}
-                  className="shrink-0 text-muted hover:text-brand"
-                  aria-label={t('cupping.title')}
-                  title={t('cupping.title')}
+                  className="btn-ghost shrink-0 !px-3 !py-1.5 text-sm"
                 >
-                  <Star size={18} />
+                  <Star size={16} /> {t('cupping.title')}
                 </Link>
-                <button className="shrink-0 text-muted hover:text-red-500" onClick={() => deleteBean(b.id)}>
+                <button className="shrink-0 text-muted hover:text-red-500" onClick={() => deleteBean(b.id)} aria-label={t('common.delete')}>
                   <Trash2 size={18} />
                 </button>
               </div>
