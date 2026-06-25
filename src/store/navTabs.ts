@@ -60,15 +60,31 @@ interface NavTabsState {
   /** Last full location (pathname + search) visited inside each tab. */
   lastLocation: Record<TabKey, string>
   remember: (pathname: string, search: string) => void
+  /**
+   * Tell the next location recording to ignore a bare Home (`/`) visit. The tab
+   * switcher splices a synthetic `/` into history beneath the destination; that
+   * transient must not overwrite the Home tab's real saved sub-window.
+   */
+  skipNextHomeRecord: () => void
 }
 
 export const useNavTabs = create<NavTabsState>((set) => ({
   lastLocation: { ...TAB_ROOT },
-  remember: (pathname, search) =>
+  remember: (pathname, search) => {
+    const skip = pendingHomeSkip
+    pendingHomeSkip = false
+    if (skip && pathname === '/') return
     set((s) => ({
       lastLocation: {
         ...s.lastLocation,
         [tabForPath(pathname)]: pathname + search,
       },
-    })),
+    }))
+  },
+  skipNextHomeRecord: () => {
+    pendingHomeSkip = true
+  },
 }))
+
+// One-shot flag, kept outside React state so it never triggers a re-render.
+let pendingHomeSkip = false

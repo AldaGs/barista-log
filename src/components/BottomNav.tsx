@@ -16,12 +16,24 @@ export function BottomNav() {
   const navigate = useNavigate()
   const location = useLocation()
   const lastLocation = useNavTabs((s) => s.lastLocation)
+  const skipNextHomeRecord = useNavTabs((s) => s.skipNextHomeRecord)
   const activeTab = tabForPath(location.pathname)
 
   const go = (tab: TabKey) => {
     // Re-tapping the active tab returns to its root (native behaviour);
     // otherwise restore wherever we last were inside that tab.
     const target = tab === activeTab ? TAB_ROOT[tab] : lastLocation[tab]
+    if (target === '/') {
+      navigate('/')
+      return
+    }
+    // Splice Home in beneath the destination so the OS/swipe back gesture
+    // always pops a non-Home tab back to Home, instead of unwinding the flat
+    // browser history through whatever tabs were visited before (which made it
+    // feel like a web page). Sub-windows opened from here still push normally.
+    // The transient '/' must not overwrite the Home tab's saved sub-window.
+    skipNextHomeRecord()
+    navigate('/', { replace: true })
     navigate(target)
   }
 
