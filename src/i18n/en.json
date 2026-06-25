@@ -29,6 +29,14 @@
           "The brew keeps running even if you leave the screen — resume it any time from the bar above the menu. Tap × to discard it."
         ]
       },
+      "pressure": {
+        "title": "Espresso pressure profiles",
+        "steps": [
+          "On an espresso recipe, scroll to Pressure profile and tap Add stage to build a shot in stages — e.g. pre-infusion, ramp, hold, decline.",
+          "Each stage has a duration (seconds) and a target pressure (bar). A live curve previews the shape; leave it empty to just use a single pressure.",
+          "The recipe page shows the curve, and the shot timer guides you through it: it names the current stage and target bar, draws a moving playhead, and beeps at each stage change."
+        ]
+      },
       "coldbrew": {
         "title": "Cold brew",
         "steps": [
@@ -42,7 +50,7 @@
       "logging": {
         "title": "Logging & history",
         "steps": [
-          "After brewing, tap Log this brew to rate the cup, score flavors, add tags and — with a refractometer — a TDS reading.",
+          "After brewing, tap Log this brew to rate the cup, score flavors, add tags and — with a refractometer — a TDS reading. If your refractometer reads °Brix, switch the unit next to the field and it's converted to TDS% for you (tune the factor in Settings → Measurements).",
           "The date & time is filled in for you, but you can edit it to backdate a brew.",
           "If you used the guided timer, your actual brew time is saved and compared against the recipe's planned time.",
           "Every recipe keeps its own brew log, so you can see how the same recipe drifts over time.",
@@ -55,6 +63,14 @@
           "Open Beans in the bottom bar, then tap Add.",
           "Enter name, roaster, origin, process and roast date.",
           "Saved beans show up in the bean picker when you create a recipe."
+        ]
+      },
+      "cupping": {
+        "title": "Cupping a coffee",
+        "steps": [
+          "On the Beans list, tap Cuppings on any bean to open it and see its cupping scores and average.",
+          "Tap New cupping to score the coffee on the SCA protocol: seven quality attributes (6–10), the three 5-cup attributes (tap how many of the 5 cups were clean), and any defect points to subtract.",
+          "The total out of 100 updates as you score. Saved cuppings live with the bean, so a coffee's quality history travels with it."
         ]
       },
       "water": {

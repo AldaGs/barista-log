@@ -29,6 +29,14 @@
           "La preparación sigue corriendo aunque salgas de la pantalla — retómala cuando quieras desde la barra sobre el menú. Toca × para descartarla."
         ]
       },
+      "pressure": {
+        "title": "Perfiles de presión de espresso",
+        "steps": [
+          "En una receta de espresso, baja a Perfil de presión y toca Añadir etapa para armar el shot por etapas — p. ej. preinfusión, subida, sostenido, bajada.",
+          "Cada etapa tiene una duración (segundos) y una presión objetivo (bar). Una curva en vivo muestra la forma; déjalo vacío para usar una sola presión.",
+          "La receta muestra la curva y el temporizador del shot te guía: nombra la etapa actual y su objetivo en bar, dibuja un marcador en movimiento y suena en cada cambio de etapa."
+        ]
+      },
       "coldbrew": {
         "title": "Cold brew",
         "steps": [
@@ -42,7 +50,7 @@
       "logging": {
         "title": "Registro e historial",
         "steps": [
-          "Al terminar, toca Registrar preparación para calificar la taza, puntuar sabores, agregar etiquetas y — con refractómetro — una lectura de TDS.",
+          "Al terminar, toca Registrar preparación para calificar la taza, puntuar sabores, agregar etiquetas y — con refractómetro — una lectura de TDS. Si tu refractómetro mide en °Brix, cambia la unidad junto al campo y se convierte a TDS% por ti (ajusta el factor en Ajustes → Mediciones).",
           "La fecha y hora se completa por ti, pero puedes editarla para registrar una preparación con fecha anterior.",
           "Si usaste la guía con temporizador, tu tiempo real se guarda y se compara con el tiempo planeado de la receta.",
           "Cada receta conserva su propio registro de preparaciones, para ver cómo cambia la misma receta con el tiempo.",
@@ -55,6 +63,14 @@
           "Abre Granos en la barra inferior y toca Agregar.",
           "Ingresa nombre, tostador, origen, proceso y fecha de tueste.",
           "Los granos guardados aparecen al crear una receta."
+        ]
+      },
+      "cupping": {
+        "title": "Catar un café",
+        "steps": [
+          "En la lista de Granos, toca Catas en cualquier grano para abrirlo y ver sus puntajes de cata y el promedio.",
+          "Toca Nueva cata para puntuar el café con el protocolo SCA: siete atributos de calidad (6–10), los tres atributos de 5 tazas (toca cuántas de las 5 estuvieron limpias) y los puntos de defecto a restar.",
+          "El total sobre 100 se actualiza mientras puntúas. Las catas guardadas viven con el grano, así su historial de calidad lo acompaña."
         ]
       },
       "water": {
