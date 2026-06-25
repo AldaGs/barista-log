@@ -385,6 +385,25 @@ export default function SettingsPage() {
         )}
       </section>
 
+      {/* Measurements */}
+      <section className="card space-y-3 p-4">
+        <h2 className="font-semibold">{t('settings.measureSection')}</h2>
+        <label className="block">
+          <span className="label">{t('settings.brixFactor')}</span>
+          <p className="mb-2 text-xs text-muted">{t('settings.brixFactorHint')}</p>
+          <input
+            className="input"
+            type="number"
+            inputMode="decimal"
+            step="0.01"
+            min="0.5"
+            max="1"
+            value={s.brixFactor}
+            onChange={(e) => s.setBrixFactor(Number(e.target.value))}
+          />
+        </label>
+      </section>
+
       {/* Data */}
       <section className="card space-y-3 p-4">
         <h2 className="font-semibold">{t('settings.data')}</h2>

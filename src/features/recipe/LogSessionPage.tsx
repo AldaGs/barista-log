@@ -12,6 +12,8 @@ import { formatSeconds } from '@/lib/units'
 import { estimateMicrons } from '@/lib/grindConvert'
 import { useBrewPlayer } from '@/store/brewPlayer'
 import { useColdSteep, steepElapsedMs } from '@/store/coldSteep'
+import { useSettings } from '@/store/settings'
+import { brixToTds } from '@/lib/refractometer'
 
 const num = (v: string) => (v === '' ? undefined : Number(v))
 
@@ -62,6 +64,10 @@ export default function LogSessionPage() {
   const [tags, setTags] = useState<string[]>([])
   const [notes, setNotes] = useState('')
   const [tds, setTds] = useState('')
+  const [tdsUnit, setTdsUnit] = useState<'tds' | 'brix'>('tds')
+  const brixFactor = useSettings((s) => s.brixFactor)
+  // Canonical TDS% to store: a Brix reading is converted, a TDS reading is taken as-is.
+  const tdsCanonical = tds === '' ? undefined : tdsUnit === 'brix' ? brixToTds(Number(tds), brixFactor) : Number(tds)
   const [beverageWeight, setBeverageWeight] = useState(
     actual.beverageWeight != null ? String(actual.beverageWeight) : '',
   )
@@ -96,7 +102,7 @@ export default function LogSessionPage() {
       rating,
       flavors,
       flavorTags: tags,
-      tds: tds === '' ? undefined : Number(tds),
+      tds: tdsCanonical,
       beverageWeight: beverageWeight === '' ? undefined : Number(beverageWeight),
       actualTotalSec: actual.actualTotalSec,
       actualLaps: actual.actualLaps?.length ? actual.actualLaps : undefined,
@@ -206,28 +212,48 @@ export default function LogSessionPage() {
           <h2 className="font-semibold">{t('session.measured')}</h2>
           <p className="text-xs text-muted">{t('session.measuredHint')}</p>
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <Field label={t('session.tds')} hint={t('common.optional')}>
+        <Field
+          label={tdsUnit === 'brix' ? t('session.brix') : t('session.tds')}
+          hint={
+            tdsUnit === 'brix' && tdsCanonical != null
+              ? t('session.brixPreview', { tds: tdsCanonical.toFixed(2) })
+              : t('common.optional')
+          }
+        >
+          <div className="flex gap-2">
             <input
-              className="input"
+              className="input min-w-0 flex-1"
               type="number"
               inputMode="decimal"
               step="0.01"
               value={tds}
               onChange={(e) => setTds(e.target.value)}
-              placeholder={recipe.method === 'espresso' ? '10' : isSteep && recipe.concentrate ? '4.5' : '1.35'}
+              placeholder={
+                tdsUnit === 'brix'
+                  ? recipe.method === 'espresso' ? '12' : '1.6'
+                  : recipe.method === 'espresso' ? '10' : isSteep && recipe.concentrate ? '4.5' : '1.35'
+              }
             />
-          </Field>
-          <Field label={t('session.beverageWeight')} hint={t('common.optional')}>
-            <input
-              className="input"
-              type="number"
-              inputMode="decimal"
-              value={beverageWeight}
-              onChange={(e) => setBeverageWeight(e.target.value)}
-            />
-          </Field>
-        </div>
+            <select
+              className="input !w-28 shrink-0"
+              value={tdsUnit}
+              onChange={(e) => setTdsUnit(e.target.value as 'tds' | 'brix')}
+              aria-label={t('session.tdsUnit')}
+            >
+              <option value="tds">% TDS</option>
+              <option value="brix">°Brix</option>
+            </select>
+          </div>
+        </Field>
+        <Field label={t('session.beverageWeight')} hint={t('common.optional')}>
+          <input
+            className="input"
+            type="number"
+            inputMode="decimal"
+            value={beverageWeight}
+            onChange={(e) => setBeverageWeight(e.target.value)}
+          />
+        </Field>
       </section>
 
       <div>

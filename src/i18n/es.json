@@ -410,6 +410,9 @@
     "measured": "Medido",
     "measuredHint": "¿Tienes refractómetro? Registra el TDS para graficar tu extracción real.",
     "tds": "TDS %",
+    "brix": "°Brix",
+    "tdsUnit": "Unidad",
+    "brixPreview": "≈ {{tds}} % TDS",
     "beverageWeight": "Bebida final (g)",
     "photo": "Foto",
     "addPhoto": "Agregar foto",
@@ -753,7 +756,10 @@
     "costSection": "Costo",
     "costTracking": "Registrar costo del café",
     "costTrackingHint": "Añade el precio de la bolsa a los granos y verás el costo por taza y el gasto en estadísticas. Desactivado por defecto.",
-    "currency": "Símbolo de moneda"
+    "currency": "Símbolo de moneda",
+    "measureSection": "Mediciones",
+    "brixFactor": "Factor Brix → TDS",
+    "brixFactorHint": "Convierte una lectura de refractómetro en °Brix a TDS%. El valor común para café es 0.85; calíbralo con un medidor de TDS digital si tienes uno."
   },
   "scale": {
     "title": "Escalar receta",

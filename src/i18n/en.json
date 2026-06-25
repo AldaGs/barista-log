@@ -410,6 +410,9 @@
     "measured": "Measured",
     "measuredHint": "Got a refractometer? Log a TDS reading to plot your real extraction.",
     "tds": "TDS %",
+    "brix": "°Brix",
+    "tdsUnit": "Reading unit",
+    "brixPreview": "≈ {{tds}} % TDS",
     "beverageWeight": "Beverage out (g)",
     "photo": "Photo",
     "addPhoto": "Add photo",
@@ -753,7 +756,10 @@
     "costSection": "Cost",
     "costTracking": "Track coffee cost",
     "costTrackingHint": "Add a bag price to beans and see cost per cup and spend in stats. Off by default.",
-    "currency": "Currency symbol"
+    "currency": "Currency symbol",
+    "measureSection": "Measurements",
+    "brixFactor": "Brix → TDS factor",
+    "brixFactorHint": "Converts a °Brix refractometer reading to TDS%. The coffee default is 0.85; calibrate against a digital TDS meter if you have one."
   },
   "scale": {
     "title": "Scale recipe",
