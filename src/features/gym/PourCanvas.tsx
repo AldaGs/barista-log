@@ -53,6 +53,13 @@ export function PourCanvas({
 
       {/* Brewer bed */}
       <circle cx={C} cy={C} r={BED} className="fill-surface-2" />
+      {/* Growing fill — the bed "floods" from the centre as the pour progresses */}
+      <circle
+        cx={C}
+        cy={C}
+        r={BED * frac}
+        className="fill-brand/20 transition-[r] duration-200"
+      />
       <circle cx={C} cy={C} r={BED} fill="none" stroke="currentColor" strokeWidth={2} className="text-border" />
 
       {/* Pattern guide trace */}

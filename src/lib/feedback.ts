@@ -3,8 +3,12 @@ import { useSettings } from '@/store/settings'
 
 let audioCtx: AudioContext | null = null
 
-/** Short beep via WebAudio + a haptic buzz, as a step cue. Best-effort. */
-export function cue(strong = false) {
+/**
+ * Short beep via WebAudio + a haptic buzz, as a step cue. Best-effort.
+ * `sharp` swaps the soft sine for a brighter square tone — used for the
+ * final-seconds countdown so it's audibly distinct from the pace ticks.
+ */
+export function cue(strong = false, sharp = false) {
   const { cuesEnabled, cueVolume } = useSettings.getState()
   if (!cuesEnabled) return
   // exponentialRampToValueAtTime can't target 0, so keep a tiny floor.
@@ -15,8 +19,8 @@ export function cue(strong = false) {
     if (ctx.state === 'suspended') void ctx.resume()
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
-    osc.type = 'sine'
-    osc.frequency.value = strong ? 880 : 660
+    osc.type = sharp ? 'square' : 'sine'
+    osc.frequency.value = sharp ? 1320 : strong ? 880 : 660
     gain.gain.setValueAtTime(0.001, ctx.currentTime)
     gain.gain.exponentialRampToValueAtTime(peak, ctx.currentTime + 0.02)
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25)
@@ -26,7 +30,7 @@ export function cue(strong = false) {
   } catch {
     /* audio not available */
   }
-  navigator.vibrate?.(strong ? [80, 40, 80] : 60)
+  navigator.vibrate?.(sharp ? [40, 30, 40] : strong ? [80, 40, 80] : 60)
 }
 
 /**

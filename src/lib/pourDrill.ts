@@ -121,16 +121,18 @@ export function usePourDrill(segments: DrillSegment[], metronome = true): DrillR
 
   // Precompute every cue time once: segment boundaries + in-pour metronome ticks.
   const cues = useMemo(() => {
-    const list: { t: number; strong: boolean }[] = []
+    const list: { t: number; strong: boolean; sharp?: boolean }[] = []
     let start = 0
     for (const seg of segments) {
+      const end = start + seg.seconds
       list.push({ t: start, strong: seg.kind === 'pour' })
       if (metronome && seg.kind === 'pour') {
-        for (let s = Math.ceil(start + 0.001); s < start + seg.seconds - 0.05; s++) {
-          list.push({ t: s, strong: false })
+        for (let s = Math.ceil(start + 0.001); s < end - 0.05; s++) {
+          // Final-seconds ticks ring sharp so they're distinct from the pace.
+          list.push({ t: s, strong: false, sharp: end - s <= 3 + 1e-6 })
         }
       }
-      start += seg.seconds
+      start = end
     }
     list.push({ t: total, strong: true })
     return list.sort((a, b) => a.t - b.t)
@@ -151,7 +153,7 @@ export function usePourDrill(segments: DrillSegment[], metronome = true): DrillR
       elapsedRef.current = e
       setElapsed(e)
       while (fired.current < cues.length && cues[fired.current].t <= e + 1e-3) {
-        cue(cues[fired.current].strong)
+        cue(cues[fired.current].strong, cues[fired.current].sharp)
         fired.current++
       }
       if (e >= total) {
