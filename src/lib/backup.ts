@@ -57,9 +57,10 @@ async function restoreLabels(parsed: Backup) {
  */
 const DEDUPE_TABLES = ['beans', 'waters', 'grinders', 'gear'] as const
 
-/** Foreign keys on recipes/sessions that point at a DEDUPE_TABLES row. */
+/** Foreign keys on recipes/sessions/cuppings that point at a DEDUPE_TABLES row. */
 const RECIPE_REFS = ['beanId', 'waterId', 'grinderId', 'gearId'] as const
 const SESSION_REFS = ['beanId', 'waterId', 'grinderId'] as const
+const CUPPING_REFS = ['beanId'] as const
 
 const nameKey = (r: Record<string, unknown>) =>
   String(r.name ?? '').trim().toLowerCase()
@@ -250,6 +251,12 @@ export async function applyImport(parsed: Backup, mode: ImportMode) {
           .map((s) => repoint(s, SESSION_REFS, remap))
           .filter(Boolean) as Record<string, unknown>[]
         if (fixedS.length) await db.sessions.bulkPut(fixedS as never)
+
+        const cuppings = (await db.cuppings.toArray()) as unknown as Record<string, unknown>[]
+        const fixedC = cuppings
+          .map((c) => repoint(c, CUPPING_REFS, remap))
+          .filter(Boolean) as Record<string, unknown>[]
+        if (fixedC.length) await db.cuppings.bulkPut(fixedC as never)
       }
 
       // 3) Delete the collapsed duplicate rows (+ tombstones so the delete sticks).
