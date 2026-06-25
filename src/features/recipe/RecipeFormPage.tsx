@@ -15,6 +15,7 @@ import { RecipeInsights } from '@/components/RecipeInsights'
 import { ClockInput } from '@/components/ClockInput'
 import { GrindConverter } from '@/features/grinder/GrindConverter'
 import { InlineGearAdd } from '@/features/gear/InlineGearAdd'
+import { PressureProfileEditor } from './PressureProfileEditor'
 import { useSettings } from '@/store/settings'
 import { cToF, fToC, formatSeconds } from '@/lib/units'
 import { estimateMicrons } from '@/lib/grindConvert'
@@ -195,6 +196,7 @@ export default function RecipeFormPage() {
       shotTimeSec: form.shotTimeSec,
       pressureBar: form.pressureBar,
       preInfusionSec: form.preInfusionSec,
+      pressureProfile: form.pressureProfile?.length ? form.pressureProfile : undefined,
       brewer: form.brewer,
       totalTimeSec: usesSteep ? undefined : form.totalTimeSec,
       bloomSec: usesSteep ? undefined : form.bloomSec,
@@ -384,6 +386,10 @@ export default function RecipeFormPage() {
             <input className="input" type="number" value={form.preInfusionSec ?? ''} onChange={(e) => set({ preInfusionSec: num(e.target.value) })} />
           </Field>
         </div>
+        <PressureProfileEditor
+          value={form.pressureProfile}
+          onChange={(pressureProfile) => set({ pressureProfile })}
+        />
         </div>
       ) : (
         <div className="space-y-3">

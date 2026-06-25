@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef, useState } from 'react'
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
@@ -6,6 +6,7 @@ import { Play, Square, RotateCcw, Check, X } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { PageHeader, Field } from '@/components/ui'
 import { cue, useWakeLock } from '@/lib/feedback'
+import { PressureCurve } from '@/components/PressureCurve'
 
 /**
  * Guided espresso shot timer. A stripped-down sibling of the brew player: a
@@ -45,9 +46,27 @@ export default function EspressoShotPage() {
   const elapsed =
     stoppedSec != null ? stoppedSec : startedAt != null ? (Date.now() - startedAt) / 1000 : 0
 
+  // Optional staged pressure profile. When present it drives a per-stage overlay
+  // (label · target bar) and the shot total falls out of the summed stage times.
+  const profile = useMemo(
+    () => (recipe?.pressureProfile ?? []).filter((s) => s.sec > 0),
+    [recipe?.pressureProfile],
+  )
+  const stageBounds = useMemo(() => {
+    let acc = 0
+    return profile.map((s) => (acc += s.sec))
+  }, [profile])
+  const profileTotal = stageBounds.length ? stageBounds[stageBounds.length - 1] : 0
+
   const preInf = recipe?.preInfusionSec ?? 0
-  const target = recipe?.shotTimeSec
+  const target = recipe?.shotTimeSec ?? (profileTotal ? Math.round(profileTotal) : undefined)
   const [winLo, winHi] = target ? [target - 2, target + 2] : [0, 0]
+
+  // Active profile stage at the current elapsed time (clamps to the last stage).
+  const stageIdx = profile.length
+    ? Math.min(stageBounds.findIndex((b) => elapsed < b), profile.length - 1)
+    : -1
+  const curStage = stageIdx >= 0 ? profile[stageIdx] : profile.length ? profile[profile.length - 1] : undefined
   const inPreInfusion = running && preInf > 0 && elapsed < preInf
   const inWindow = !!target && elapsed >= winLo && elapsed <= winHi
   const pastWindow = !!target && elapsed > winHi
@@ -56,6 +75,15 @@ export default function EspressoShotPage() {
   const passedPreInf = useRef(false)
   const enteredWindow = useRef(false)
   const passedWindow = useRef(false)
+  const firedStages = useRef(0)
+  // Beep at each profile stage boundary so you know when to move the lever/paddle.
+  useEffect(() => {
+    if (!running || !profile.length) return
+    while (firedStages.current < stageBounds.length && elapsed >= stageBounds[firedStages.current]) {
+      firedStages.current++
+      cue(true)
+    }
+  }, [elapsed, running, profile.length, stageBounds])
   useEffect(() => {
     if (!running) return
     if (preInf > 0 && !passedPreInf.current && elapsed >= preInf) {
@@ -78,6 +106,7 @@ export default function EspressoShotPage() {
     passedPreInf.current = false
     enteredWindow.current = false
     passedWindow.current = false
+    firedStages.current = 0
     cue(true)
   }
 
@@ -154,10 +183,25 @@ export default function EspressoShotPage() {
                     : t('shot.extraction')
                 : t('shot.ready')}
         </p>
-        {preInf > 0 && !stopped && (
+        {preInf > 0 && !stopped && profile.length === 0 && (
           <p className="text-xs text-muted tabular-nums">{t('shot.preinfusionPlan', { secs: preInf })}</p>
         )}
+        {curStage && !stopped && (
+          <p className="text-sm font-medium tabular-nums">
+            {t('shot.stage', {
+              label: t('recipe.stage.' + (curStage.label ?? 'other')),
+              bar: curStage.bar,
+            })}
+          </p>
+        )}
       </div>
+
+      {/* Pressure profile timeline with a live playhead */}
+      {profile.length > 0 && (
+        <div className="card p-3">
+          <PressureCurve stages={profile} elapsed={running || stopped ? elapsed : 0} />
+        </div>
+      )}
 
       {/* Controls */}
       {!stopped ? (

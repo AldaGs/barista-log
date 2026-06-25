@@ -90,6 +90,22 @@ export interface BrewStep {
   note?: string
 }
 
+export type PressureStageLabel = 'preinfusion' | 'ramp' | 'hold' | 'decline' | 'other'
+
+/**
+ * One stage of an espresso pressure profile: hold `bar` pressure for `sec`
+ * seconds. An ordered list of these describes a profiled shot (e.g. a gentle
+ * preinfusion, a ramp to 9 bar, a hold, then a declining tail).
+ */
+export interface PressureStage {
+  id: string
+  label?: PressureStageLabel
+  /** duration of this stage, seconds */
+  sec: number
+  /** target pressure during this stage, bar */
+  bar: number
+}
+
 export type GearType = 'machine' | 'brewer'
 
 export interface Gear extends SyncMeta {
@@ -150,6 +166,10 @@ export interface Recipe extends SyncMeta {
   shotTimeSec?: number
   pressureBar?: number
   preInfusionSec?: number
+  /** optional staged pressure profile (preinfusion → ramp → hold → decline);
+   *  when present it's the source of truth for the shot timeline & curve, with
+   *  the single `pressureBar`/`preInfusionSec` kept as a simple fallback */
+  pressureProfile?: PressureStage[]
 
   // brew-specific
   brewer?: string // V60, Aeropress, Chemex...

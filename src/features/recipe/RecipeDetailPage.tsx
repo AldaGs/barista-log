@@ -10,6 +10,7 @@ import { useColdSteep } from '@/store/coldSteep'
 import { PageHeader } from '@/components/ui'
 import { RecipeCard } from './RecipeCard'
 import { BrewChart } from '@/components/BrewChart'
+import { PressureCurve } from '@/components/PressureCurve'
 import { RecipeInsights } from '@/components/RecipeInsights'
 import { DialInCard } from '@/components/DialInCard'
 import { estimateBrew, measuredBrew, type BrewPoint } from '@/lib/brewModel'
@@ -269,6 +270,13 @@ export default function RecipeDetailPage() {
 
       {recipe.method === 'espresso' && (
         <DialInCard recipe={recipe} lastSession={log[0]} micronsPerClick={grinder?.micronsPerClick} />
+      )}
+
+      {recipe.method === 'espresso' && !!recipe.pressureProfile?.length && (
+        <div className="card space-y-2 p-4">
+          <h2 className="font-semibold">{t('recipe.pressureProfile')}</h2>
+          <PressureCurve stages={recipe.pressureProfile} />
+        </div>
       )}
 
       {(estimate || measured.length > 0) && (
