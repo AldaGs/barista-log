@@ -117,6 +117,43 @@ export const useSettings = create<SettingsState>()(
   ),
 )
 
+/**
+ * Preference fields carried in JSON / Google-Drive backups. Functions and the
+ * `supabase` connection (device/account-specific credentials) are deliberately
+ * excluded — only portable user preferences travel with a backup.
+ */
+const BACKUP_KEYS: (keyof SettingsState)[] = [
+  'theme',
+  'lang',
+  'accent',
+  'tempUnit',
+  'altitude',
+  'pourRates',
+  'cuesEnabled',
+  'cueVolume',
+  'stepEndCountdown',
+  'pourMarkCue',
+  'costTracking',
+  'currency',
+  'brixFactor',
+]
+
+/** Snapshot the backup-able settings as a plain object. */
+export function exportSettings(): Record<string, unknown> {
+  const s = useSettings.getState()
+  const out: Record<string, unknown> = {}
+  for (const k of BACKUP_KEYS) out[k] = s[k]
+  return out
+}
+
+/** Merge backed-up settings into the store (persists to localStorage). */
+export function importSettings(data: Record<string, unknown> | undefined) {
+  if (!data || typeof data !== 'object') return
+  const patch: Record<string, unknown> = {}
+  for (const k of BACKUP_KEYS) if (k in data) patch[k] = data[k]
+  useSettings.setState(patch as Partial<SettingsState>)
+}
+
 function isDark(theme: ThemeMode) {
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
   return theme === 'dark' || (theme === 'system' && prefersDark)

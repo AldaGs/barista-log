@@ -1,5 +1,6 @@
 import { db, now } from '@/db/dexie'
 import type { Label } from '@/db/types'
+import { exportSettings, importSettings } from '@/store/settings'
 
 const TABLES = ['beans', 'waters', 'grinders', 'gear', 'recipes', 'sessions', 'flavorTags', 'profile', 'maintenance', 'practice', 'cuppings'] as const
 
@@ -78,6 +79,8 @@ export interface Backup {
   version: 1
   exportedAt: string
   data: Record<string, unknown[]>
+  /** portable user preferences (theme, units, Brix factor…); see exportSettings */
+  settings?: Record<string, unknown>
 }
 
 /**
@@ -100,6 +103,7 @@ export async function buildBackup(): Promise<Backup> {
     version: 1,
     exportedAt: new Date().toISOString(),
     data,
+    settings: exportSettings(),
   }
 }
 
@@ -113,6 +117,7 @@ export async function applyBackup(parsed: Backup) {
     }
   })
   await restoreLabels(parsed)
+  importSettings(parsed.settings)
 }
 
 // ---------------------------------------------------------------------------
@@ -291,6 +296,8 @@ export async function applyImport(parsed: Backup, mode: ImportMode) {
     const strayLabels = (await db.labels.toArray()).map((l) => l.id).filter((id) => !backupIds.has(id))
     if (strayLabels.length) await db.labels.bulkDelete(strayLabels)
   }
+  // Restore portable preferences (no-op if the backup predates settings support).
+  importSettings(parsed.settings)
 }
 
 /** Record that a backup just happened (local marker, any destination). */
