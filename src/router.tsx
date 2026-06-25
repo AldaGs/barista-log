@@ -12,6 +12,8 @@ import HistoryPage from './features/history/HistoryPage'
 import StatsPage from './features/stats/StatsPage'
 import ComparePage from './features/compare/ComparePage'
 import BeansPage from './features/beans/BeansPage'
+import BeanDetailPage from './features/beans/BeanDetailPage'
+import CuppingFormPage from './features/beans/CuppingFormPage'
 import WaterPage from './features/water/WaterPage'
 import EquipmentPage from './features/equipment/EquipmentPage'
 import MaintenancePage from './features/maintenance/MaintenancePage'
@@ -42,6 +44,9 @@ export const router = createBrowserRouter([
       { path: 'stats', element: <StatsPage /> },
       { path: 'compare', element: <ComparePage /> },
       { path: 'beans', element: <BeansPage /> },
+      { path: 'bean/:id', element: <BeanDetailPage /> },
+      { path: 'bean/:id/cup', element: <CuppingFormPage /> },
+      { path: 'cupping/:cid/edit', element: <CuppingFormPage /> },
       { path: 'water', element: <WaterPage /> },
       { path: 'equipment', element: <EquipmentPage /> },
       { path: 'grinders', element: <Navigate to="/equipment" replace /> },

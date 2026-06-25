@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Plus, Trash2, Coffee, AlertTriangle, Tag } from 'lucide-react'
+import { Plus, Trash2, Coffee, AlertTriangle, Tag, Star } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { saveBean, deleteBean } from '@/db/repo'
 import type { Bean } from '@/db/types'
@@ -145,6 +145,14 @@ export default function BeansPage() {
                     )}
                   </div>
                 </button>
+                <Link
+                  to={`/bean/${b.id}`}
+                  className="shrink-0 text-muted hover:text-brand"
+                  aria-label={t('cupping.title')}
+                  title={t('cupping.title')}
+                >
+                  <Star size={18} />
+                </Link>
                 <button className="shrink-0 text-muted hover:text-red-500" onClick={() => deleteBean(b.id)}>
                   <Trash2 size={18} />
                 </button>

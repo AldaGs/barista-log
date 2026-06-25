@@ -826,6 +826,29 @@
     "result": "{{hot}} g hot · {{ice}} g ice",
     "apply": "Apply split"
   },
+  "cupping": {
+    "title": "Cuppings",
+    "newCupping": "New cupping",
+    "empty": "No cuppings yet. Score this coffee on the SCA protocol.",
+    "avgScore": "avg of {{count}}",
+    "quality": "Quality (6–10)",
+    "cups": "5-cup attributes",
+    "cupsHint": "Tap how many of the 5 cups were clean (2 points each).",
+    "defects": "Defects",
+    "defectsHint": "Points to subtract for taints/faults",
+    "attr": {
+      "fragrance": "Fragrance / Aroma",
+      "flavor": "Flavor",
+      "aftertaste": "Aftertaste",
+      "acidity": "Acidity",
+      "body": "Body",
+      "balance": "Balance",
+      "overall": "Overall",
+      "uniformity": "Uniformity",
+      "cleanCup": "Clean cup",
+      "sweetness": "Sweetness"
+    }
+  },
   "labels": {
     "title": "Labels",
     "empty": "No labels yet. Snap your favorite coffee bags to start a collection.",

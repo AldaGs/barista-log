@@ -2,6 +2,7 @@ import Dexie, { type Table } from 'dexie'
 import type {
   Bean,
   BrewSession,
+  Cupping,
   FlavorTag,
   Gear,
   Grinder,
@@ -40,6 +41,7 @@ class BaristaDB extends Dexie {
   maintenance!: Table<MaintenanceTask, string>
   practice!: Table<PracticeLog, string>
   labels!: Table<Label, string>
+  cuppings!: Table<Cupping, string>
   deletions!: Table<Deletion, string>
 
   constructor() {
@@ -75,6 +77,9 @@ class BaristaDB extends Dexie {
     })
     this.version(9).stores({
       labels: 'id, beanId, name, updatedAt',
+    })
+    this.version(10).stores({
+      cuppings: 'id, beanId, date, updatedAt, dirty',
     })
   }
 }

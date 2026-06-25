@@ -71,22 +71,28 @@ export function ScoreSlider({
   label,
   value = 0,
   onChange,
+  min = 0,
+  max = 5,
+  step = 1,
 }: {
   label: string
   value?: number
   onChange: (v: number) => void
+  min?: number
+  max?: number
+  step?: number
 }) {
   return (
     <div>
       <div className="mb-1 flex justify-between text-sm">
         <span className="text-muted">{label}</span>
-        <span className="tabular-nums text-text">{value}/5</span>
+        <span className="tabular-nums text-text">{value}/{max}</span>
       </div>
       <input
         type="range"
-        min={0}
-        max={5}
-        step={1}
+        min={min}
+        max={max}
+        step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         className="w-full accent-[rgb(var(--brand))]"

@@ -1,7 +1,7 @@
 import { db, now } from '@/db/dexie'
 import type { Label } from '@/db/types'
 
-const TABLES = ['beans', 'waters', 'grinders', 'gear', 'recipes', 'sessions', 'flavorTags', 'profile', 'maintenance', 'practice'] as const
+const TABLES = ['beans', 'waters', 'grinders', 'gear', 'recipes', 'sessions', 'flavorTags', 'profile', 'maintenance', 'practice', 'cuppings'] as const
 
 // --- Label images -----------------------------------------------------------
 // Labels hold a Blob image that the generic table path can't serialize. We carry

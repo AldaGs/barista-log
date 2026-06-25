@@ -826,6 +826,29 @@
     "result": "{{hot}} g caliente · {{ice}} g hielo",
     "apply": "Aplicar división"
   },
+  "cupping": {
+    "title": "Catas",
+    "newCupping": "Nueva cata",
+    "empty": "Aún no hay catas. Califica este café con el protocolo SCA.",
+    "avgScore": "prom. de {{count}}",
+    "quality": "Calidad (6–10)",
+    "cups": "Atributos de 5 tazas",
+    "cupsHint": "Toca cuántas de las 5 tazas estuvieron limpias (2 puntos cada una).",
+    "defects": "Defectos",
+    "defectsHint": "Puntos a restar por defectos/fallas",
+    "attr": {
+      "fragrance": "Fragancia / Aroma",
+      "flavor": "Sabor",
+      "aftertaste": "Retrogusto",
+      "acidity": "Acidez",
+      "body": "Cuerpo",
+      "balance": "Balance",
+      "overall": "General",
+      "uniformity": "Uniformidad",
+      "cleanCup": "Taza limpia",
+      "sweetness": "Dulzor"
+    }
+  },
   "labels": {
     "title": "Etiquetas",
     "empty": "Aún no hay etiquetas. Fotografía tus bolsas favoritas para empezar una colección.",

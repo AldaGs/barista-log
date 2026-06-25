@@ -261,6 +261,36 @@ export interface PracticeLog extends SyncMeta {
   recipeId?: string
 }
 
+/**
+ * A formal SCA-style cupping score for a coffee. Lives attached to a Bean (the
+ * thing being evaluated), independent of any brew recipe. Seven attributes are
+ * scored 6.00–10.00 in 0.25 steps; uniformity, clean cup and sweetness are the
+ * 5-cup attributes stored as a 0–10 value (2 points per clean cup). The total
+ * (`score`, out of 100) = sum of all ten attributes − `defects`, cached on save.
+ */
+export interface Cupping extends SyncMeta {
+  id: string
+  beanId: string
+  date: number
+  // 6.00–10.00 quality attributes
+  fragrance?: number
+  flavor?: number
+  aftertaste?: number
+  acidity?: number
+  body?: number
+  balance?: number
+  overall?: number
+  // 5-cup attributes, stored 0–10 (clean cups × 2)
+  uniformity?: number
+  cleanCup?: number
+  sweetness?: number
+  /** points subtracted for taints/faults */
+  defects?: number
+  /** cached total out of 100 */
+  score?: number
+  notes?: string
+}
+
 /** Common upkeep jobs — drives the icon + interval preset in the UI. */
 export type MaintenanceKind =
   | 'descale'

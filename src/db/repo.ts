@@ -2,6 +2,7 @@ import { db, now, uid } from './dexie'
 import type {
   Bean,
   BrewSession,
+  Cupping,
   Gear,
   Grinder,
   Label,
@@ -12,6 +13,7 @@ import type {
   SyncMeta,
   WaterProfile,
 } from './types'
+import { cuppingScore } from '@/lib/cupping'
 import { triggerSync } from '@/sync/syncManager'
 
 /** Record a tombstone and remove locally, so the delete reaches the cloud. */
@@ -336,6 +338,26 @@ export async function saveLabel(
 }
 
 export const deleteLabel = (id: string) => deleteWithTombstone('labels', id)
+
+// ---- Cuppings (SCA scores, attached to a bean) --------------------------
+export async function saveCupping(
+  data: Omit<Cupping, keyof NewMeta | 'score'> & Partial<Pick<Cupping, 'id'>>,
+): Promise<string> {
+  const withScore = { ...data, score: cuppingScore(data) }
+  let id: string
+  if (data.id) {
+    await db.cuppings.update(data.id, { ...withScore, dirty: 1, updatedAt: now() })
+    id = data.id
+  } else {
+    const rec = { ...withScore, ...freshMeta() } as Cupping
+    await db.cuppings.add(rec)
+    id = rec.id
+  }
+  triggerSync()
+  return id
+}
+
+export const deleteCupping = (id: string) => deleteWithTombstone('cuppings', id)
 
 // ---- Profile (singleton) -------------------------------------------------
 // Fixed id for the one-per-user profile row. Must be a valid UUID because the
