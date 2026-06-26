@@ -27,7 +27,7 @@
   </head>
   <body>
     <h1>Slurry Stats — Privacy Policy</h1>
-    <p class="updated">Last updated: 23 June 2026</p>
+    <p class="updated">Last updated: 25 June 2026</p>
 
     <p>
       Slurry Stats (“the app”, “we”, “us”) is a coffee-brewing logbook. This policy
@@ -46,22 +46,70 @@
 
     <h2>2. Optional Google Drive backup</h2>
     <p>
-      If you choose to connect Google Drive, the app backs up a single JSON file to your own
-      Google Drive account. We request only the
-      <code>https://www.googleapis.com/auth/drive.appdata</code> scope, which grants access to
-      a private, app-specific hidden folder in <em>your</em> Drive. With this scope the app:
+      Google Drive backup is an opt-in feature you enable from the app’s Settings. When
+      enabled, Slurry Stats interacts with Google user data as described below.
     </p>
-    <ul>
-      <li>can read and write only the backup file it creates in that hidden folder;</li>
-      <li><strong>cannot see, read, or access any of your other Google Drive files;</strong></li>
-      <li>does not transmit your data to us or to any third party — the file goes from your
-        device directly to your Google Drive.</li>
-    </ul>
+
+    <h3>2.1 Google user data the app accesses</h3>
     <p>
-      Authorization uses Google Identity Services. The access token is held only in your
-      browser’s memory for the duration of a session and is never sent to or stored on any
-      server we control. We do not receive a refresh token and retain no Google credentials.
+      The app requests exactly one OAuth scope:
+      <code>https://www.googleapis.com/auth/drive.appdata</code>. This scope restricts the
+      app to a hidden, application-specific data folder in <em>your</em> Google Drive. With
+      this scope the app can read and write only the backup file it creates in that folder
+      and <strong>cannot see, read, list, modify, or delete any other file in your Google
+      Drive</strong>. The app does not request access to your Gmail, Calendar, Contacts,
+      Photos, profile information, or any other Google service.
     </p>
+    <p>
+      The contents of the backup file are the local app data you have created in Slurry
+      Stats — beans, recipes, brew sessions, gear, grinders, water profiles, your profile,
+      app settings, and preferences — serialized as a single JSON file.
+    </p>
+
+    <h3>2.2 How the app uses this Google user data</h3>
+    <ul>
+      <li>
+        <strong>Purpose:</strong> the sole purpose of accessing Google user data is to let
+        you back up your Slurry Stats data to, and restore it from, your own Google Drive,
+        so you can recover it or move it between devices.
+      </li>
+      <li>
+        <strong>Use of the backup file:</strong> the app writes your local data to the
+        backup file when you create or update a backup, and reads it back when you restore.
+        The file is overwritten on each backup.
+      </li>
+      <li>
+        <strong>No server-side processing:</strong> all reads and writes happen directly
+        between your device and Google’s servers. We do not operate a backend that
+        receives, processes, or proxies your Google user data.
+      </li>
+      <li>
+        <strong>No secondary use:</strong> we do not use Google user data to train AI/ML
+        models, for advertising, for analytics, for profiling, or for any purpose other
+        than the backup/restore feature described here.
+      </li>
+    </ul>
+
+    <h3>2.3 How the app stores and shares Google user data</h3>
+    <ul>
+      <li>
+        <strong>Storage of the backup file:</strong> the backup file is stored in
+        <em>your</em> Google Drive’s hidden app-data folder. We do not store a copy on any
+        server we control.
+      </li>
+      <li>
+        <strong>Tokens and credentials:</strong> authorization uses Google Identity
+        Services. The OAuth access token is held only in your browser’s memory for the
+        duration of a session, is never sent to or stored on any server we control, and is
+        discarded when the session ends. We do not request or receive a refresh token and
+        retain no long-lived Google credentials.
+      </li>
+      <li>
+        <strong>Sharing:</strong> we do <strong>not</strong> transfer, sell, share, or
+        disclose Google user data to any third party. The backup file moves directly from
+        your device to your Google Drive.
+      </li>
+    </ul>
 
     <h2>3. Google API Services User Data Policy</h2>
     <p>
