@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { format } from 'date-fns'
-import { Pencil, Copy, Trash2, Share2, Play, Check, GitFork, GitMerge, AlertTriangle, Send, Star, GitCompare, Snowflake, X, Dumbbell, Scale, MoreVertical } from 'lucide-react'
+import { Pencil, Copy, Trash2, Share2, Play, Check, GitFork, GitMerge, AlertTriangle, Send, Star, GitCompare, Snowflake, X, Dumbbell, Scale, MoreVertical, Network } from 'lucide-react'
 import { db } from '@/db/dexie'
 import { deleteRecipe, toggleFavorite } from '@/db/repo'
 import { useColdSteep } from '@/store/coldSteep'
@@ -20,6 +20,7 @@ import { shareRecipePng } from '@/lib/share'
 import { ShareRecipeSheet } from './ShareRecipeSheet'
 import { AdoptFromForkSheet } from './AdoptFromForkSheet'
 import { ScaleRecipeSheet } from './ScaleRecipeSheet'
+import { RecipeFamilySheet } from './RecipeFamilySheet'
 
 export default function RecipeDetailPage() {
   const { t } = useTranslation()
@@ -29,6 +30,7 @@ export default function RecipeDetailPage() {
   const [showShare, setShowShare] = useState(false)
   const [showAdopt, setShowAdopt] = useState(false)
   const [showScale, setShowScale] = useState(false)
+  const [showFamily, setShowFamily] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -57,6 +59,10 @@ export default function RecipeDetailPage() {
   const parent = useLiveQuery(
     () => (recipe?.forkedFromId ? db.recipes.get(recipe.forkedFromId) : undefined),
     [recipe?.forkedFromId],
+  )
+  const forkCount = useLiveQuery(
+    () => (id ? db.recipes.where('forkedFromId').equals(id).count() : 0),
+    [id],
   )
   const grinder = useLiveQuery(
     () => (recipe?.grinderId ? db.grinders.get(recipe.grinderId) : undefined),
@@ -176,19 +182,29 @@ export default function RecipeDetailPage() {
         }
       />
 
-      {parent && (
+      {(parent || !!forkCount) && (
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-          <Link
-            to={`/recipe/${parent.id}`}
-            className="flex items-center gap-1.5 text-sm text-muted hover:text-brand"
-          >
-            <GitFork size={14} /> {t('recipe.forkedFrom', { title: parent.title || t('method.' + parent.method) })}
-          </Link>
+          {parent && (
+            <>
+              <Link
+                to={`/recipe/${parent.id}`}
+                className="flex items-center gap-1.5 text-sm text-muted hover:text-brand"
+              >
+                <GitFork size={14} /> {t('recipe.forkedFrom', { title: parent.title || t('method.' + parent.method) })}
+              </Link>
+              <button
+                onClick={() => setShowAdopt(true)}
+                className="flex items-center gap-1.5 text-sm text-muted hover:text-brand"
+              >
+                <GitMerge size={14} /> {t('recipe.compareToParent')}
+              </button>
+            </>
+          )}
           <button
-            onClick={() => setShowAdopt(true)}
+            onClick={() => setShowFamily(true)}
             className="flex items-center gap-1.5 text-sm text-muted hover:text-brand"
           >
-            <GitMerge size={14} /> {t('recipe.compareToParent')}
+            <Network size={14} /> {t('recipe.familyTree')}
           </button>
         </div>
       )}
@@ -381,6 +397,9 @@ export default function RecipeDetailPage() {
       {showShare && <ShareRecipeSheet recipe={recipe} onClose={() => setShowShare(false)} />}
       {showAdopt && parent && (
         <AdoptFromForkSheet fork={recipe} parent={parent} onClose={() => setShowAdopt(false)} />
+      )}
+      {showFamily && (
+        <RecipeFamilySheet recipeId={recipe.id} onClose={() => setShowFamily(false)} />
       )}
     </div>
   )

@@ -334,6 +334,13 @@
     "brew": "Preparar",
     "forkedFrom": "Bifurcada de {{title}}",
     "compareToParent": "Comparar con la original",
+    "familyTree": "Árbol genealógico",
+    "family": {
+      "title": "Árbol genealógico",
+      "subtitle": "Toca otra versión para abrirla.",
+      "thisRecipe": "Esta receta",
+      "empty": "Esta receta aún no tiene versiones relacionadas."
+    },
     "adopt": {
       "title": "Adoptar en la original",
       "hint": "Copia los valores marcados de esta bifurcación a \"{{title}}\". La bifurcación no se modifica.",
@@ -461,15 +468,6 @@
     "filterAll": "Todas",
     "compare": "Comparar",
     "selectToCompare": "Selecciona 2+ preparaciones para comparar",
-    "view": {
-      "group": "Agrupar",
-      "all": "Todas"
-    },
-    "brewCount_one": "{{count}} preparación",
-    "brewCount_other": "{{count}} preparaciones",
-    "forkCount_one": "{{count}} bifurcación",
-    "forkCount_other": "{{count}} bifurcaciones",
-    "unlinked": "Preparaciones sin receta",
     "confirmDelete": "¿Eliminar esta preparación registrada?",
     "tdsValue": "{{value}}% TDS",
     "bevValue": "{{value}} g de bebida",

@@ -334,6 +334,13 @@
     "brew": "Brew",
     "forkedFrom": "Forked from {{title}}",
     "compareToParent": "Compare to original",
+    "familyTree": "Family tree",
+    "family": {
+      "title": "Family tree",
+      "subtitle": "Tap another version to open it.",
+      "thisRecipe": "This recipe",
+      "empty": "This recipe has no related versions yet."
+    },
     "adopt": {
       "title": "Adopt into original",
       "hint": "Copy the checked values from this fork back into \"{{title}}\". The fork is left unchanged.",
@@ -461,15 +468,6 @@
     "filterAll": "All",
     "compare": "Compare",
     "selectToCompare": "Select 2+ brews to compare",
-    "view": {
-      "group": "Group",
-      "all": "All"
-    },
-    "brewCount_one": "{{count}} brew",
-    "brewCount_other": "{{count}} brews",
-    "forkCount_one": "{{count}} fork",
-    "forkCount_other": "{{count}} forks",
-    "unlinked": "Unlinked brews",
     "confirmDelete": "Delete this logged brew?",
     "tdsValue": "{{value}}% TDS",
     "bevValue": "{{value}} g out",
