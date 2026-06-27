@@ -132,7 +132,7 @@ export function RecipeFamilySheet({
         ) : (
           <>
             <p className="text-sm text-muted">{t('recipe.family.subtitle')}</p>
-            <div className="-mx-1 flex-1 space-y-2 overflow-y-auto px-1">
+            <div className="-mx-1 min-h-0 flex-1 space-y-2 overflow-y-auto px-1">
               <Row node={tree} depth={0} />
             </div>
           </>
