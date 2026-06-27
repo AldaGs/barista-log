@@ -6,6 +6,11 @@ import { X, GitFork } from 'lucide-react'
 import { db } from '@/db/dexie'
 import type { Recipe } from '@/db/types'
 
+/** Horizontal indent (px) added per nesting level, capped at MAX_INDENT_DEPTH. */
+const INDENT_STEP = 10
+/** Levels deeper than this stop indenting so long chains stay on-screen. */
+const MAX_INDENT_DEPTH = 4
+
 /** A recipe and its forked-from children, for the lineage tree. */
 interface FamilyNode {
   recipe: Recipe
@@ -73,6 +78,10 @@ export function RecipeFamilySheet({
     const isCurrent = node.recipe.id === recipeId
     const isFork = !!node.recipe.forkedFromId
     const title = node.recipe.title || t('method.' + node.recipe.method)
+    // Indentation compounds through nesting, so to keep deep (often linear)
+    // lineages from running off-screen we only add a step up to MAX_INDENT_DEPTH;
+    // deeper levels add none and align under that cap.
+    const indented = depth > 0 && depth <= MAX_INDENT_DEPTH
     const inner = (
       <div className="flex min-w-0 items-center gap-2">
         {isFork && <GitFork size={14} className="shrink-0 text-muted" />}
@@ -86,8 +95,8 @@ export function RecipeFamilySheet({
     )
     return (
       <div
-        style={depth > 0 ? { marginLeft: 12 } : undefined}
-        className={depth > 0 ? 'border-l border-border/60 pl-2' : ''}
+        style={indented ? { marginLeft: INDENT_STEP } : undefined}
+        className={indented ? 'border-l border-border/60 pl-1.5' : ''}
       >
         {isCurrent ? (
           <div className="card flex items-center p-3 ring-1 ring-brand">{inner}</div>
