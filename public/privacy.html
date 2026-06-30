@@ -27,7 +27,7 @@
   </head>
   <body>
     <h1>Slurry Stats — Privacy Policy</h1>
-    <p class="updated">Last updated: 25 June 2026</p>
+    <p class="updated">Last updated: 29 June 2026</p>
 
     <p>
       Slurry Stats (“the app”, “we”, “us”) is a coffee-brewing logbook. This policy
@@ -52,18 +52,53 @@
 
     <h3>2.1 Google user data the app accesses</h3>
     <p>
-      The app requests exactly one OAuth scope:
-      <code>https://www.googleapis.com/auth/drive.appdata</code>. This scope restricts the
-      app to a hidden, application-specific data folder in <em>your</em> Google Drive. With
-      this scope the app can read and write only the backup file it creates in that folder
-      and <strong>cannot see, read, list, modify, or delete any other file in your Google
-      Drive</strong>. The app does not request access to your Gmail, Calendar, Contacts,
-      Photos, profile information, or any other Google service.
+      <strong>Google API used:</strong> Google Drive API v3.<br />
+      <strong>OAuth scope requested:</strong> exactly one —
+      <code>https://www.googleapis.com/auth/drive.appdata</code>. This scope grants access
+      only to a hidden, application-specific data folder
+      (<code>appDataFolder</code>) inside <em>your</em> Google Drive. The folder is created
+      by Google for Slurry Stats, is invisible to you in the regular Drive UI, and is
+      inaccessible to any other application.
     </p>
     <p>
-      The contents of the backup file are the local app data you have created in Slurry
-      Stats — beans, recipes, brew sessions, gear, grinders, water profiles, your profile,
-      app settings, and preferences — serialized as a single JSON file.
+      Within that scope, the app accesses the following — and only the following — Google
+      user data:
+    </p>
+    <ul>
+      <li>
+        <strong>The Drive file ID and file name of a single file</strong> named
+        <code>barista-backup.json</code> that the app itself creates inside
+        <code>appDataFolder</code>. The app queries
+        <code>files.list</code> with <code>spaces=appDataFolder</code> and
+        <code>q=name='barista-backup.json'</code> to locate this one file.
+      </li>
+      <li>
+        <strong>The contents of that single file</strong>, which the app reads back via
+        <code>files.get?alt=media</code> when you choose to restore. The file contents are
+        the local app data you have created in Slurry Stats — beans, recipes, brew
+        sessions, gear, grinders, water profiles, your profile, app settings, and
+        preferences — serialized by the app as a single JSON document. The app does not
+        access any other file metadata fields (no <code>owners</code>,
+        <code>permissions</code>, <code>sharingUser</code>, thumbnails, revisions, or
+        comments).
+      </li>
+    </ul>
+    <p>
+      Operations the app performs against the Google Drive API are limited to:
+      <code>files.list</code> (restricted to <code>appDataFolder</code>),
+      <code>files.create</code> (multipart, into <code>appDataFolder</code>),
+      <code>files.update</code> (content of the one file the app created),
+      <code>files.get?alt=media</code> (content of the one file the app created), and
+      <code>files.delete</code> (the one file the app created, when you choose to remove
+      the backup).
+    </p>
+    <p>
+      <strong>Google user data the app does NOT access:</strong> the app does not access
+      any other file in your Google Drive (the <code>drive.appdata</code> scope makes this
+      technically impossible). The app does not request or receive your Google profile,
+      name, email address, photo, Gmail messages, Calendar events, Contacts, Photos,
+      YouTube data, or any other Google service. The app does not request any sensitive or
+      restricted scopes.
     </p>
 
     <h3>2.2 How the app uses this Google user data</h3>
