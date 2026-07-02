@@ -34,7 +34,7 @@ export function PageHeader({
           <ArrowLeft size={20} />
         </button>
       )}
-      <h1 className="flex-1 text-2xl font-bold">{title}</h1>
+      <h1 className="flex-1 font-display text-[1.7rem] font-semibold tracking-tight">{title}</h1>
       {action}
     </header>
   )

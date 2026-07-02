@@ -25,7 +25,7 @@ export default function HomePage() {
   return (
     <div className="space-y-6">
       <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{t('app.name')}</h1>
+        <h1 className="font-display text-[1.9rem] font-semibold tracking-tight">{t('app.name')}</h1>
         <div className="flex items-center gap-2">
           <Link to="/recipes" className="btn-ghost !px-2" aria-label={t('recipes.title')}>
             <Search size={18} />
@@ -66,8 +66,8 @@ export default function HomePage() {
             {t('home.favorites')}
           </h2>
           <div className="space-y-3">
-            {favorites.map((r) => (
-              <RecipeSummaryCard key={r.id} recipe={r} />
+            {favorites.map((r, i) => (
+              <RecipeSummaryCard key={r.id} recipe={r} index={i} />
             ))}
           </div>
         </section>
@@ -84,8 +84,8 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="space-y-3">
-            {recent.map((r) => (
-              <RecipeSummaryCard key={r.id} recipe={r} />
+            {recent.map((r, i) => (
+              <RecipeSummaryCard key={r.id} recipe={r} index={i} />
             ))}
           </div>
         </section>

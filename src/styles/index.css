@@ -3,29 +3,38 @@
 @tailwind utilities;
 
 :root {
-  /* Cool neutral light theme. Accent vars (--brand*) are set at runtime. */
-  --bg: 247 248 251;
-  --surface: 255 255 255;
-  --surface-2: 238 240 246;
-  --border: 222 225 234;
-  --text: 23 25 33;
-  --muted: 108 112 128;
-  --brand: 76 99 230;
-  --brand-fg: 255 255 255;
-  --accent: 70 150 175;
+  /* Ceramic light theme: cool porcelain neutrals, deep teal brand, honey accent.
+     Accent vars (--brand*) are refined at runtime by applyAccent(). */
+  --bg: 237 238 236;
+  --surface: 247 248 246;
+  --surface-2: 225 227 224;
+  --border: 210 213 209;
+  --text: 25 27 26;
+  --muted: 106 110 107;
+  --brand: 14 124 107;
+  --brand-fg: 247 248 246;
+  --accent: 201 150 63;
+  /* Glass bevel: a bright top highlight + a color for soft shadows. */
+  --bevel-hi: 255 255 255;
+  --bevel-a: 0.65;
+  --shadow: 25 27 26;
 }
 
 .dark {
-  /* Deep, near-black with a subtle blue/purple tint. */
-  --bg: 13 14 21;
-  --surface: 21 23 32;
-  --surface-2: 29 31 43;
-  --border: 43 46 62;
-  --text: 228 230 240;
-  --muted: 146 150 168;
-  --brand: 116 134 248;
-  --brand-fg: 17 18 28;
-  --accent: 122 196 210;
+  /* Cool graphite (neutral, not brown) with a brighter ceramic teal. */
+  --bg: 22 24 23;
+  --surface: 30 33 31;
+  --surface-2: 40 44 42;
+  --border: 54 59 56;
+  --text: 233 236 233;
+  --muted: 154 160 156;
+  --brand: 47 168 148;
+  --brand-fg: 18 32 28;
+  --accent: 228 182 90;
+  /* On dark surfaces the highlight is a faint sheen, not a white line. */
+  --bevel-hi: 255 255 255;
+  --bevel-a: 0.06;
+  --shadow: 0 0 0;
 }
 
 html, body, #root { height: 100%; }
@@ -36,20 +45,71 @@ body {
   color: rgb(var(--text));
   font-family: Inter, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  /* Faint paper grain — warms up flat surfaces without an image asset. */
+  background-image:
+    radial-gradient(rgb(var(--text) / 0.014) 1px, transparent 1px);
+  background-size: 4px 4px;
 }
 
 * { -webkit-tap-highlight-color: transparent; }
 
-.card { @apply bg-surface border border-border rounded-2xl; }
+/* Display serif for headings — the single biggest departure from the stock look. */
+.font-display { font-family: Fraunces, Georgia, serif; }
+
+.card {
+  @apply bg-surface border border-border rounded-2xl;
+  /* Faint glass bevel: inset top highlight + inset bottom shade, over a soft drop. */
+  box-shadow:
+    inset 0 1px 0 rgb(var(--bevel-hi) / var(--bevel-a)),
+    inset 0 -1px 0 rgb(var(--shadow) / 0.04),
+    0 1px 2px rgb(var(--shadow) / 0.04),
+    0 6px 16px -8px rgb(var(--shadow) / 0.10);
+}
 .input {
-  @apply w-full rounded-xl border border-border bg-surface px-3 py-2 text-text
+  @apply w-full rounded-lg border border-border bg-surface px-3 py-2 text-text
          outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition;
 }
 .label { @apply block text-sm font-medium text-muted mb-1; }
 .btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2
          font-medium transition active:scale-[0.98] disabled:opacity-50;
 }
-.btn-primary { @apply btn bg-brand text-brand-fg hover:opacity-90; }
-.btn-ghost { @apply btn border border-border bg-surface hover:bg-surface-2; }
+.btn-primary {
+  @apply btn bg-brand text-brand-fg hover:opacity-90;
+  /* Glassy top sheen so the pill reads slightly domed. */
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    inset 0 -1px 0 rgb(var(--shadow) / 0.12),
+    0 1px 2px rgb(var(--shadow) / 0.15);
+}
+.btn-ghost {
+  @apply btn border border-border bg-surface hover:bg-surface-2;
+  box-shadow: inset 0 1px 0 rgb(var(--bevel-hi) / var(--bevel-a));
+}
 .chip { @apply inline-flex items-center gap-1 rounded-full bg-surface-2 px-3 py-1 text-sm; }
+
+/* Tabular figures for the many metric readouts (ratios, weights, times). */
+.metric { @apply font-mono tabular-nums; }
+
+/* Motion — always opt-out for users who prefer reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+  /* Content settling in on mount. Pair with an inline animation-delay for stagger. */
+  .rise { animation: rise 0.38s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+  @keyframes pop {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+  }
+  .animate-pop { animation: pop 0.28s ease; }
+
+  @keyframes livepulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+  .animate-livepulse { animation: livepulse 1.8s ease-in-out infinite; }
+}

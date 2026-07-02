@@ -8,7 +8,16 @@ import { toggleFavorite } from '@/db/repo'
 import { useSettings } from '@/store/settings'
 import { formatSeconds, formatTemp } from '@/lib/units'
 
-export function RecipeSummaryCard({ recipe, featured }: { recipe: Recipe; featured?: boolean }) {
+export function RecipeSummaryCard({
+  recipe,
+  featured,
+  index = 0,
+}: {
+  recipe: Recipe
+  featured?: boolean
+  /** position in a list — drives a small staggered entrance delay */
+  index?: number
+}) {
   const { t } = useTranslation()
   const tempUnit = useSettings((s) => s.tempUnit)
   const bean = useLiveQuery(
@@ -21,7 +30,8 @@ export function RecipeSummaryCard({ recipe, featured }: { recipe: Recipe; featur
   return (
     <Link
       to={`/recipe/${recipe.id}`}
-      className={`card block p-4 transition hover:border-brand ${featured ? 'ring-1 ring-brand/30' : ''}`}
+      style={{ animationDelay: `${Math.min(index, 8) * 45}ms` }}
+      className={`rise card block p-4 transition hover:border-brand ${featured ? 'ring-1 ring-brand/30' : ''}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
@@ -44,7 +54,7 @@ export function RecipeSummaryCard({ recipe, featured }: { recipe: Recipe; featur
           </button>
         </div>
       </div>
-      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted">
+      <div className="metric mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted">
         {recipe.ratio && (
           <span className="inline-flex items-center gap-1">
             <Coffee size={15} /> 1:{recipe.ratio}

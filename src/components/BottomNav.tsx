@@ -51,7 +51,11 @@ export function BottomNav() {
                 isActive ? 'text-brand' : 'text-muted hover:text-text'
               }`}
             >
-              <Icon size={22} strokeWidth={2} />
+              <Icon
+                size={22}
+                strokeWidth={isActive ? 2.4 : 2}
+                className={`transition-transform duration-200 ${isActive ? '-translate-y-0.5 scale-110' : ''}`}
+              />
               <span>{t(`nav.${key}`)}</span>
             </button>
           )

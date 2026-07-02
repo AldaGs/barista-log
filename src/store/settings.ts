@@ -26,7 +26,7 @@ export const ACCENTS: Record<
 > = {
   midnight: { brandLight: '64 86 214', brandDark: '116 134 248', accent: '120 196 214' },
   plum: { brandLight: '124 78 214', brandDark: '167 130 247', accent: '210 150 235' },
-  teal: { brandLight: '20 142 150', brandDark: '60 196 196', accent: '150 210 180' },
+  teal: { brandLight: '14 124 107', brandDark: '47 168 148', accent: '201 150 63' },
   coffee: { brandLight: '176 110 64', brandDark: '201 138 90', accent: '122 188 165' },
 }
 
@@ -84,7 +84,7 @@ export const useSettings = create<SettingsState>()(
     (set) => ({
       theme: 'system',
       lang: (navigator.language?.startsWith('es') ? 'es' : 'en') as Lang,
-      accent: 'midnight',
+      accent: 'teal',
       tempUnit: 'C',
       altitude: 0,
       pourRates: { ...DEFAULT_POUR_RATES },
@@ -164,7 +164,7 @@ export function applyTheme(theme: ThemeMode) {
   const dark = isDark(theme)
   document.documentElement.classList.toggle('dark', dark)
   const meta = document.querySelector('meta[name="theme-color"]')
-  meta?.setAttribute('content', dark ? '#0d0e15' : '#f7f8fb')
+  meta?.setAttribute('content', dark ? '#161817' : '#edeeec')
 }
 
 /** Apply the chosen accent to the brand CSS variables (light/dark aware). */
