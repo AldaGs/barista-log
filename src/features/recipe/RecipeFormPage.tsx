@@ -12,6 +12,8 @@ import { PhotoInput } from '@/components/PhotoInput'
 import { BrewTimer } from '@/components/BrewTimer'
 import { BrewSteps } from '@/components/BrewSteps'
 import { RecipeInsights } from '@/components/RecipeInsights'
+import { BrewChart } from '@/components/BrewChart'
+import { estimateBrew } from '@/lib/brewModel'
 import { ClockInput } from '@/components/ClockInput'
 import { GrindConverter } from '@/features/grinder/GrindConverter'
 import { InlineGearAdd } from '@/features/gear/InlineGearAdd'
@@ -162,6 +164,12 @@ export default function RecipeFormPage() {
         ? { ...form, ratio: Math.round((form.yieldOut / form.doseIn) * 100) / 100 }
         : form,
     [form],
+  )
+
+  const micronsPerClick = grinders?.find((g) => g.id === form.grinderId)?.micronsPerClick
+  const previewEstimate = useMemo(
+    () => estimateBrew(previewRecipe, micronsPerClick),
+    [previewRecipe, micronsPerClick],
   )
 
   // Totals derived from the pour schedule, for one-tap auto-fill.
@@ -550,10 +558,25 @@ export default function RecipeFormPage() {
 
       <BrewTimer onUse={(s) => set(isEspresso ? { shotTimeSec: s } : { totalTimeSec: s })} />
 
+      {/* live brew control chart: the estimate moves as the numbers change */}
+      {previewEstimate && form.method && (
+        <section className="card space-y-3 p-4">
+          <h2 className="font-semibold">{t('chart.title')}</h2>
+          <BrewChart method={form.method} estimate={previewEstimate} measured={[]} />
+          <p className="text-xs text-muted">
+            {t('chart.readout', {
+              ext: previewEstimate.extraction.toFixed(1),
+              tds: previewEstimate.tds.toFixed(isEspresso ? 1 : 2),
+            })}
+          </p>
+          <p className="text-[11px] text-muted/70">{t('chart.disclaimer')}</p>
+        </section>
+      )}
+
       {/* live suggestions from the numbers entered so far */}
       <RecipeInsights
         recipe={previewRecipe}
-        micronsPerClick={grinders?.find((g) => g.id === form.grinderId)?.micronsPerClick}
+        micronsPerClick={micronsPerClick}
         freshness={(() => {
           const b = beans?.find((x) => x.id === form.beanId)
           return b ? freshness(b) : undefined
