@@ -7,6 +7,7 @@ import { db } from '@/db/dexie'
 import type { BrewStep, FlowRate } from '@/db/types'
 import { PageHeader, EmptyState } from '@/components/ui'
 import { formatSeconds } from '@/lib/units'
+import { stepTimeValue } from '@/lib/stepTime'
 import { cue, useWakeLock } from '@/lib/feedback'
 import { useSettings } from '@/store/settings'
 import { useBrewPlayer, elapsedSec } from '@/store/brewPlayer'
@@ -53,6 +54,7 @@ export default function BrewPlayPage() {
   const pourRates = useSettings((s) => s.pourRates)
   const stepEndCountdown = useSettings((s) => s.stepEndCountdown)
   const pourMarkCue = useSettings((s) => s.pourMarkCue)
+  const timeMode = useSettings((s) => s.stepTimeMode)
 
   // Durable, wall-clock brew state — survives navigating away & back.
   const player = useBrewPlayer()
@@ -431,7 +433,7 @@ export default function BrewPlayPage() {
                     {cumWater[i] > 0 && (
                       <span className="tabular-nums text-sm font-semibold text-brand">{cumWater[i]} g</span>
                     )}
-                    <span className="tabular-nums text-xs text-muted">{formatSeconds(s.atTimeSec)}</span>
+                    <span className="tabular-nums text-xs text-muted">{formatSeconds(stepTimeValue(steps, i, timeMode))}</span>
                   </span>
                 </li>
               )

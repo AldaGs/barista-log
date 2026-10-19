@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware'
 import type { TempUnit } from '@/lib/units'
 import type { FlowRate } from '@/db/types'
 import { DEFAULT_BRIX_FACTOR } from '@/lib/refractometer'
+import type { StepTimeMode } from '@/lib/stepTime'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 export type Lang = 'en' | 'es'
@@ -58,6 +59,8 @@ interface SettingsState {
   currency: string
   /** coffee correction factor for converting a °Brix reading to TDS% */
   brixFactor: number
+  /** how recipe step times are written and shown (stored form is always 'end') */
+  stepTimeMode: StepTimeMode
   supabase: SupabaseConfig | null
   setTheme: (t: ThemeMode) => void
   setLang: (l: Lang) => void
@@ -73,6 +76,7 @@ interface SettingsState {
   setCostTracking: (on: boolean) => void
   setCurrency: (c: string) => void
   setBrixFactor: (f: number) => void
+  setStepTimeMode: (m: StepTimeMode) => void
   setSupabase: (c: SupabaseConfig | null) => void
 }
 
@@ -95,6 +99,7 @@ export const useSettings = create<SettingsState>()(
       costTracking: false,
       currency: '$',
       brixFactor: DEFAULT_BRIX_FACTOR,
+      stepTimeMode: 'end',
       supabase: null,
       setTheme: (theme) => set({ theme }),
       setLang: (lang) => set({ lang }),
@@ -111,6 +116,7 @@ export const useSettings = create<SettingsState>()(
       setCostTracking: (costTracking) => set({ costTracking }),
       setCurrency: (currency) => set({ currency }),
       setBrixFactor: (brixFactor) => set({ brixFactor: Math.min(1, Math.max(0.5, brixFactor)) }),
+      setStepTimeMode: (stepTimeMode) => set({ stepTimeMode }),
       setSupabase: (supabase) => set({ supabase }),
     }),
     { name: 'barista-settings' },
@@ -136,6 +142,7 @@ const BACKUP_KEYS: (keyof SettingsState)[] = [
   'costTracking',
   'currency',
   'brixFactor',
+  'stepTimeMode',
 ]
 
 /** Snapshot the backup-able settings as a plain object. */

@@ -359,11 +359,19 @@
     }
   },
   "step": {
+    "time_end": "Finish at",
+    "time_start": "Start at",
+    "time_duration": "Lasts",
+    "time_finish": "Brew finishes at",
+    "timeHint_end": "Times are the brew clock when each step should be finished.",
+    "timeHint_start": "Times are the brew clock when each step begins. Set when the last step ends below.",
+    "timeHint_duration": "Times are how long each step lasts. Changing one shifts the steps after it.",
     "bloom": "Bloom",
     "pour": "Pour",
     "agitation": "Agitation",
     "wait": "Wait",
     "drawdown": "Drawdown",
+    "bypass": "Bypass",
     "press": "Press",
     "other": "Other",
     "light": "Light",
@@ -660,6 +668,10 @@
     "empty": "No gear yet."
   },
   "settings": {
+    "stepTimeMode": "Write step times as",
+    "stepTime_end": "Finish time",
+    "stepTime_start": "Start time",
+    "stepTime_duration": "Duration",
     "title": "Settings",
     "appearance": "Appearance",
     "theme": "Theme",
