@@ -14,7 +14,7 @@ import type {
 import { uid } from '@/db/dexie'
 import { ClockInput } from './ClockInput'
 
-const STEP_TYPES: BrewStepType[] = ['bloom', 'pour', 'agitation', 'wait', 'drawdown', 'press', 'other']
+const STEP_TYPES: BrewStepType[] = ['bloom', 'pour', 'agitation', 'wait', 'drawdown', 'press', 'bypass', 'other']
 const INTENSITIES: AgitationIntensity[] = ['light', 'medium', 'strong']
 const METHODS: AgitationMethod[] = ['swirl', 'stir', 'tap']
 const POUR_PATTERNS: PourPattern[] = ['circular', 'elliptical', 'direct', 'edge', 'concentric']
@@ -23,6 +23,8 @@ const FLOW_RATES: FlowRate[] = ['slow', 'medium', 'fast']
 const PRESS_STRENGTHS: PressStrength[] = ['low', 'medium', 'hard']
 
 const hasWater = (t: BrewStepType) => t === 'bloom' || t === 'pour'
+// bypass: water added straight to the brewed coffee (not through the bed)
+const isBypass = (t: BrewStepType) => t === 'bypass'
 const isAgitation = (t: BrewStepType) => t === 'agitation'
 const isPress = (t: BrewStepType) => t === 'press'
 
@@ -83,7 +85,7 @@ export function BrewSteps({
     setRepeatOpen(false)
   }
 
-  const totalWater = steps.reduce((sum, s) => sum + (hasWater(s.type) ? s.water ?? 0 : 0), 0)
+  const totalWater = steps.reduce((sum, s) => sum + (hasWater(s.type) || isBypass(s.type) ? s.water ?? 0 : 0), 0)
 
   return (
     <div className="space-y-2">
@@ -163,6 +165,16 @@ export function BrewSteps({
                   ))}
                 </select>
               </>
+            )}
+            {isBypass(s.type) && (
+              <input
+                className="input !py-1.5"
+                type="number"
+                inputMode="decimal"
+                placeholder={t('recipe.stepWater')}
+                value={s.water ?? ''}
+                onChange={(e) => update(s.id, { water: e.target.value === '' ? undefined : Number(e.target.value) })}
+              />
             )}
             {isPress(s.type) && (
               <select
