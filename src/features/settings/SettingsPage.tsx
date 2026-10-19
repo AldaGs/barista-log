@@ -8,6 +8,7 @@ import { getProfile } from '@/db/repo'
 import { ProfileAvatar } from '@/features/profile/ProfileAvatar'
 import { ACCENTS, useSettings, type AccentId, type Lang, type ThemeMode } from '@/store/settings'
 import type { TempUnit } from '@/lib/units'
+import type { StepTimeMode } from '@/lib/stepTime'
 import { exportBackup, parseBackupFile, lastBackupAt, type Backup } from '@/lib/backup'
 import { ImportBackupSheet } from './ImportBackupSheet'
 import { ensurePersistence, formatBytes, getStorageStatus, type StorageStatus } from '@/lib/storage'
@@ -294,6 +295,20 @@ export default function SettingsPage() {
         <button className="btn-ghost w-full" onClick={s.resetPourRates}>
           {t('settings.resetDefaults')}
         </button>
+
+        <div className="border-t border-border/60 pt-4">
+          <span className="label">{t('settings.stepTimeMode')}</span>
+          <SegGroup<StepTimeMode>
+            value={s.stepTimeMode}
+            onChange={s.setStepTimeMode}
+            options={[
+              { value: 'end', label: t('settings.stepTime_end') },
+              { value: 'start', label: t('settings.stepTime_start') },
+              { value: 'duration', label: t('settings.stepTime_duration') },
+            ]}
+          />
+          <p className="mt-1 text-xs text-muted">{t(`step.timeHint_${s.stepTimeMode}`)}</p>
+        </div>
 
         <AltitudeField />
 

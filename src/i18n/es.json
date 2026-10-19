@@ -359,6 +359,13 @@
     }
   },
   "step": {
+    "time_end": "Terminar a",
+    "time_start": "Empezar a",
+    "time_duration": "Dura",
+    "time_finish": "La preparación termina a",
+    "timeHint_end": "Los tiempos son el reloj de preparación en que cada paso debe terminar.",
+    "timeHint_start": "Los tiempos son el reloj de preparación en que empieza cada paso. Indica abajo cuándo termina el último.",
+    "timeHint_duration": "Los tiempos son cuánto dura cada paso. Cambiar uno desplaza los pasos siguientes.",
     "bloom": "Bloom/Pre infusión",
     "pour": "Vertido",
     "agitation": "Agitación",
@@ -661,6 +668,10 @@
     "empty": "Aún no hay equipo."
   },
   "settings": {
+    "stepTimeMode": "Escribir tiempos de pasos como",
+    "stepTime_end": "Hora de fin",
+    "stepTime_start": "Hora de inicio",
+    "stepTime_duration": "Duración",
     "title": "Ajustes",
     "appearance": "Apariencia",
     "theme": "Tema",

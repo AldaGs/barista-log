@@ -13,6 +13,8 @@ import type {
 } from '@/db/types'
 import { uid } from '@/db/dexie'
 import { ClockInput } from './ClockInput'
+import { useSettings } from '@/store/settings'
+import { setStepTime, stepTimeValue } from '@/lib/stepTime'
 
 const STEP_TYPES: BrewStepType[] = ['bloom', 'pour', 'agitation', 'wait', 'drawdown', 'press', 'bypass', 'other']
 const INTENSITIES: AgitationIntensity[] = ['light', 'medium', 'strong']
@@ -37,6 +39,7 @@ export function BrewSteps({
 }) {
   const { t } = useTranslation()
   const steps = value ?? []
+  const timeMode = useSettings((s) => s.stepTimeMode)
 
   const update = (id: string, patch: Partial<BrewStep>) =>
     onChange(steps.map((s) => (s.id === id ? { ...s, ...patch } : s)))
@@ -209,10 +212,17 @@ export function BrewSteps({
                 </select>
               </>
             )}
-            <ClockInput
-              value={s.atTimeSec}
-              onChange={(secs) => update(s.id, { atTimeSec: secs })}
-            />
+            <label className="block">
+              <span className="label !mb-1 text-xs">{t(`step.time_${timeMode}`)}</span>
+              {timeMode === 'start' && i === 0 ? (
+                <div className="input !py-2 text-center tabular-nums text-muted">0:00</div>
+              ) : (
+                <ClockInput
+                  value={stepTimeValue(steps, i, timeMode)}
+                  onChange={(secs) => onChange(setStepTime(steps, i, timeMode, secs))}
+                />
+              )}
+            </label>
             {!hasWater(s.type) && !isAgitation(s.type) && (
               <input
                 className="input !py-1.5"
@@ -224,6 +234,17 @@ export function BrewSteps({
           </div>
         </div>
       ))}
+
+      {timeMode === 'start' && steps.length > 0 && (
+        <label className="card block p-2">
+          <span className="label !mb-1 text-xs">{t('step.time_finish')}</span>
+          <ClockInput
+            value={steps[steps.length - 1].atTimeSec}
+            onChange={(secs) => update(steps[steps.length - 1].id, { atTimeSec: secs })}
+          />
+        </label>
+      )}
+      <p className="text-xs text-muted">{t(`step.timeHint_${timeMode}`)}</p>
 
       {repeatOpen && (
         <div className="card space-y-2 p-3">

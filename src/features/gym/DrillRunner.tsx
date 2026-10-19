@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Play, Pause, RotateCcw, Check } from 'lucide-react'
 import type { BrewStep } from '@/db/types'
 import { formatSeconds } from '@/lib/units'
+import { stepTimeValue } from '@/lib/stepTime'
+import { useSettings } from '@/store/settings'
 import { cue, useWakeLock } from '@/lib/feedback'
 import { usePourDrill, type DrillSegment } from '@/lib/pourDrill'
 import { PourCanvas } from './PourCanvas'
@@ -32,6 +34,7 @@ export function DrillRunner({
   onComplete?: (seconds: number) => void
 }) {
   const { t } = useTranslation()
+  const timeMode = useSettings((s) => s.stepTimeMode)
   const run = usePourDrill(segments, metronome)
   useWakeLock(run.running)
 
@@ -282,7 +285,7 @@ export function DrillRunner({
           drill feels like running the real pour-over of this recipe. */}
       {isRecipe && (
         <ol className="space-y-2">
-          {recipeSteps.map(({ index, step, target }) => {
+          {recipeSteps.map(({ index, step, target }, k) => {
             const active = cur?.stepIndex === index && !run.done
             const passed = (cur?.stepIndex != null && index < cur.stepIndex) || run.done
             return (
@@ -305,7 +308,7 @@ export function DrillRunner({
                     <span className="text-sm font-semibold tabular-nums text-brand">{target} g</span>
                   )}
                   {step.atTimeSec != null && (
-                    <span className="text-xs tabular-nums text-muted">{formatSeconds(step.atTimeSec)}</span>
+                    <span className="text-xs tabular-nums text-muted">{formatSeconds(stepTimeValue(recipeSteps.map((r) => r.step), k, timeMode))}</span>
                   )}
                 </span>
               </li>

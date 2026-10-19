@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import type { Recipe } from '@/db/types'
 import { useSettings } from '@/store/settings'
 import { formatSeconds, formatTemp } from '@/lib/units'
+import { stepTimeValue } from '@/lib/stepTime'
 import { estimateMicrons } from '@/lib/grindConvert'
 
 function Row({ label, value }: { label: string; value?: string | number | null }) {
@@ -29,6 +30,7 @@ export function RecipeCard({
 }) {
   const { t } = useTranslation()
   const unit = useSettings((s) => s.tempUnit)
+  const timeMode = useSettings((s) => s.stepTimeMode)
   const microns = estimateMicrons(recipe.grindClicks, micronsPerClick)
   const isEspresso = recipe.method === 'espresso'
   const isCold = recipe.method === 'coldbrew'
@@ -128,7 +130,9 @@ export function RecipeCard({
                           .join(' · ')}
                   </span>
                   {s.atTimeSec != null && (
-                    <span className="ml-auto tabular-nums text-muted">{formatSeconds(s.atTimeSec)}</span>
+                    <span className="ml-auto tabular-nums text-muted">
+                      {formatSeconds(stepTimeValue(recipe.steps!, i, timeMode))}
+                    </span>
                   )}
                 </li>
               ))}
