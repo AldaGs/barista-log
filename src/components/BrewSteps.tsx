@@ -15,10 +15,11 @@ import { uid } from '@/db/dexie'
 import { ClockInput } from './ClockInput'
 import { useSettings } from '@/store/settings'
 import { setStepTime, stepTimeValue } from '@/lib/stepTime'
+import { cToF, fToC } from '@/lib/units'
 
 const STEP_TYPES: BrewStepType[] = ['bloom', 'pour', 'agitation', 'wait', 'drawdown', 'press', 'bypass', 'other']
 const INTENSITIES: AgitationIntensity[] = ['light', 'medium', 'strong']
-const METHODS: AgitationMethod[] = ['swirl', 'stir', 'tap']
+const METHODS: AgitationMethod[] = ['swirl', 'stir', 'tap', 'shake']
 const POUR_PATTERNS: PourPattern[] = ['circular', 'elliptical', 'direct', 'edge', 'concentric']
 const POUR_HEIGHTS: PourHeight[] = ['low', 'high']
 const FLOW_RATES: FlowRate[] = ['slow', 'medium', 'fast']
@@ -40,6 +41,7 @@ export function BrewSteps({
   const { t } = useTranslation()
   const steps = value ?? []
   const timeMode = useSettings((s) => s.stepTimeMode)
+  const tempUnit = useSettings((s) => s.tempUnit)
 
   const update = (id: string, patch: Partial<BrewStep>) =>
     onChange(steps.map((s) => (s.id === id ? { ...s, ...patch } : s)))
@@ -167,6 +169,17 @@ export function BrewSteps({
                     <option key={x} value={x}>{t(`step.flow_${x}`)}</option>
                   ))}
                 </select>
+                <input
+                  className="input !py-1.5"
+                  type="number"
+                  inputMode="decimal"
+                  placeholder={`${t('step.waterTemp')} (°${tempUnit})`}
+                  value={s.waterTemp == null ? '' : tempUnit === 'C' ? s.waterTemp : cToF(s.waterTemp)}
+                  onChange={(e) => {
+                    const v = e.target.value === '' ? undefined : Number(e.target.value)
+                    update(s.id, { waterTemp: v == null ? undefined : tempUnit === 'C' ? v : fToC(v) })
+                  }}
+                />
               </>
             )}
             {isBypass(s.type) && (
