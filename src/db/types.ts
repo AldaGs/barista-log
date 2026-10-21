@@ -64,7 +64,7 @@ export interface Grinder extends SyncMeta {
 
 export type BrewStepType = 'bloom' | 'pour' | 'agitation' | 'wait' | 'drawdown' | 'press' | 'bypass' | 'other'
 export type AgitationIntensity = 'light' | 'medium' | 'strong'
-export type AgitationMethod = 'swirl' | 'stir' | 'tap' | 'shake'
+export type AgitationMethod = 'swirl' | 'stir' | 'tap' | 'cross'
 export type PourPattern = 'circular' | 'elliptical' | 'direct' | 'edge' | 'concentric'
 export type PourHeight = 'low' | 'high'
 export type FlowRate = 'slow' | 'medium' | 'fast'

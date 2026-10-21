@@ -19,7 +19,7 @@ import { cToF, fToC } from '@/lib/units'
 
 const STEP_TYPES: BrewStepType[] = ['bloom', 'pour', 'agitation', 'wait', 'drawdown', 'press', 'bypass', 'other']
 const INTENSITIES: AgitationIntensity[] = ['light', 'medium', 'strong']
-const METHODS: AgitationMethod[] = ['swirl', 'stir', 'tap', 'shake']
+const METHODS: AgitationMethod[] = ['swirl', 'stir', 'tap', 'cross']
 const POUR_PATTERNS: PourPattern[] = ['circular', 'elliptical', 'direct', 'edge', 'concentric']
 const POUR_HEIGHTS: PourHeight[] = ['low', 'high']
 const FLOW_RATES: FlowRate[] = ['slow', 'medium', 'fast']
