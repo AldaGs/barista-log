@@ -124,6 +124,7 @@ export function RecipeCard({
                           s.pourPattern && t('step.' + s.pourPattern),
                           s.pourHeight && t('step.' + s.pourHeight),
                           s.flowRate && t('step.flow_' + s.flowRate),
+                          s.waterTemp != null ? formatTemp(s.waterTemp, unit) : null,
                           s.note,
                         ]
                           .filter(Boolean)

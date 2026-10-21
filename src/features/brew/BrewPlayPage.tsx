@@ -6,7 +6,7 @@ import { Play, Pause, RotateCcw, Check, Flag, X, Snowflake } from 'lucide-react'
 import { db } from '@/db/dexie'
 import type { BrewStep, FlowRate } from '@/db/types'
 import { PageHeader, EmptyState } from '@/components/ui'
-import { formatSeconds } from '@/lib/units'
+import { formatSeconds, formatTemp, type TempUnit } from '@/lib/units'
 import { stepTimeValue } from '@/lib/stepTime'
 import { cue, useWakeLock } from '@/lib/feedback'
 import { useSettings } from '@/store/settings'
@@ -23,7 +23,7 @@ function pourDurationSec(step: BrewStep, rates: Record<FlowRate, number>): numbe
   return rate > 0 ? step.water / rate : null
 }
 
-function stepLabel(s: BrewStep, t: (k: string) => string) {
+function stepLabel(s: BrewStep, t: (k: string) => string, unit: TempUnit) {
   if (s.type === 'agitation') {
     return [t('step.' + s.type), s.method && t('step.' + s.method), s.intensity && t('step.' + s.intensity)]
       .filter(Boolean)
@@ -40,6 +40,7 @@ function stepLabel(s: BrewStep, t: (k: string) => string) {
     s.pourPattern && t('step.' + s.pourPattern),
     s.pourHeight && t('step.' + s.pourHeight),
     s.flowRate && t('step.flow_' + s.flowRate),
+    s.waterTemp != null ? formatTemp(s.waterTemp, unit) : null,
     s.note,
   ]
     .filter(Boolean)
@@ -52,6 +53,7 @@ export default function BrewPlayPage() {
   const navigate = useNavigate()
   const recipe = useLiveQuery(() => (id ? db.recipes.get(id) : undefined), [id])
   const pourRates = useSettings((s) => s.pourRates)
+  const tempUnit = useSettings((s) => s.tempUnit)
   const stepEndCountdown = useSettings((s) => s.stepEndCountdown)
   const pourMarkCue = useSettings((s) => s.pourMarkCue)
   const timeMode = useSettings((s) => s.stepTimeMode)
@@ -292,7 +294,7 @@ export default function BrewPlayPage() {
             )}
             <span className="font-mono text-5xl tabular-nums">{formatSeconds(elapsed)}</span>
             {currentStep ? (
-              <p className="text-lg font-semibold">{stepLabel(currentStep, t)}</p>
+              <p className="text-lg font-semibold">{stepLabel(currentStep, t, tempUnit)}</p>
             ) : (
               <p className="font-semibold text-accent">{t('play.complete')}</p>
             )}
@@ -310,7 +312,7 @@ export default function BrewPlayPage() {
             )}
             {nextStep && (
               <p className="mt-1 text-sm text-muted">
-                {t('play.next')}: {stepLabel(nextStep, t)}
+                {t('play.next')}: {stepLabel(nextStep, t, tempUnit)}
                 {cumWater[currentIndex + 1] > cumWater[currentIndex] && (
                   <span className="ml-1 tabular-nums">→ {cumWater[currentIndex + 1]} g</span>
                 )}
@@ -428,7 +430,7 @@ export default function BrewPlayPage() {
                   <span className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-2 text-xs font-semibold">
                     {passed ? <Check size={14} className="text-accent" /> : i + 1}
                   </span>
-                  <span className={`relative flex-1 ${active ? 'font-semibold' : ''}`}>{stepLabel(s, t)}</span>
+                  <span className={`relative flex-1 ${active ? 'font-semibold' : ''}`}>{stepLabel(s, t, tempUnit)}</span>
                   <span className="relative flex shrink-0 flex-col items-end leading-tight">
                     {cumWater[i] > 0 && (
                       <span className="tabular-nums text-sm font-semibold text-brand">{cumWater[i]} g</span>
