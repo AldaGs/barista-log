@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Recipe } from '@/db/types'
 import { useSettings } from '@/store/settings'
@@ -39,6 +40,9 @@ export function RecipeCard({
   const isFlash = isCold && recipe.coldBrewStyle === 'flash'
   const isSteep = isCold && !isFlash
   const bloom = recipe.hotBloom
+  // Steps view: 'targets' = time & cumulative weight to hit; 'settings' = technique per step
+  const [stepsView, setStepsView] = useState<'targets' | 'settings'>('targets')
+  let cumWater = 0
 
   return (
     <div className="card overflow-hidden">
@@ -102,34 +106,55 @@ export function RecipeCard({
         )}
         {!isSteep && recipe.steps && recipe.steps.length > 0 && (
           <div className="mt-3">
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
-              {t('recipe.steps')}
-            </p>
+            <div className="mb-1 flex items-center justify-between">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted">{t('recipe.steps')}</p>
+              <div className="flex overflow-hidden rounded-full border border-border text-[11px]" role="group">
+                {(['targets', 'settings'] as const).map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    aria-pressed={stepsView === v}
+                    className={`px-2 py-0.5 ${stepsView === v ? 'bg-brand text-brand-fg' : 'text-muted'}`}
+                    onClick={() => setStepsView(v)}
+                  >
+                    {t('recipe.stepsView_' + v)}
+                  </button>
+                ))}
+              </div>
+            </div>
             <ol className="space-y-1">
               {recipe.steps.map((s, i) => (
                 <li key={s.id} className="flex items-baseline gap-2 text-sm">
                   <span className="w-4 shrink-0 text-muted">{i + 1}.</span>
                   <span className="font-medium">{t('step.' + s.type)}</span>
+                  {stepsView === 'targets' ? (
+                    <span className="text-muted tabular-nums">
+                      {s.water != null && (s.type === 'bloom' || s.type === 'pour' || s.type === 'bypass')
+                        ? `+${s.water} g → ${(cumWater += s.water)} g`
+                        : null}
+                    </span>
+                  ) : (
                   <span className="text-muted">
-                    {s.type === 'agitation'
-                      ? [s.method && t('step.' + s.method), s.intensity && t('step.' + s.intensity)]
-                          .filter(Boolean)
-                          .join(' · ')
-                      : s.type === 'press'
-                      ? [s.pressStrength && t('step.press_' + s.pressStrength), s.note]
-                          .filter(Boolean)
-                          .join(' · ')
-                      : [
-                          s.water != null ? `${s.water} g` : null,
-                          s.pourPattern && t('step.' + s.pourPattern),
-                          s.pourHeight && t('step.' + s.pourHeight),
-                          s.flowRate && t('step.flow_' + s.flowRate),
-                          s.waterTemp != null ? formatTemp(s.waterTemp, unit) : null,
-                          s.note,
-                        ]
-                          .filter(Boolean)
-                          .join(' · ')}
-                  </span>
+                      {s.type === 'agitation'
+                        ? [s.method && t('step.' + s.method), s.intensity && t('step.' + s.intensity)]
+                            .filter(Boolean)
+                            .join(' · ')
+                        : s.type === 'press'
+                        ? [s.pressStrength && t('step.press_' + s.pressStrength), s.note]
+                            .filter(Boolean)
+                            .join(' · ')
+                        : [
+                            s.water != null ? `${s.water} g` : null,
+                            s.pourPattern && t('step.' + s.pourPattern),
+                            s.pourHeight && t('step.' + s.pourHeight),
+                            s.flowRate && t('step.flow_' + s.flowRate),
+                            s.waterTemp != null ? formatTemp(s.waterTemp, unit) : null,
+                            s.note,
+                          ]
+                            .filter(Boolean)
+                            .join(' · ')}
+                    </span>
+                  )}
                   {s.atTimeSec != null && (
                     <span className="ml-auto tabular-nums text-muted">
                       {formatSeconds(stepTimeValue(recipe.steps!, i, timeMode))}
