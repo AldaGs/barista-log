@@ -356,7 +356,9 @@
       "count_one": "{{count}} brew",
       "count_other": "{{count}} brews",
       "viewAll": "View in history"
-    }
+    },
+    "stepsView_targets": "Targets",
+    "stepsView_settings": "Settings"
   },
   "step": {
     "time_end": "Finish at",

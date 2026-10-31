@@ -356,7 +356,9 @@
       "count_one": "{{count}} preparación",
       "count_other": "{{count}} preparaciones",
       "viewAll": "Ver en el historial"
-    }
+    },
+    "stepsView_targets": "Objetivos",
+    "stepsView_settings": "Ajustes"
   },
   "step": {
     "time_end": "Terminar a",
