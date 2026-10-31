@@ -41,7 +41,7 @@ export function RecipeCard({
   const isSteep = isCold && !isFlash
   const bloom = recipe.hotBloom
   // Steps view: 'targets' = time & cumulative weight to hit; 'settings' = technique per step
-  const [stepsView, setStepsView] = useState<'targets' | 'settings'>('targets')
+  const [stepsView, setStepsView] = useState<'targets' | 'settings' | 'temp'>('targets')
   let cumWater = 0
 
   return (
@@ -109,7 +109,7 @@ export function RecipeCard({
             <div className="mb-1 flex items-center justify-between">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted">{t('recipe.steps')}</p>
               <div className="flex overflow-hidden rounded-full border border-border text-[11px]" role="group">
-                {(['targets', 'settings'] as const).map((v) => (
+                {(['targets', 'settings', 'temp'] as const).map((v) => (
                   <button
                     key={v}
                     type="button"
@@ -131,6 +131,18 @@ export function RecipeCard({
                     <span className="text-muted tabular-nums">
                       {s.water != null && (s.type === 'bloom' || s.type === 'pour' || s.type === 'bypass')
                         ? `+${s.water} g → ${(cumWater += s.water)} g`
+                        : null}
+                    </span>
+                  ) : stepsView === 'temp' ? (
+                    <span className="text-muted">
+                      {s.type === 'agitation'
+                        ? [s.method && t('step.' + s.method), s.intensity && t('step.' + s.intensity)]
+                            .filter(Boolean)
+                            .join(' · ')
+                        : s.type === 'bloom' || s.type === 'pour' || s.type === 'bypass'
+                        ? (s.waterTemp ?? recipe.waterTemp) != null
+                          ? formatTemp((s.waterTemp ?? recipe.waterTemp)!, unit)
+                          : null
                         : null}
                     </span>
                   ) : (

@@ -358,7 +358,8 @@
       "viewAll": "Ver en el historial"
     },
     "stepsView_targets": "Objetivos",
-    "stepsView_settings": "Ajustes"
+    "stepsView_settings": "Ajustes",
+    "stepsView_temp": "Temp. y agitación"
   },
   "step": {
     "time_end": "Terminar a",
