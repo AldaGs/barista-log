@@ -358,7 +358,8 @@
       "viewAll": "View in history"
     },
     "stepsView_targets": "Targets",
-    "stepsView_settings": "Settings"
+    "stepsView_settings": "Settings",
+    "stepsView_temp": "Temp & agitation"
   },
   "step": {
     "time_end": "Finish at",
